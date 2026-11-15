@@ -41,6 +41,11 @@ keys.json
 *.h5
 *.parquet
 
+# Blueprint documentation and generator
+DropGuard_Work_Division_and_Architecture.pdf
+generate_blueprint_pdf.py
+*.pdf
+
 # Operating System & IDEs
 .DS_Store
 Thumbs.db

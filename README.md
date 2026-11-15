@@ -54,7 +54,6 @@ DropGuard/
 │   ├── main.py                      # FastAPI REST application
 │   └── requirements_server.txt      # API dependencies
 │
-├── DropGuard_Work_Division_and_Architecture.pdf  # Project blueprint PDF
 ├── .gitignore
 └── README.md
 ```
