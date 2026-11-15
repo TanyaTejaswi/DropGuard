@@ -1,72 +1,94 @@
 """
-DropGuard - Production ML Training Pipeline (Member 1)
-Combines preprocessing (ColumnTransformer) + Classifier (RandomForest) into a single Pipeline.
+DropGuard - Self-Contained Production ML Training Pipeline (Member 1)
+Bundles Preprocessing (ColumnTransformer) + Classifier (RandomForest) into a single Pipeline.
 """
 
 import os
 import joblib
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix
-from preprocess import load_and_clean_raw_data, get_preprocessor, NUMERICAL_FEATURES, CATEGORICAL_FEATURES, BINARY_FEATURES
+from sklearn.metrics import classification_report, roc_auc_score
 
+DATASET_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "student_data.csv")
 MODEL_OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
 
-def run_training_pipeline():
-    print("[*] Step 1: Loading and cleaning raw dataset...")
-    df = load_and_clean_raw_data()
+# Feature Taxonomy for UCI Dataset #697
+NUMERICAL_FEATURES = [
+    'Previous qualification (grade)', 'Admission grade', 'Age at enrollment',
+    'Curricular units 1st sem (credited)', 'Curricular units 1st sem (enrolled)',
+    'Curricular units 1st sem (evaluations)', 'Curricular units 1st sem (approved)',
+    'Curricular units 1st sem (grade)', 'Curricular units 1st sem (without evaluations)',
+    'Curricular units 2nd sem (credited)', 'Curricular units 2nd sem (enrolled)',
+    'Curricular units 2nd sem (evaluations)', 'Curricular units 2nd sem (approved)',
+    'Curricular units 2nd sem (grade)', 'Curricular units 2nd sem (without evaluations)',
+    'Unemployment rate', 'Inflation rate', 'GDP'
+]
 
-    # Target Formulation for Early Warning:
-    # 1 = Dropout (At-Risk), 0 = Graduate (Safe)
+CATEGORICAL_FEATURES = [
+    'Marital status', 'Application mode', 'Application order', 'Course',
+    'Previous qualification', 'Nacionality', "Mother's qualification",
+    "Father's qualification", "Mother's occupation", "Father's occupation"
+]
+
+BINARY_FEATURES = [
+    'Daytime/evening attendance', 'Displaced', 'Educational special needs',
+    'Debtor', 'Tuition fees up to date', 'Gender', 'Scholarship holder', 'International'
+]
+
+def train_and_save_pipeline():
+    print("[*] Loading raw UCI dataset from:", DATASET_PATH)
+    if not os.path.exists(DATASET_PATH):
+        raise FileNotFoundError(f"Dataset not found at {DATASET_PATH}. Run 'python data/download_dataset.py' first.")
+
+    df = pd.read_csv(DATASET_PATH)
+    df.columns = [c.strip() for c in df.columns]
+
+    # Target: 1 = Dropout, 0 = Graduate
     binary_df = df[df["Target"].isin(["Dropout", "Graduate"])].copy()
     X = binary_df.drop(columns=["Target"])
     y = (binary_df["Target"] == "Dropout").astype(int)
 
-    print(f"[*] Step 2: Stratified Train/Test split (80/20)...")
+    # 80/20 Stratified Split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.20, random_state=42, stratify=y
     )
 
-    print(f"[*] Step 3: Building unified Preprocessing + Classifier Pipeline...")
-    preprocessor = get_preprocessor()
-    
-    # Random Forest with class balancing to prioritize high recall on at-risk students
-    classifier = RandomForestClassifier(
-        n_estimators=200,
-        max_depth=14,
-        class_weight="balanced",
-        random_state=42,
-        n_jobs=-1
+    # Bundled Preprocessing
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', StandardScaler(), NUMERICAL_FEATURES),
+            ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), CATEGORICAL_FEATURES),
+            ('bin', 'passthrough', BINARY_FEATURES)
+        ],
+        remainder='drop'
     )
 
-    full_pipeline = Pipeline(steps=[
-        ("preprocessor", preprocessor),
-        ("classifier", classifier)
+    # Full End-to-End Pipeline
+    pipeline = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('classifier', RandomForestClassifier(n_estimators=200, max_depth=14, class_weight='balanced', random_state=42, n_jobs=-1))
     ])
 
-    print("[*] Step 4: Fitting pipeline on training data...")
-    full_pipeline.fit(X_train, y_train)
+    print("[*] Training pipeline on training data...")
+    pipeline.fit(X_train, y_train)
 
-    print("[*] Step 5: Evaluating pipeline on holdout test set...")
-    y_pred = full_pipeline.predict(X_test)
-    y_prob = full_pipeline.predict_proba(X_test)[:, 1]
+    y_pred = pipeline.predict(X_test)
+    y_prob = pipeline.predict_proba(X_test)[:, 1]
 
-    print("\n" + "=" * 55)
-    print("      PREPROCESSED PIPELINE PERFORMANCE METRICS")
-    print("=" * 55)
-    print(classification_report(y_test, y_pred, target_names=["Graduate (Safe)", "Dropout (At-Risk)"]))
-    print(f"ROC-AUC Score: {roc_auc_score(y_test, y_prob):.4f}")
-    print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
-    print("=" * 55)
+    print("\n" + "=" * 50)
+    print("           EVALUATION METRICS")
+    print("=" * 50)
+    print(classification_report(y_test, y_pred, target_names=["Graduate", "Dropout"]))
+    print(f"ROC-AUC: {roc_auc_score(y_test, y_prob):.4f}")
+    print("=" * 50)
 
-    # Serialize complete pipeline
-    print(f"[*] Step 6: Serializing end-to-end pipeline to {MODEL_OUTPUT_PATH}...")
-    joblib.dump(full_pipeline, MODEL_OUTPUT_PATH)
-    print("[✔] Done! Training and preprocessing successfully bundled.")
-    return full_pipeline
+    # Save artifact
+    joblib.dump(pipeline, MODEL_OUTPUT_PATH)
+    print(f"[✔] Serialized end-to-end model pipeline to: {MODEL_OUTPUT_PATH}")
 
 if __name__ == "__main__":
-    run_training_pipeline()
+    train_and_save_pipeline()
