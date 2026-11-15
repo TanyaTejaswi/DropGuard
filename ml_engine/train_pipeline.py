@@ -11,10 +11,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, recall_score, f1_score
 
-def run_training(dataset_path="data/student_data.csv", model_output_path="model.pkl"):
+def run_training(dataset_path=None, model_output_path="model.pkl"):
     print("[M1] Starting training pipeline...")
+    if dataset_path is None:
+        dataset_path = os.path.join(os.path.dirname(__file__), "..", "data", "student_data.csv")
+    
     if not os.path.exists(dataset_path):
-        print(f"[M1] Dataset not found at {dataset_path}. Please place your UCI dataset CSV in data/.")
+        print(f"[M1] Dataset not found at {dataset_path}. Please place your UCI dataset CSV in the root data/ folder.")
         return False
     
     # Placeholder pipeline implementation

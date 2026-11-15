@@ -24,8 +24,10 @@ DropGuard/
 │   ├── student_schema.json          # Universal JSON schema for data exchange
 │   └── mock_students.json           # 10 realistic test student profiles
 │
+├── data/                            # [CENTRAL DATASET DIRECTORY]
+│   └── student_data.csv             # Raw UCI dataset (place CSV here)
+│
 ├── ml_engine/                       # [MEMBER 1: ML & XAI ENGINE]
-│   ├── data/                        # UCI dataset storage
 │   ├── 01_eda_and_training.ipynb    # Exploration & model comparison
 │   ├── train_pipeline.py            # Automated training script
 │   ├── predict.py                   # Inference + SHAP top-factor extraction
@@ -100,6 +102,7 @@ To ensure that the 3 independent streams assemble flawlessly:
 No backend is needed to test the UI! Simply open `frontend/index.html` in your browser (or use VS Code Live Server). It reads directly from `frontend/mock_students.json`.
 
 ### 2. Run the ML Pipeline (Member 1)
+Place the dataset CSV in the root `data/student_data.csv`, then:
 ```bash
 cd ml_engine
 pip install -r requirements_ml.txt

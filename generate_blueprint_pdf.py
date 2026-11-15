@@ -330,10 +330,11 @@ def build_pdf(filename="DropGuard_Work_Division_and_Architecture.pdf"):
             Paragraph("All (Day 1)", table_cell_bold),
             Paragraph("10 realistic test student profiles used by Member 2 & 3 for independent testing from Day 1.", table_cell)
         ],
+        # Data
         [
-            Paragraph("<b>ml_engine/data/student_data.csv</b>", table_cell),
-            Paragraph("Member 1", table_cell_bold),
-            Paragraph("Raw dataset downloaded from UCI repository (academic, demographic, attendance attributes).", table_cell)
+            Paragraph("<b>data/student_data.csv</b>", table_cell),
+            Paragraph("Shared / M1", table_cell_bold),
+            Paragraph("Raw dataset downloaded from UCI repository (stored centrally at the project root).", table_cell)
         ],
         [
             Paragraph("<b>ml_engine/01_eda_and_training.ipynb</b>", table_cell),
