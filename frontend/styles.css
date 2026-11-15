@@ -1,0 +1,16 @@
+/* Custom Styles for DropGuard */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #student-modal, #student-modal * {
+    visibility: visible;
+  }
+  #student-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+  }
+}

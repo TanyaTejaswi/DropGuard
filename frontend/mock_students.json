@@ -1,0 +1,139 @@
+[
+  {
+    "student_id": "STU-101",
+    "name": "Maria Silva",
+    "program": "Computer Science",
+    "semester": 2,
+    "attendance_pct": 54.0,
+    "gpa": 7.4,
+    "prediction": {
+      "risk_score": 0.88,
+      "risk_level": "High"
+    },
+    "top_risk_factors": [
+      "18 unexcused lecture absences",
+      "Failed Midterm Exam 1 (6.5/20)",
+      "Zero extracurricular engagement hours"
+    ],
+    "counseling_memo": {
+      "summary": "Student is displaying acute disengagement driven by chronic morning absenteeism and an initial failure in core algorithms.",
+      "action_items": [
+        "Issue formal attendance alert and schedule an immediate 1-on-1 counselor intake.",
+        "Assign a dedicated peer tutor for Data Structures remedial coaching.",
+        "Establish an attendance recovery agreement requiring bi-weekly advisor sign-offs."
+      ],
+      "meeting_talking_points": [
+        "Inquire about personal, commute, or housing difficulties impacting morning attendance.",
+        "Discuss perceived pace of the curriculum and identify specific stumbling blocks in algorithms."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-102",
+    "name": "Lucas Santos",
+    "program": "Electrical Engineering",
+    "semester": 4,
+    "attendance_pct": 68.0,
+    "gpa": 8.9,
+    "prediction": {
+      "risk_score": 0.74,
+      "risk_level": "High"
+    },
+    "top_risk_factors": [
+      "Accumulated 3 failed course credits from prior term",
+      "Sharp drop in continuous assessment scores (-35%)",
+      "Late tuition installment payment notification"
+    ],
+    "counseling_memo": {
+      "summary": "Student faces compounding academic stress exacerbated by potential socio-economic or financial constraints.",
+      "action_items": [
+        "Connect student with Financial Aid Office for emergency grant or payment installment plan.",
+        "Review credit overload and explore dropping one elective to stabilize core subjects."
+      ],
+      "meeting_talking_points": [
+        "Check in empathetically regarding external financial or part-time job commitments.",
+        "Formulate a balanced study timetable to recover backlog subjects without burning out."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-103",
+    "name": "Beatriz Costa",
+    "program": "Business Administration",
+    "semester": 1,
+    "attendance_pct": 72.5,
+    "gpa": 10.2,
+    "prediction": {
+      "risk_score": 0.48,
+      "risk_level": "Medium"
+    },
+    "top_risk_factors": [
+      "Borderline introductory mathematics grade (9.5/20)",
+      "Low reported weekly independent study hours (<3 hrs/week)"
+    ],
+    "counseling_memo": {
+      "summary": "First-year student adjusting to university academic standards with borderline quantitative results.",
+      "action_items": [
+        "Enroll student in the peer-assisted study session for Quantitative Methods.",
+        "Provide time management workshop schedule."
+      ],
+      "meeting_talking_points": [
+        "Explore how student is transitioning from high school to university study routines.",
+        "Recommend study groups to foster academic collaboration."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-104",
+    "name": "Rodrigo Lima",
+    "program": "Mechanical Engineering",
+    "semester": 3,
+    "attendance_pct": 91.0,
+    "gpa": 14.8,
+    "prediction": {
+      "risk_score": 0.12,
+      "risk_level": "Low"
+    },
+    "top_risk_factors": [
+      "Slight decline in Lab practical attendance (1 session missed)"
+    ],
+    "counseling_memo": {
+      "summary": "Student is in strong academic standing with consistent participation and high assessment averages.",
+      "action_items": [
+        "Encourage participation in departmental undergraduate research or project leadership.",
+        "Standard mid-term progress acknowledgement."
+      ],
+      "meeting_talking_points": [
+        "Congratulate on consistent academic discipline.",
+        "Discuss internship and honors program opportunities."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-105",
+    "name": "Camila Oliveira",
+    "program": "Data Science",
+    "semester": 2,
+    "attendance_pct": 60.0,
+    "gpa": 9.1,
+    "prediction": {
+      "risk_score": 0.69,
+      "risk_level": "High"
+    },
+    "top_risk_factors": [
+      "Missed mandatory midterm project deadline",
+      "Low LMS portal activity (<2 logins per week)"
+    ],
+    "counseling_memo": {
+      "summary": "Student is showing signs of digital disengagement and submission delinquency in core programming.",
+      "action_items": [
+        "Reach out via advisor phone check-in regarding missed submission window.",
+        "Facilitate an extension review with course instructor if medical/personal cause is present."
+      ],
+      "meeting_talking_points": [
+        "Discuss technical or personal barriers hindering online platform participation.",
+        "Outline milestone deadlines for the remaining semester deliverables."
+      ]
+    }
+  }
+]

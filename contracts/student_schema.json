@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DropGuardStudentProfile",
+  "type": "object",
+  "required": [
+    "student_id",
+    "name",
+    "program",
+    "semester",
+    "attendance_pct",
+    "gpa",
+    "prediction",
+    "top_risk_factors",
+    "counseling_memo"
+  ],
+  "properties": {
+    "student_id": { "type": "string" },
+    "name": { "type": "string" },
+    "program": { "type": "string" },
+    "semester": { "type": "integer" },
+    "attendance_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "gpa": { "type": "number", "minimum": 0, "maximum": 20 },
+    "prediction": {
+      "type": "object",
+      "required": ["risk_score", "risk_level"],
+      "properties": {
+        "risk_score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "risk_level": { "type": "string", "enum": ["Low", "Medium", "High"] }
+      }
+    },
+    "top_risk_factors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 5
+    },
+    "counseling_memo": {
+      "type": "object",
+      "required": ["summary", "action_items", "meeting_talking_points"],
+      "properties": {
+        "summary": { "type": "string" },
+        "action_items": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "meeting_talking_points": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
