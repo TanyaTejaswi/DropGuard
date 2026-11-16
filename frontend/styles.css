@@ -1,16 +1,93 @@
-/* Custom Styles for DropGuard */
+/* DropGuard — Production Dashboard Theme & Print Engine */
+
+/* Radial Gauge Animations */
+.gauge-circle {
+  transition: stroke-dashoffset 1s ease-in-out, stroke 0.5s ease;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* Custom Scrollbars for Modal Drawer */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Pulse Glows for High-Risk Alerts */
+.pulse-risk-high {
+  box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
+  animation: pulse-rose 2s infinite;
+}
+
+@keyframes pulse-rose {
+  0% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(225, 29, 72, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0);
+  }
+}
+
+/* Professional Print Stylesheet */
 @media print {
-  body * {
-    visibility: hidden;
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
   }
-  #student-modal, #student-modal * {
-    visibility: visible;
+
+  /* Hide navigation, background dashboard, modals backdrop and action buttons */
+  header, 
+  main, 
+  #predict-modal, 
+  #modal-backdrop, 
+  #modal-close-btn, 
+  #modal-dismiss-btn, 
+  button, 
+  .no-print {
+    display: none !important;
+    visibility: hidden !important;
   }
+
+  /* Show and format student dossier full page */
   #student-modal {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  #student-modal > div:last-child {
+    padding-left: 0 !important;
+  }
+
+  #student-modal .w-screen {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .print-header {
+    display: block !important;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
   }
 }

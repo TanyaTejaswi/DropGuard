@@ -135,5 +135,143 @@
         "Outline milestone deadlines for the remaining semester deliverables."
       ]
     }
+  },
+  {
+    "student_id": "STU-106",
+    "name": "Tiago Ferreira",
+    "program": "Civil Engineering",
+    "semester": 3,
+    "attendance_pct": 49.0,
+    "gpa": 6.8,
+    "prediction": {
+      "risk_score": 0.91,
+      "risk_level": "High"
+    },
+    "top_risk_factors": [
+      "Repeated failure in Structural Mechanics prerequisite",
+      "Attendance below mandatory 50% threshold",
+      "Unresponsive to academic early warning emails"
+    ],
+    "counseling_memo": {
+      "summary": "Severe academic attrition risk marked by repeat course failures, critical attendance violations, and advisor outreach disengagement.",
+      "action_items": [
+        "Schedule an urgent in-person dean's advisory conference.",
+        "Conduct an academic audit to restructure degree pathway and reduce semester course load.",
+        "Provide direct referral to student counseling and health center."
+      ],
+      "meeting_talking_points": [
+        "Discuss underlying personal or emotional factors impacting continuous attendance.",
+        "Evaluate academic motivation and whether a change of major or temporary study pause is warranted."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-107",
+    "name": "Ines Martins",
+    "program": "Nursing",
+    "semester": 2,
+    "attendance_pct": 78.0,
+    "gpa": 11.5,
+    "prediction": {
+      "risk_score": 0.38,
+      "risk_level": "Medium"
+    },
+    "top_risk_factors": [
+      "Clinical rotation commute conflict (working night shifts)",
+      "Minor drop in Pharmacology continuous evaluation"
+    ],
+    "counseling_memo": {
+      "summary": "Student balances demanding vocational work shifts with clinical coursework, creating potential fatigue and schedule friction.",
+      "action_items": [
+        "Coordinate with clinical placement coordinator to explore daylight rotation schedules.",
+        "Connect with campus student-worker flexibility program."
+      ],
+      "meeting_talking_points": [
+        "Inquire about work-life balance and sleep schedule management during clinical shifts.",
+        "Identify specific study intervals during off-duty days."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-108",
+    "name": "Andre Sousa",
+    "program": "Law",
+    "semester": 5,
+    "attendance_pct": 82.0,
+    "gpa": 10.8,
+    "prediction": {
+      "risk_score": 0.42,
+      "risk_level": "Medium"
+    },
+    "top_risk_factors": [
+      "Unpaid library overdue fines and administrative hold",
+      "Delayed submission of Constitutional Law research paper"
+    ],
+    "counseling_memo": {
+      "summary": "Upperclassman experiencing administrative roadblocks and thesis deadline compression.",
+      "action_items": [
+        "Assist in clearing administrative holds to prevent exam registration blocks.",
+        "Set up writing lab consultation for thesis organization."
+      ],
+      "meeting_talking_points": [
+        "Check progress on Constitutional Law research draft.",
+        "Ensure clear understanding of upcoming bar preparation requirements."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-109",
+    "name": "Sofia Chen",
+    "program": "International Relations",
+    "semester": 1,
+    "attendance_pct": 88.0,
+    "gpa": 11.2,
+    "prediction": {
+      "risk_score": 0.31,
+      "risk_level": "Low"
+    },
+    "top_risk_factors": [
+      "Language barrier during seminar oral presentations",
+      "First-generation college student adjustment"
+    ],
+    "counseling_memo": {
+      "summary": "First-year international student displaying strong attendance and motivation with transitional adaptation in oral presentations.",
+      "action_items": [
+        "Pair with international student mentor organization.",
+        "Connect with university English Academic Speaking workshop series."
+      ],
+      "meeting_talking_points": [
+        "Discuss cultural integration, campus community connections, and conversational confidence.",
+        "Review oral presentation anxiety management techniques."
+      ]
+    }
+  },
+  {
+    "student_id": "STU-110",
+    "name": "Diogo Ribeiro",
+    "program": "Computer Science",
+    "semester": 4,
+    "attendance_pct": 52.0,
+    "gpa": 15.2,
+    "prediction": {
+      "risk_score": 0.58,
+      "risk_level": "Medium"
+    },
+    "top_risk_factors": [
+      "High academic capability paired with severe lecture absenteeism",
+      "Working 30+ hours/week as freelance software developer"
+    ],
+    "counseling_memo": {
+      "summary": "Talented student showing high exam aptitude but at risk of administrative failure due to breaching minimum lecture attendance guidelines.",
+      "action_items": [
+        "Clarify institutional attendance compliance regulations to avoid automatic de-registration.",
+        "Formalize student-working-status dispensation with academic department if eligible.",
+        "Propose asynchronous project submission credits."
+      ],
+      "meeting_talking_points": [
+        "Highlight the institutional risk of automatic failure regardless of high exam performance.",
+        "Explore course schedule adjustments or part-time student registration status."
+      ]
+    }
   }
 ]

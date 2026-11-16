@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DropGuard — Day 7 Presentation Deck (Member 2: AI Counseling)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .slide { display: none; }
+    .slide.active { display: flex; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-white font-sans antialiased min-h-screen flex flex-col justify-between select-none">
+
+  <!-- Presentation Header -->
+  <header class="border-b border-slate-800 px-8 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-sm">
+        DG
+      </div>
+      <div>
+        <span class="font-bold text-sm tracking-tight text-slate-100">DropGuard Early Warning Project</span>
+        <span class="text-xs px-2 py-0.5 ml-2 bg-blue-950 text-blue-400 rounded-full border border-blue-800">Member 2 Presentation</span>
+      </div>
+    </div>
+    <div class="text-xs text-slate-400 font-mono">
+      Slide <span id="slide-num">1</span> of 5
+    </div>
+  </header>
+
+  <!-- Slide Stage -->
+  <main class="max-w-6xl w-full mx-auto px-6 py-6 flex-1 flex flex-col justify-center items-center">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active fade-in flex-col items-center text-center space-y-6 max-w-3xl" data-slide="1">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 bg-blue-900/40 text-blue-400 rounded-full text-xs font-semibold border border-blue-700/50">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>Academic Project Deliverable — Member 2</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+        DropGuard: From Risk Predictions to Empathetic Pastoral Action
+      </h1>
+      <p class="text-base text-slate-400 leading-relaxed max-w-2xl">
+        Bridging Tabular Machine Learning, SHAP Explainability, and Generative AI to deliver structured, legally sound academic intervention memos for university advisors.
+      </p>
+      <div class="pt-4 flex items-center justify-center space-x-6 text-xs text-slate-500 font-mono">
+        <span>Dataset: UCI #697</span>
+        <span>•</span>
+        <span>Lead: Member 2 (AI Counseling Lead)</span>
+        <span>•</span>
+        <span>Architecture: Contract-First</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem Statement & Value Proposition -->
+    <div class="slide fade-in flex-col space-y-6 w-full" data-slide="2">
+      <div class="border-b border-slate-800 pb-3">
+        <h2 class="text-2xl font-bold text-white">The "Cold Data" Problem in Higher Education</h2>
+        <p class="text-xs text-slate-400">Why automated ML scores fail without contextual GenAI translation.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/60 space-y-3">
+          <div class="h-10 w-10 rounded-xl bg-rose-950 text-rose-400 flex items-center justify-center border border-rose-800">
+            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-base text-slate-200">The Warning Gap</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Faculty dashboards show red flags like <code class="text-rose-300 font-mono">Risk: 0.88</code>, but offer zero context on *why* the student is struggling or *what actions* to take.
+          </p>
+        </div>
+
+        <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/60 space-y-3">
+          <div class="h-10 w-10 rounded-xl bg-amber-950 text-amber-400 flex items-center justify-center border border-amber-800">
+            <i data-lucide="clock" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-base text-slate-200">Advisor Cognitive Overload</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Advisors have under 15 minutes per consultation and cannot manually cross-reference attendance records, fee status, and exam grades for 300+ students.
+          </p>
+        </div>
+
+        <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/60 space-y-3">
+          <div class="h-10 w-10 rounded-xl bg-blue-950 text-blue-400 flex items-center justify-center border border-blue-800">
+            <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-base text-slate-200">Restorative Counseling</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            DropGuard's AI Counseling Engine synthesizes empathetic diagnostic memos, tailored remediation steps, and open-ended interview prompts in milliseconds.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Day 7 Core Deliverable: 3 Persona Before/After Matrix -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="3">
+      <div class="border-b border-slate-800 pb-2 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white">Before vs. After: 3 Distinct Student Persona Archetypes</h2>
+          <p class="text-xs text-slate-400">Comparing traditional institutional responses against DropGuard AI counseling strategies.</p>
+        </div>
+        <span class="text-[10px] bg-blue-900/60 text-blue-300 px-2 py-0.5 rounded font-mono border border-blue-800">Official Day 7 Slide</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+        <!-- Persona 1 -->
+        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-rose-400">Persona 1: Academic Crisis</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 font-mono">STU-101</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Maria Silva • CS Sem 2 • GPA 7.4 • Att 54%</p>
+            
+            <div class="mt-2.5 p-2 rounded bg-rose-950/40 border border-rose-900/60 text-[10px] text-rose-200 space-y-1">
+              <span class="font-bold block uppercase text-[9px] text-rose-400">Traditional Response (Before):</span>
+              <p class="italic">"Warning: Your attendance and GPA violate rules. Report to Dean hearing or face expulsion."</p>
+            </div>
+
+            <div class="mt-2.5 p-2 rounded bg-emerald-950/40 border border-emerald-900/60 text-[10px] text-emerald-200 space-y-1">
+              <span class="font-bold block uppercase text-[9px] text-emerald-400">DropGuard Memo (After):</span>
+              <p>• Identifies morning commute friction & core algorithms failure.</p>
+              <p>• Co-signs Attendance Recovery Compact.</p>
+              <p>• Assigns peer tutor for Data Structures.</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 block pt-1 border-t border-slate-700/60">Outcome: Re-engages student before administrative drop deadline.</span>
+        </div>
+
+        <!-- Persona 2 -->
+        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400">Persona 2: Debt Stress</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 font-mono">STU-102</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Lucas Santos • EE Sem 4 • Late Tuition</p>
+            
+            <div class="mt-2.5 p-2 rounded bg-rose-950/40 border border-rose-900/60 text-[10px] text-rose-200 space-y-1">
+              <span class="font-bold block uppercase text-[9px] text-rose-400">Traditional Response (Before):</span>
+              <p class="italic">"Bursar hold applied. Exam enrollment locked until full arrears paid in cash."</p>
+            </div>
+
+            <div class="mt-2.5 p-2 rounded bg-emerald-950/40 border border-emerald-900/60 text-[10px] text-emerald-200 space-y-1">
+              <span class="font-bold block uppercase text-[9px] text-emerald-400">DropGuard Memo (After):</span>
+              <p>• Separates financial distress from academic aptitude.</p>
+              <p>• Connects student with Emergency Bursar Aid.</p>
+              <p>• Explores dropping 1 elective to ease overload.</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 block pt-1 border-t border-slate-700/60">Outcome: Eliminates financial hold without stopping studies.</span>
+        </div>
+
+        <!-- Persona 3 -->
+        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-blue-400">Persona 3: Vocational Conflict</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 font-mono">STU-110</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Diogo Ribeiro • CS Sem 4 • GPA 15.2 • Att 52%</p>
+            
+            <div class="mt-2.5 p-2 rounded bg-rose-950/40 border border-rose-900/60 text-[10px] text-rose-200 space-y-1">
+              <span class="font-bold block uppercase text-[9px] text-rose-400">Traditional Response (Before):</span>
+              <p class="italic">"Automatic F grade applied for attendance violation despite scoring 15+/20 on exams."</p>
+            </div>
+
+            <div class="mt-2.5 p-2 rounded bg-emerald-950/40 border border-emerald-900/60 text-[10px] text-emerald-200 space-y-1">
+              <span class="font-bold block uppercase text-[9px] text-emerald-400">DropGuard Memo (After):</span>
+              <p>• Recognizes high technical competence.</p>
+              <p>• Formalizes working-student dispensation status.</p>
+              <p>• Replaces attendance with asynchronous lab credits.</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 block pt-1 border-t border-slate-700/60">Outcome: Retains high-performing talent in workforce.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Architecture & Contract-First Guarantees -->
+    <div class="slide fade-in flex-col space-y-6 w-full" data-slide="4">
+      <div class="border-b border-slate-800 pb-3">
+        <h2 class="text-2xl font-bold text-white">Engineering Architecture & Strict Schema Guarantees</h2>
+        <p class="text-xs text-slate-400">How Member 2 guarantees zero hallucination and 100% contract compliance.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700 space-y-4">
+          <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider">Zero-Conflict Data Contract</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Member 2 consumes the exact float risk score ($0.00-1.00$) and 3 SHAP driver strings output by Member 1's Random Forest.
+          </p>
+          <div class="p-3 rounded-lg bg-slate-900 font-mono text-[11px] text-blue-300 border border-slate-800">
+            {<br>
+            &nbsp;&nbsp;"summary": str,<br>
+            &nbsp;&nbsp;"action_items": list[str],<br>
+            &nbsp;&nbsp;"meeting_talking_points": list[str]<br>
+            }
+          </div>
+          <p class="text-xs text-slate-400">
+            Validated against <code class="text-slate-300 font-mono">contracts/student_schema.json</code> across 10/10 mock profiles with 100% pass rate.
+          </p>
+        </div>
+
+        <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700 space-y-4">
+          <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">High-Availability Dual Engine</h3>
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+              <span class="text-xs font-bold text-slate-200">Mode 1: Google Gemini GenAI Live</span>
+              <p class="text-[11px] text-slate-400 mt-0.5">Executes dynamic prompt interpolation with temperature 0.4 and strict JSON MIME response.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+              <span class="text-xs font-bold text-slate-200">Mode 2: Autonomous Domain Expert Fallback</span>
+              <p class="text-[11px] text-slate-400 mt-0.5">Pedagogical heuristic engine tailored across financial, attendance, and academic failure triggers for zero downtime.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Verification & Production Readiness -->
+    <div class="slide fade-in flex-col items-center text-center space-y-6 max-w-2xl" data-slide="5">
+      <div class="h-14 w-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40">
+        <i data-lucide="check-circle-2" class="w-8 h-8"></i>
+      </div>
+      <h2 class="text-3xl font-black text-white">Member 2: 100% Verified & Deliverable Complete</h2>
+      <p class="text-sm text-slate-400 leading-relaxed">
+        All deliverables from Day 1 to Day 7 are fully packaged and tested. The engine is live, serving REST endpoints on <code class="text-emerald-400 font-mono">/api/counsel</code> and integrated with Member 1's ML pipeline and Member 3's UI.
+      </p>
+
+      <div class="w-full bg-slate-800/80 p-4 rounded-xl border border-slate-700 text-xs font-mono text-slate-300 text-left space-y-1.5">
+        <p class="text-emerald-400 font-bold">✔ Day 1: verify_llm_connection.py (Passed)</p>
+        <p class="text-emerald-400 font-bold">✔ Day 2: counselor_prompt.txt (Complete)</p>
+        <p class="text-emerald-400 font-bold">✔ Day 3: advisor.py with strict JSON parser (Complete)</p>
+        <p class="text-emerald-400 font-bold">✔ Day 4: test_edge_cases.py (5/5 Edge Archetypes Passed)</p>
+        <p class="text-emerald-400 font-bold">✔ Day 5: test_counseling.py (10/10 Passed) & sample_counseling_notes.md</p>
+        <p class="text-emerald-400 font-bold">✔ Day 6: server/main.py /api/counsel & /api/predict (Verified)</p>
+        <p class="text-emerald-400 font-bold">✔ Day 7: day7_presentation_slides.md & Slide Deck (Delivered)</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Presentation Footer / Navigation Controls -->
+  <footer class="border-t border-slate-800 px-8 py-4 flex items-center justify-between">
+    <div class="text-xs text-slate-500">
+      Use <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono">←</kbd> and <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono">→</kbd> keys to navigate
+    </div>
+    <div class="flex items-center space-x-3">
+      <button id="prev-btn" class="px-4 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-colors">
+        ← Previous
+      </button>
+      <button id="next-btn" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white transition-colors">
+        Next Slide →
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 5;
+
+    function showSlide(index) {
+      if (index < 1) index = 1;
+      if (index > totalSlides) index = totalSlides;
+      currentSlide = index;
+
+      document.querySelectorAll(".slide").forEach((s, idx) => {
+        if (idx + 1 === currentSlide) {
+          s.classList.add("active");
+        } else {
+          s.classList.remove("active");
+        }
+      });
+
+      document.getElementById("slide-num").innerText = currentSlide;
+      document.getElementById("prev-btn").disabled = currentSlide === 1;
+      document.getElementById("next-btn").innerText = currentSlide === totalSlides ? "Restart ↺" : "Next Slide →";
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    document.getElementById("prev-btn").addEventListener("click", () => showSlide(currentSlide - 1));
+    document.getElementById("next-btn").addEventListener("click", () => {
+      if (currentSlide === totalSlides) showSlide(1);
+      else showSlide(currentSlide + 1);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") showSlide(currentSlide + 1);
+      if (e.key === "ArrowLeft") showSlide(currentSlide - 1);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
