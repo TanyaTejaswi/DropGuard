@@ -1,5 +1,6 @@
 /**
  * DropGuard — Main Frontend Controller (Member 3)
+ * PostHog-Inspired Neo-Brutalist Telemetry & Early Warning Portal
  * Full Implementation:
  * - Ingests data from FastAPI server with graceful offline fallback (Day 6)
  * - Renders KPI summary metric cards: Total Students, % At-Risk, Average GPA (Day 2)
@@ -40,18 +41,18 @@ async function checkBackendHealth() {
   try {
     const res = await fetch(HEALTH_URL, { cache: "no-store", signal: AbortSignal.timeout(2000) });
     if (res.ok) {
-      if (dot) dot.className = "h-2 w-2 rounded-full bg-emerald-500 animate-pulse";
+      if (dot) dot.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 pulse-dot-green";
       if (label) label.innerText = "FastAPI ML Core Active";
-      if (badge) badge.className = "text-[11px] px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium border border-emerald-200 flex items-center space-x-1.5";
+      if (badge) badge.className = "font-mono text-xs px-3 py-1.5 rounded-lg bg-white text-[#111111] font-bold border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-center space-x-2";
       return true;
     }
   } catch (err) {
     // API not reachable directly
   }
 
-  if (dot) dot.className = "h-2 w-2 rounded-full bg-amber-500";
+  if (dot) dot.className = "h-2.5 w-2.5 rounded-full bg-[#f7a501]";
   if (label) label.innerText = "Standalone / Mock Mode";
-  if (badge) badge.className = "text-[11px] px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 font-medium border border-amber-200 flex items-center space-x-1.5";
+  if (badge) badge.className = "font-mono text-xs px-3 py-1.5 rounded-lg bg-[#fff5db] text-[#925300] font-bold border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-center space-x-2";
   return false;
 }
 
@@ -105,7 +106,7 @@ function updateKPIs(students) {
   const totalEl = document.getElementById("kpi-total");
   if (totalEl) totalEl.innerText = total;
 
-  // % At-Risk (Day 2 Blueprint core metric)
+  // % At-Risk
   const atRiskEl = document.getElementById("kpi-at-risk-pct");
   const atRiskBreakdownEl = document.getElementById("kpi-at-risk-breakdown");
   if (atRiskEl) atRiskEl.innerText = `${atRiskPct}%`;
@@ -136,10 +137,10 @@ function updatePillCounters(students) {
   const pillMed = document.getElementById("pill-count-med");
   const pillLow = document.getElementById("pill-count-low");
 
-  if (pillAll) pillAll.innerText = total;
-  if (pillHigh) pillHigh.innerText = high;
-  if (pillMed) pillMed.innerText = med;
-  if (pillLow) pillLow.innerText = low;
+  if (pillAll) pillAll.innerText = `[${total}]`;
+  if (pillHigh) pillHigh.innerText = `[${high}]`;
+  if (pillMed) pillMed.innerText = `[${med}]`;
+  if (pillLow) pillLow.innerText = `[${low}]`;
 }
 
 /**
@@ -180,7 +181,6 @@ function setupSearchAndFilters() {
 
   filterRisk?.addEventListener("change", (e) => {
     currentFilter = e.target.value;
-    // Sync pills
     const pills = document.querySelectorAll(".filter-pill");
     pills.forEach(p => {
       if (p.getAttribute("data-filter") === currentFilter) {
@@ -254,10 +254,10 @@ function renderTable(students) {
   if (!students || students.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" class="px-6 py-12 text-center text-slate-400">
-          <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
-          <p class="font-semibold text-slate-600">No students match your filter criteria.</p>
-          <p class="text-xs text-slate-400 mt-1">Try clearing the search box or selecting "All Students".</p>
+        <td colspan="6" class="px-6 py-12 text-center text-[#575953] bg-white font-mono">
+          <p class="text-2xl mb-1">🦔</p>
+          <p class="font-bold text-sm text-[#111111]">No students match your filter criteria.</p>
+          <p class="text-xs text-[#575953] mt-1">Try clearing the search box or selecting "All Students".</p>
         </td>
       </tr>
     `;
@@ -267,7 +267,7 @@ function renderTable(students) {
 
   students.forEach(student => {
     const tr = document.createElement("tr");
-    tr.className = "hover:bg-slate-50/80 transition-colors cursor-pointer group";
+    tr.className = "ph-table-row border-b border-[#e2e4d8] cursor-pointer group";
     tr.onclick = () => openStudentModal(student);
 
     const riskLevel = student.prediction ? student.prediction.risk_level : "Medium";
@@ -275,27 +275,27 @@ function renderTable(students) {
     const riskBadge = getRiskBadge(riskLevel, riskScore);
 
     tr.innerHTML = `
-      <td class="px-6 py-4 whitespace-nowrap">
-        <div class="font-bold text-slate-900 group-hover:text-blue-700 transition-colors">${student.name}</div>
-        <div class="text-xs text-slate-400 font-mono">${student.student_id}</div>
+      <td class="px-6 py-4 whitespace-nowrap border-r border-[#e2e4d8]">
+        <div class="font-black text-sm text-[#111111] group-hover:text-[#f54e00] transition-colors">${student.name}</div>
+        <div class="mt-0.5"><span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#f4f3ec] border border-[#111111] text-[#111111]">${student.student_id}</span></div>
       </td>
-      <td class="px-6 py-4 whitespace-nowrap text-slate-600">
-        <div class="font-medium text-slate-800">${student.program}</div>
-        <div class="text-xs text-slate-400">Semester ${student.semester}</div>
+      <td class="px-6 py-4 whitespace-nowrap text-[#575953] border-r border-[#e2e4d8]">
+        <div class="font-bold text-xs text-[#111111]">${student.program}</div>
+        <div class="font-mono text-xs text-[#575953]">Semester ${student.semester}</div>
       </td>
-      <td class="px-6 py-4 whitespace-nowrap">
-        <span class="font-semibold ${student.attendance_pct < 65 ? 'text-rose-600 font-bold' : 'text-slate-700'}">
+      <td class="px-6 py-4 whitespace-nowrap border-r border-[#e2e4d8]">
+        <span class="font-mono font-bold text-xs ${student.attendance_pct < 65 ? 'text-[#f54e00] bg-[#ffece5] px-2 py-0.5 rounded border border-[#f54e00]' : 'text-[#111111]'}">
           ${student.attendance_pct}%
         </span>
       </td>
-      <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-700">
+      <td class="px-6 py-4 whitespace-nowrap font-mono font-bold text-xs text-[#111111] border-r border-[#e2e4d8]">
         ${student.gpa}/20
       </td>
-      <td class="px-6 py-4 whitespace-nowrap">
+      <td class="px-6 py-4 whitespace-nowrap border-r border-[#e2e4d8]">
         ${riskBadge}
       </td>
       <td class="px-6 py-4 whitespace-nowrap text-right">
-        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white group-hover:bg-blue-700 group-hover:text-white text-slate-700 border border-slate-200 group-hover:border-blue-700 transition-all shadow-2xs">
+        <button class="ph-btn-secondary px-3 py-1.5 text-xs font-mono font-bold group-hover:bg-[#eb9d2a] transition-all">
           View Dossier →
         </button>
       </td>
@@ -307,29 +307,29 @@ function renderTable(students) {
 }
 
 /**
- * Returns formatted HTML risk badge strictly obeying the Non-Contradiction Matrix.
+ * Returns formatted HTML risk badge in PostHog tag style strictly per Non-Contradiction Matrix.
  * High: Red (≥0.65), Medium: Yellow/Amber (0.35–0.64), Low: Green (<0.35)
  */
 function getRiskBadge(level, score) {
   const pct = Math.round(score * 100);
   if (level === "High") {
     return `
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 shadow-2xs">
-        <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+      <span class="ph-tag ph-tag-high shadow-[1px_1px_0px_#111]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#f54e00] pulse-dot-coral"></span>
         ${pct}% (High)
       </span>
     `;
   } else if (level === "Medium") {
     return `
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
-        <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-amber-600"></span>
+      <span class="ph-tag ph-tag-medium shadow-[1px_1px_0px_#111]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#f7a501]"></span>
         ${pct}% (Watch)
       </span>
     `;
   } else {
     return `
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
-        <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-600"></span>
+      <span class="ph-tag ph-tag-low shadow-[1px_1px_0px_#111]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#27a745]"></span>
         ${pct}% (Safe)
       </span>
     `;
@@ -361,7 +361,6 @@ function setupTableSorting() {
 
 /**
  * Sets up Day 7 Demo Persona Quick Access Buttons.
- * Immediately opens the student modal for presentation walkthrough.
  */
 function setupDemoPersonas() {
   const buttons = document.querySelectorAll(".demo-persona-btn");
@@ -402,7 +401,7 @@ function setupPredictionModal() {
     e.preventDefault();
     const submitBtn = document.getElementById("predict-submit-btn");
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>Running RandomForest + SHAP Pipeline...</span>`;
+    submitBtn.innerHTML = `<span>Running Pipeline...</span>`;
 
     const name = document.getElementById("form-name").value;
     const program = document.getElementById("form-program").value;
@@ -524,7 +523,7 @@ function setupPredictionModal() {
       alert("Error: " + err.message);
     } finally {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5"></i><span>Run DropGuard Pipeline</span>`;
+      submitBtn.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5 mr-1.5"></i><span>Run DropGuard Pipeline</span>`;
       if (window.lucide) lucide.createIcons();
     }
   });

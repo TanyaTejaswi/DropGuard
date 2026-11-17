@@ -1,6 +1,6 @@
 /**
  * DropGuard — Chart & Attribution Helpers (Member 3)
- * Implements:
+ * PostHog-Inspired Neo-Brutalist Visual Analytics
  * 1. Animated SVG Radial Risk Gauge with Rolling Counter
  * 2. Horizontal SHAP Risk Attribution Bar Chart
  * 3. Cohort Distribution Analytics & Breakdown Bar
@@ -46,24 +46,23 @@ function updateRadialRiskGauge(score, level) {
     activeGaugeAnim = requestAnimationFrame(animate);
   }
 
-  // Update SVG Circle path and stroke color
+  // Update SVG Circle path and stroke color using PostHog vibrant palette
   if (circle) {
     circle.style.strokeDasharray = `${circumference}`;
     circle.style.strokeDashoffset = `${offset}`;
 
     if (level === "High") {
-      circle.setAttribute("stroke", "#e11d48"); // Rose-600
+      circle.setAttribute("stroke", "#f54e00"); // PostHog Coral
     } else if (level === "Medium") {
-      circle.setAttribute("stroke", "#d97706"); // Amber-600
+      circle.setAttribute("stroke", "#f7a501"); // PostHog Amber
     } else {
-      circle.setAttribute("stroke", "#059669"); // Emerald-600
+      circle.setAttribute("stroke", "#27a745"); // PostHog Emerald
     }
   }
 }
 
 /**
- * Renders an authentic Horizontal SHAP Risk Attribution Bar Chart.
- * Each feature displays its rank, description, and calibrated visual contribution bar.
+ * Renders an authentic Horizontal SHAP Risk Attribution Bar Chart in PostHog telemetry style.
  * @param {Array<string>} factors - List of human-readable risk factors
  * @param {number} [riskScore=0.5] - Overall risk score to scale impacts
  * @returns {string} HTML string of horizontal attribution bars
@@ -71,14 +70,13 @@ function updateRadialRiskGauge(score, level) {
 function formatSHAPFactors(factors, riskScore = 0.5) {
   if (!factors || factors.length === 0) {
     return `
-      <li class="text-xs text-slate-500 italic bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center space-x-2">
-        <svg class="w-4 h-4 text-emerald-500 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      <li class="font-mono text-xs text-[#575953] bg-[#fcfbf7] p-4 rounded-xl border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-center space-x-2">
+        <span class="text-base">✅</span>
         <span>No adverse risk drivers identified. Student is currently on track across all academic criteria.</span>
       </li>
     `;
   }
 
-  // Weighted relative impacts for horizontal SHAP bars
   const rankLabels = ["Primary Driver", "Secondary Driver", "Tertiary Factor", "Contributing Factor", "Minor Factor"];
   const baseWeights = [88, 64, 46, 32, 20];
 
@@ -87,48 +85,47 @@ function formatSHAPFactors(factors, riskScore = 0.5) {
     const rankTitle = rankLabels[index] || `Driver #${index + 1}`;
     const impactDelta = Math.round((weight / 100) * (riskScore > 0 ? riskScore * 50 : 25));
 
-    // Choose gradient theme based on rank severity
-    let barGradient = "from-amber-500 to-rose-600";
-    let badgeBg = "bg-rose-50 text-rose-700 border-rose-200";
+    let barColor = "bg-[#f54e00]";
+    let badgeBg = "bg-[#ffece5] text-[#f54e00]";
     if (index === 0) {
-      barGradient = "from-rose-500 to-rose-700";
-      badgeBg = "bg-rose-100 text-rose-800 border-rose-300";
+      barColor = "bg-gradient-to-r from-[#f54e00] to-[#ff7a3d]";
+      badgeBg = "bg-[#ffece5] text-[#f54e00]";
     } else if (index === 1) {
-      barGradient = "from-amber-500 to-rose-500";
-      badgeBg = "bg-amber-100 text-amber-800 border-amber-300";
+      barColor = "bg-gradient-to-r from-[#eb9d2a] to-[#f7a501]";
+      badgeBg = "bg-[#fff5db] text-[#925300]";
     } else {
-      barGradient = "from-amber-400 to-amber-600";
-      badgeBg = "bg-slate-100 text-slate-700 border-slate-200";
+      barColor = "bg-gradient-to-r from-[#8e9087] to-[#adb0a3]";
+      badgeBg = "bg-[#f4f3ec] text-[#575953]";
     }
 
     return `
-      <li class="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs space-y-2 hover:border-slate-300 transition-all">
+      <li class="ph-card bg-white p-3.5 border-2 border-[#111111] shadow-[2px_2px_0px_#111111] rounded-xl space-y-2">
         <div class="flex items-center justify-between text-xs">
           <div class="flex items-center space-x-2.5">
-            <span class="flex h-5 w-5 rounded-md ${badgeBg} font-black items-center justify-center text-[10px] border shadow-xs">
-              #${index + 1}
+            <span class="font-mono ${badgeBg} font-black px-2 py-0.5 rounded border border-[#111111] text-[10px] shadow-[1px_1px_0px_#111111]">
+              #0${index + 1}
             </span>
-            <span class="font-bold text-slate-800 leading-tight">${factor}</span>
+            <span class="font-bold text-[#111111] leading-tight">${factor}</span>
           </div>
           <div class="flex items-center space-x-1.5 shrink-0 ml-2">
-            <span class="text-[10px] font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
-              +${impactDelta}% Risk Impact
+            <span class="font-mono text-[10px] font-bold text-[#f54e00] bg-[#ffece5] px-2 py-0.5 rounded border border-[#111111] shadow-[1px_1px_0px_#111111]">
+              +${impactDelta}% Δ risk
             </span>
           </div>
         </div>
 
         <!-- Horizontal SHAP Attribution Bar -->
         <div class="space-y-1">
-          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex shadow-inner">
+          <div class="w-full bg-[#eeefe9] border-1.5 border-[#111111] rounded-full h-2.5 overflow-hidden flex shadow-inner">
             <div 
-              class="bg-gradient-to-r ${barGradient} h-2 rounded-full transition-all duration-1000 ease-out" 
+              class="${barColor} h-2.5 rounded-full transition-all duration-1000 ease-out" 
               style="width: ${weight}%"
               title="${rankTitle}: ${weight}% relative SHAP attribution"
             ></div>
           </div>
-          <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
-            <span>Base Line (Cohort Mean)</span>
-            <span>${rankTitle} (${weight}% Attribution)</span>
+          <div class="flex justify-between items-center font-mono text-[10px] text-[#575953]">
+            <span>Baseline (Cohort Mean)</span>
+            <span>${rankTitle} (${weight}% Impact)</span>
           </div>
         </div>
       </li>
@@ -155,24 +152,24 @@ function renderCohortBreakdownBar(students) {
 
   container.innerHTML = `
     <div class="space-y-1.5">
-      <div class="flex flex-wrap justify-between items-center text-[11px] font-medium text-slate-600 gap-2">
+      <div class="flex flex-wrap justify-between items-center font-mono text-[11px] font-bold text-[#111111] gap-2">
         <span class="flex items-center">
-          <span class="h-2 w-2 rounded-full bg-rose-500 mr-1.5"></span>
-          High Risk Alert: <b class="ml-1 text-slate-900">${high} (${highPct}%)</b>
+          <span class="h-2.5 w-2.5 rounded-sm bg-[#f54e00] border border-[#111111] mr-1.5"></span>
+          High Risk: <b class="ml-1 text-[#f54e00]">${high} (${highPct}%)</b>
         </span>
         <span class="flex items-center">
-          <span class="h-2 w-2 rounded-full bg-amber-500 mr-1.5"></span>
-          Watchlist (Medium): <b class="ml-1 text-slate-900">${medium} (${medPct}%)</b>
+          <span class="h-2.5 w-2.5 rounded-sm bg-[#f7a501] border border-[#111111] mr-1.5"></span>
+          Watchlist: <b class="ml-1 text-[#925300]">${medium} (${medPct}%)</b>
         </span>
         <span class="flex items-center">
-          <span class="h-2 w-2 rounded-full bg-emerald-500 mr-1.5"></span>
-          Low Risk (Safe): <b class="ml-1 text-slate-900">${low} (${lowPct}%)</b>
+          <span class="h-2.5 w-2.5 rounded-sm bg-[#27a745] border border-[#111111] mr-1.5"></span>
+          Low Risk (Safe): <b class="ml-1 text-[#27a745]">${low} (${lowPct}%)</b>
         </span>
       </div>
-      <div class="w-full bg-slate-200 rounded-full h-2.5 flex overflow-hidden shadow-inner">
-        <div class="bg-rose-500 h-2.5 transition-all duration-500" style="width: ${highPct}%" title="High Risk: ${highPct}% (${high} students)"></div>
-        <div class="bg-amber-500 h-2.5 transition-all duration-500" style="width: ${medPct}%" title="Medium Risk: ${medPct}% (${medium} students)"></div>
-        <div class="bg-emerald-500 h-2.5 transition-all duration-500" style="width: ${lowPct}%" title="Low Risk: ${lowPct}% (${low} students)"></div>
+      <div class="w-full bg-[#eeefe9] border-2 border-[#111111] rounded-lg h-3 flex overflow-hidden shadow-[2px_2px_0px_#111111]">
+        <div class="bg-[#f54e00] h-3 border-r border-[#111111] transition-all duration-500" style="width: ${highPct}%" title="High Risk: ${highPct}% (${high} students)"></div>
+        <div class="bg-[#f7a501] h-3 border-r border-[#111111] transition-all duration-500" style="width: ${medPct}%" title="Medium Risk: ${medPct}% (${medium} students)"></div>
+        <div class="bg-[#27a745] h-3 transition-all duration-500" style="width: ${lowPct}%" title="Low Risk: ${lowPct}% (${low} students)"></div>
       </div>
     </div>
   `;

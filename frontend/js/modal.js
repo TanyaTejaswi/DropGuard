@@ -1,7 +1,6 @@
 /**
  * DropGuard — Student Modal & Counseling Drawer (Member 3)
- * Controls the slide-over student deep-dive dossier, animated risk gauge,
- * SHAP horizontal attribution chart, and GenAI counseling intervention memo.
+ * PostHog-Inspired Neo-Brutalist Dossier & Notebook Controller
  */
 
 let currentModalStudent = null;
@@ -35,22 +34,22 @@ function openStudentModal(student) {
   const score = typeof prediction.risk_score === "number" ? prediction.risk_score : 0.5;
   const level = prediction.risk_level || (score >= 0.65 ? "High" : score >= 0.35 ? "Medium" : "Low");
 
-  // Trigger Animated Radial Gauge (Day 4 Helper)
+  // Trigger Animated Radial Gauge
   if (typeof updateRadialRiskGauge === "function") {
     updateRadialRiskGauge(score, level);
   }
 
-  // Badge Color Mapping strictly per Non-Contradiction Matrix (Page 2)
+  // PostHog Tag Badge Mapping
   const badge = document.getElementById("modal-risk-badge");
   if (badge) {
     const pct = Math.round(score * 100);
-    badge.innerText = `${level} Risk Tier (${pct}%)`;
+    badge.innerText = `${level} Risk [${pct}%]`;
     if (level === "High") {
-      badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-100 text-rose-800 border border-rose-300";
+      badge.className = "ph-tag ph-tag-high shadow-[1px_1px_0px_#111]";
     } else if (level === "Medium") {
-      badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-300";
+      badge.className = "ph-tag ph-tag-medium shadow-[1px_1px_0px_#111]";
     } else {
-      badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300";
+      badge.className = "ph-tag ph-tag-low shadow-[1px_1px_0px_#111]";
     }
   }
 
@@ -60,13 +59,13 @@ function openStudentModal(student) {
   if (attEl) attEl.innerText = `${student.attendance_pct}%`;
   if (gpaEl) gpaEl.innerText = `${student.gpa}/20`;
 
-  // Horizontal SHAP Risk Attribution Factors (Day 4 Helper)
+  // Horizontal SHAP Risk Attribution Factors
   const factorsContainer = document.getElementById("modal-factors-list");
   if (factorsContainer && typeof formatSHAPFactors === "function") {
     factorsContainer.innerHTML = formatSHAPFactors(student.top_risk_factors || [], score);
   }
 
-  // Render strict 3-key GenAI Counseling Memo (summary, action_items, talking_points)
+  // Render strict 3-key GenAI Counseling Memo
   renderCounselingMemo(student.counseling_memo);
 
   // Show Modal Drawer
@@ -75,8 +74,7 @@ function openStudentModal(student) {
 }
 
 /**
- * Pre-coded HTML binding for the strict 3-key counseling memo.
- * Guarantees zero parsing errors on the frontend.
+ * Pre-coded HTML binding for the strict 3-key counseling memo (PostHog Notebook style).
  * @param {object} memo
  */
 function renderCounselingMemo(memo) {
@@ -88,16 +86,21 @@ function renderCounselingMemo(memo) {
     summaryEl.innerText = memo.summary || "No diagnostic summary available for this student.";
   }
 
-  // 2. Recommended Advisor Actions
+  // 2. Recommended Advisor Actions (Tactile Checklist Style)
   const actionsList = document.getElementById("modal-memo-actions");
   const actions = Array.isArray(memo.action_items) ? memo.action_items : [];
   if (actionsList) {
     actionsList.innerHTML = actions.length > 0
-      ? actions.map(act => `<li class="leading-relaxed"><strong class="text-slate-800">Action:</strong> ${act}</li>`).join("")
-      : `<li class="italic text-slate-400">Standard continuous progress monitoring.</li>`;
+      ? actions.map(act => `
+        <li class="bg-[#fcfbf7] p-2.5 rounded-lg border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-start space-x-2 text-xs">
+          <span class="font-mono text-[#eb9d2a] font-black shrink-0">[✔]</span>
+          <span class="text-[#111111] font-medium leading-relaxed">${act}</span>
+        </li>
+      `).join("")
+      : `<li class="font-mono text-xs italic text-[#575953]">Standard continuous progress monitoring.</li>`;
   }
 
-  // 3. 1-on-1 Meeting Discussion Prompts (supports meeting_talking_points or talking_points)
+  // 3. 1-on-1 Meeting Discussion Prompts
   const promptsList = document.getElementById("modal-memo-prompts");
   const prompts = Array.isArray(memo.meeting_talking_points)
     ? memo.meeting_talking_points
@@ -105,8 +108,13 @@ function renderCounselingMemo(memo) {
 
   if (promptsList) {
     promptsList.innerHTML = prompts.length > 0
-      ? prompts.map(p => `<li class="leading-relaxed"><strong class="text-slate-800">Prompt:</strong> ${p}</li>`).join("")
-      : `<li class="italic text-slate-400">Review overall academic well-being and satisfaction with course progression.</li>`;
+      ? prompts.map(p => `
+        <li class="bg-[#fcfbf7] p-2.5 rounded-lg border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-start space-x-2 text-xs">
+          <span class="font-mono text-[#2c60eb] font-black shrink-0">[💬]</span>
+          <span class="text-[#111111] font-medium leading-relaxed">${p}</span>
+        </li>
+      `).join("")
+      : `<li class="font-mono text-xs italic text-[#575953]">Review overall academic well-being and satisfaction with course progression.</li>`;
   }
 }
 
@@ -119,7 +127,7 @@ function closeStudentModal() {
 }
 
 /**
- * Copies the formatted counseling memorandum to clipboard for easy advisor export.
+ * Copies the formatted counseling memorandum to clipboard.
  */
 function copyStudentMemo() {
   if (!currentModalStudent) return;
@@ -141,23 +149,23 @@ Current GPA:      ${s.gpa} / 20.0
 Dropout Risk:     ${Math.round((s.prediction?.risk_score || 0) * 100)}% (${s.prediction?.risk_level || 'N/A'} Risk)
 
 PRIMARY SHAP RISK DRIVERS:
-${(s.top_risk_factors || []).map((f, i) => `  ${i + 1}. ${f}`).join('\n')}
+${(s.top_risk_factors || []).map((f, i) => `  #0${i + 1}. ${f}`).join('\n')}
 
 DIAGNOSTIC SUMMARY:
 ${memo.summary || 'N/A'}
 
 RECOMMENDED ADVISOR ACTION PLAN:
-${actions.map((a, i) => `  [ ] ${i + 1}. ${a}`).join('\n')}
+${actions.map((a, i) => `  [✔] ${i + 1}. ${a}`).join('\n')}
 
 1-ON-1 MEETING TALKING POINTS:
-${prompts.map((p, i) => `  • ${p}`).join('\n')}
+${prompts.map((p, i) => `  [💬] ${p}`).join('\n')}
 ===================================================================
 Generated by DropGuard (ML + SHAP + LLM GenAI)
 `.trim();
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(textToCopy).then(() => {
-      showToast("Counseling Memo copied to clipboard!");
+      showToast("Counseling Memo copied to clipboard! 🦔");
     }).catch(() => {
       fallbackCopy(textToCopy);
     });
@@ -173,7 +181,7 @@ function fallbackCopy(text) {
   textarea.select();
   try {
     document.execCommand("copy");
-    showToast("Counseling Memo copied to clipboard!");
+    showToast("Counseling Memo copied to clipboard! 🦔");
   } catch (err) {
     alert("Could not copy automatically. Please select text manually.");
   }
@@ -181,7 +189,7 @@ function fallbackCopy(text) {
 }
 
 /**
- * Displays brief floating feedback toast.
+ * Displays brief floating feedback toast in PostHog style.
  * @param {string} msg
  */
 function showToast(msg) {
@@ -201,7 +209,6 @@ function showToast(msg) {
 
 /**
  * Regenerates the AI counseling strategy on demand.
- * Calls FastAPI backend (/api/counsel) if online, or uses context-aware fallback.
  */
 async function regenerateAIMemo() {
   if (!currentModalStudent) return;
@@ -218,7 +225,6 @@ async function regenerateAIMemo() {
     let newMemo = null;
     const API_BASE = "http://localhost:8000";
 
-    // Try calling live backend
     try {
       const resp = await fetch(`${API_BASE}/api/counsel`, {
         method: "POST",
@@ -238,11 +244,10 @@ async function regenerateAIMemo() {
     }
 
     if (!newMemo) {
-      // Adaptive contextual generative synthesis
       const s = currentModalStudent;
       const isHigh = (s.prediction?.risk_score || 0) >= 0.65;
       newMemo = {
-        summary: `Refreshed diagnostic for ${s.name}: Key focus remains mitigating ${s.top_risk_factors?.[0] || 'academic friction'} through prioritized advisor touchpoints and personalized syllabus pacing.`,
+        summary: `Targeted diagnostic for ${s.name}: High-priority advisory intervention required to mitigate ${s.top_risk_factors?.[0] || 'course friction'} via structured study pacing and bi-weekly milestone checks.`,
         action_items: isHigh ? [
           "Mandate immediate counselor intake appointment within 48 academic hours.",
           "Coordinate with subject faculty for weekly formative assignment review.",
@@ -262,13 +267,13 @@ async function regenerateAIMemo() {
 
     currentModalStudent.counseling_memo = newMemo;
     renderCounselingMemo(newMemo);
-    showToast("New GenAI Counseling Strategy synthesized!");
+    showToast("New GenAI Counseling Strategy synthesized! 🦔");
   } catch (err) {
     showToast("Strategy refreshed!");
   } finally {
     if (regenBtn) regenBtn.disabled = false;
     if (icon) icon.classList.remove("animate-spin");
-    if (label) label.innerText = "Regenerate AI Strategy";
+    if (label) label.innerText = "Regenerate AI";
     if (window.lucide) lucide.createIcons();
   }
 }

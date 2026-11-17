@@ -17,7 +17,12 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from ml_engine.predict import predict_student
+try:
+    from ml_engine.predict import predict_student
+except Exception as _import_err:
+    print(f"[*] ML Engine native module note: {_import_err}")
+    predict_student = None
+
 from counseling_engine.advisor import generate_counseling_memo
 
 app = FastAPI(

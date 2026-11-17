@@ -1,9 +1,205 @@
-/* DropGuard — Production Dashboard Theme & Print Engine (Member 3) */
+/* ==========================================================================
+   DropGuard — PostHog-Inspired Neo-Brutalist Theme & Design System
+   Inspired by posthog.com:
+   - Warm greige/parchment paper canvas (#eeefe9) with retro dot grid
+   - Tactile solid ink borders (2px #111111) & offset neo-brutalist shadows (3px/4px)
+   - Playful developer-first typography (Plus Jakarta Sans + JetBrains Mono)
+   - PostHog iconic color accents: Amber (#eb9d2a), Coral (#f54e00), Emerald (#27a745)
+   ========================================================================== */
 
-/* Smooth Global Transitions */
-* {
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap');
+
+:root {
+  --ph-bg: #eeefe9;
+  --ph-bg-dots: #c5c7bc;
+  --ph-surface: #ffffff;
+  --ph-surface-warm: #fcfbf7;
+  --ph-ink: #111111;
+  --ph-ink-muted: #575953;
+  --ph-border: #111111;
+  --ph-border-muted: #cfd1c6;
+  
+  --ph-amber: #eb9d2a;
+  --ph-amber-light: #fff5db;
+  --ph-coral: #f54e00;
+  --ph-coral-light: #ffece5;
+  --ph-green: #27a745;
+  --ph-green-light: #eaf8ee;
+  --ph-blue: #2c60eb;
+  --ph-blue-light: #eef2ff;
+
+  --ph-shadow-sm: 2px 2px 0px #111111;
+  --ph-shadow-md: 3px 3px 0px #111111;
+  --ph-shadow-lg: 4px 4px 0px #111111;
+  --ph-shadow-xl: 6px 6px 0px #111111;
+}
+
+/* Global Font and Canvas Setup */
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--ph-bg);
+  background-image: radial-gradient(var(--ph-bg-dots) 1.25px, transparent 1.25px);
+  background-size: 20px 20px;
+  color: var(--ph-ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Monospace Utilities */
+.font-mono,
+code,
+pre,
+.ph-code {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+/* PostHog Card & Surface Styles */
+.ph-card {
+  background: var(--ph-surface);
+  border: 2px solid var(--ph-border);
+  box-shadow: var(--ph-shadow-md);
+  border-radius: 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ph-card:hover {
+  box-shadow: var(--ph-shadow-lg);
+}
+
+.ph-card-static {
+  background: var(--ph-surface);
+  border: 2px solid var(--ph-border);
+  box-shadow: var(--ph-shadow-md);
+  border-radius: 12px;
+}
+
+/* PostHog Tactile Buttons */
+.ph-btn-primary {
+  background-color: var(--ph-amber);
+  color: var(--ph-ink);
+  font-weight: 800;
+  border: 2px solid var(--ph-border);
+  box-shadow: var(--ph-shadow-sm);
+  border-radius: 8px;
+  transition: all 0.12s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ph-btn-primary:hover {
+  background-color: #f7a501;
+  transform: translate(-1px, -1px);
+  box-shadow: var(--ph-shadow-md);
+}
+.ph-btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #111111;
+}
+
+.ph-btn-secondary {
+  background-color: var(--ph-surface);
+  color: var(--ph-ink);
+  font-weight: 700;
+  border: 2px solid var(--ph-border);
+  box-shadow: var(--ph-shadow-sm);
+  border-radius: 8px;
+  transition: all 0.12s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ph-btn-secondary:hover {
+  background-color: var(--ph-surface-warm);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--ph-shadow-md);
+}
+.ph-btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #111111;
+}
+
+.ph-btn-dark {
+  background-color: var(--ph-ink);
+  color: #ffffff;
+  font-weight: 800;
+  border: 2px solid var(--ph-border);
+  box-shadow: var(--ph-shadow-sm);
+  border-radius: 8px;
+  transition: all 0.12s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ph-btn-dark:hover {
+  background-color: #24252a;
+  transform: translate(-1px, -1px);
+  box-shadow: var(--ph-shadow-md);
+}
+.ph-btn-dark:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #111111;
+}
+
+/* PostHog Filter Pills */
+.filter-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  border: 2px solid var(--ph-border);
+  box-shadow: var(--ph-shadow-sm);
+  background-color: var(--ph-surface);
+  color: var(--ph-ink);
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.filter-pill:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--ph-shadow-md);
+}
+.filter-pill.active {
+  background-color: var(--ph-ink) !important;
+  color: #ffffff !important;
+  border-color: var(--ph-ink) !important;
+  box-shadow: var(--ph-shadow-md) !important;
+  transform: translate(0px, 0px);
+}
+.filter-pill.active span[id^="pill-count"] {
+  background-color: var(--ph-amber) !important;
+  color: var(--ph-ink) !important;
+  font-weight: 800;
+}
+
+/* PostHog Badges & Tags */
+.ph-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1.5px solid var(--ph-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ph-tag-high {
+  background-color: var(--ph-coral-light);
+  color: var(--ph-coral);
+  border-color: var(--ph-coral);
+}
+.ph-tag-medium {
+  background-color: var(--ph-amber-light);
+  color: #925300;
+  border-color: var(--ph-amber);
+}
+.ph-tag-low {
+  background-color: var(--ph-green-light);
+  color: var(--ph-green);
+  border-color: var(--ph-green);
 }
 
 /* Radial Gauge Animations */
@@ -13,59 +209,36 @@
   transform-origin: 50% 50%;
 }
 
-/* Custom Scrollbars for Modal Drawer */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--ph-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
+  background: #aeb1a5;
+  border-radius: 4px;
+  border: 1px solid var(--ph-border);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #7a7d72;
 }
 
-/* Filter Pills Custom Styles */
-.filter-pill {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
+/* Table Enhancements */
+.ph-table-row {
+  transition: background-color 0.12s ease;
 }
-.filter-pill.active {
-  background-color: #0f172a !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.15), 0 2px 4px -2px rgba(15, 23, 42, 0.1);
-  border-color: #0f172a !important;
-}
-.filter-pill.active span[id^="pill-count"] {
-  background-color: rgba(255, 255, 255, 0.25) !important;
-  color: #ffffff !important;
+.ph-table-row:hover {
+  background-color: #f7f6f0 !important;
 }
 
-/* Pulse Glows for High-Risk Alerts */
-.pulse-risk-high {
-  box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
-  animation: pulse-rose 2s infinite;
-}
-
-@keyframes pulse-rose {
-  0% {
-    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 8px rgba(225, 29, 72, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0);
-  }
-}
-
-/* Drawer Slide In Animation */
-#student-modal .drawer-content {
-  animation: slideDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Slide-over Drawer Animation */
+#student-modal .drawer-panel {
+  border-left: 3px solid var(--ph-border);
+  box-shadow: -8px 0px 0px rgba(17, 17, 17, 0.15);
+  animation: slideDrawer 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideDrawer {
@@ -77,7 +250,7 @@
   }
 }
 
-/* Toast Notification */
+/* PostHog Floating Toast */
 #dropguard-toast {
   position: fixed;
   bottom: 24px;
@@ -85,24 +258,45 @@
   z-index: 100;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background-color: #0f172a;
+  gap: 10px;
+  background-color: var(--ph-ink);
   color: #ffffff;
-  padding: 10px 18px;
-  border-radius: 9999px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 2px solid var(--ph-amber);
+  box-shadow: var(--ph-shadow-lg);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  font-weight: 600;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-  transform: translateY(100px);
+  font-weight: 700;
+  transform: translateY(120px);
   opacity: 0;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 #dropguard-toast.show {
   transform: translateY(0);
   opacity: 1;
 }
 
-/* Professional Print Stylesheet (Day 5 Deliverable) */
+/* Pulsing Status Dot */
+.pulse-dot-green {
+  animation: pulse-green 1.8s infinite;
+}
+@keyframes pulse-green {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(39, 167, 69, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(39, 167, 69, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(39, 167, 69, 0); }
+}
+
+.pulse-dot-coral {
+  animation: pulse-coral 1.8s infinite;
+}
+@keyframes pulse-coral {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 78, 0, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(245, 78, 0, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 78, 0, 0); }
+}
+
+/* Professional Print Stylesheet */
 @media print {
   @page {
     margin: 1.2cm;
@@ -111,12 +305,12 @@
 
   body {
     background: #ffffff !important;
-    color: #0f172a !important;
-    font-size: 10.5pt !important;
+    background-image: none !important;
+    color: #111111 !important;
+    font-size: 10pt !important;
     line-height: 1.4 !important;
   }
 
-  /* Hide navigation, background dashboard, modals backdrop and action buttons */
   header, 
   main, 
   #predict-modal, 
@@ -132,7 +326,6 @@
     visibility: hidden !important;
   }
 
-  /* Show and format student dossier full page */
   #student-modal {
     display: block !important;
     visibility: visible !important;
@@ -149,7 +342,7 @@
     position: static !important;
   }
 
-  #student-modal .w-screen {
+  #student-modal .drawer-panel {
     width: 100% !important;
     max-width: 100% !important;
     box-shadow: none !important;
@@ -164,7 +357,7 @@
 
   .print-header {
     display: block !important;
-    border-bottom: 2px solid #0f172a;
+    border-bottom: 2px solid #111111;
     padding-bottom: 12px;
     margin-bottom: 20px;
   }
@@ -173,10 +366,9 @@
     display: block !important;
     margin-top: 36px;
     padding-top: 24px;
-    border-top: 1px dashed #94a3b8;
+    border-top: 1px dashed #666666;
   }
 
-  /* Ensure background colors and borders render clearly in PDF */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
