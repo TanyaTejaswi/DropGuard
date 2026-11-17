@@ -1,7 +1,7 @@
 /**
  * DropGuard — Main Frontend Controller (Member 3)
  * Linear-Inspired Light Theme Architecture
- * Multi-Page View Controller, Authentication Engine, Live Telemetry & Early Warning Console
+ * Multi-Page View Controller, Gated Prediction & Dossier Authentication Engine
  */
 
 let allStudents = [];
@@ -11,6 +11,7 @@ let currentSortColumn = "risk_score";
 let currentSortAsc = false; // default highest risk first
 let currentActiveView = "view-overview";
 let currentUser = null;
+let pendingAuthAction = null;
 
 const API_BASE = "http://localhost:8000";
 const API_URL = `${API_BASE}/api/students`;
@@ -36,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /**
  * Switches the active page view and synchronizes all ribbon navigation bars.
+ * Public views can be freely explored without login.
  * @param {string} viewId - 'view-overview' | 'view-roster' | 'view-telemetry' | 'view-counseling'
  */
 function switchView(viewId) {
@@ -105,20 +107,37 @@ window.addEventListener("hashchange", () => {
 });
 
 /* ==========================================================================
-   2. AUTHENTICATION CONTROLLER (Sign In, Sign Up, Demo Advisor, Session)
+   2. AUTHENTICATION & ACCESS GATING ENGINE
    ========================================================================== */
 
 /**
  * Opens the Linear authentication modal.
+ * Can be triggered manually or automatically when unauthenticated users attempt
+ * to run a prediction or inspect student dossiers.
  * @param {'signin'|'signup'} mode
+ * @param {string|null} [reason=null] - Reason for gating (e.g. "Advisor sign-in required...")
+ * @param {object|null} [pendingAction=null] - Action to resume after successful login
  */
-function openAuthModal(mode = "signin") {
+function openAuthModal(mode = "signin", reason = null, pendingAction = null) {
   const modal = document.getElementById("auth-modal");
   const title = document.getElementById("auth-title");
+  const reasonBanner = document.getElementById("auth-reason-banner");
+  const reasonText = document.getElementById("auth-reason-text");
   if (!modal) return;
+
+  pendingAuthAction = pendingAction || null;
 
   if (title) {
     title.innerText = mode === "signup" ? "Create Advisor Account" : "Sign in to DropGuard";
+  }
+
+  if (reasonBanner && reasonText) {
+    if (reason) {
+      reasonText.innerText = reason;
+      reasonBanner.classList.remove("hidden");
+    } else {
+      reasonBanner.classList.add("hidden");
+    }
   }
 
   modal.classList.remove("hidden");
@@ -131,10 +150,11 @@ function openAuthModal(mode = "signin") {
 function closeAuthModal() {
   const modal = document.getElementById("auth-modal");
   if (modal) modal.classList.add("hidden");
+  pendingAuthAction = null;
 }
 
 /**
- * Performs instant demo counselor login.
+ * Performs instant demo counselor login and resumes any gated pending action.
  */
 function performDemoLogin() {
   const demoAdvisor = {
@@ -146,11 +166,7 @@ function performDemoLogin() {
   };
 
   saveUserSession(demoAdvisor);
-  closeAuthModal();
-  showToast("Signed in as Dr. Sarah Adams (Senior Advisor)");
-
-  // Navigate directly to the Live Roster so the advisor can view students
-  switchView("view-roster");
+  completeAuthFlow("Signed in as Dr. Sarah Adams (Senior Advisor)");
 }
 
 /**
@@ -173,9 +189,40 @@ function handleAuthSubmit(event) {
   };
 
   saveUserSession(user);
+  completeAuthFlow(`Welcome, ${user.name}!`);
+}
+
+/**
+ * Concludes the authentication flow and immediately executes any pending action
+ * that triggered the login modal.
+ * @param {string} toastMessage
+ */
+function completeAuthFlow(toastMessage) {
+  const actionToResume = pendingAuthAction;
+  pendingAuthAction = null;
+
   closeAuthModal();
-  showToast(`Welcome, ${user.name}!`);
-  switchView("view-roster");
+  showToast(toastMessage);
+  applyFiltersAndRender();
+
+  // If user was trying to perform a gated action, execute it automatically!
+  if (actionToResume) {
+    if (actionToResume.type === "open_predict") {
+      document.getElementById("predict-modal")?.classList.remove("hidden");
+      if (window.lucide) lucide.createIcons();
+    } else if (actionToResume.type === "open_student" && actionToResume.student) {
+      if (typeof openStudentModal === "function") {
+        openStudentModal(actionToResume.student);
+      }
+    } else if (actionToResume.type === "view" && actionToResume.viewId) {
+      switchView(actionToResume.viewId);
+    }
+  } else {
+    // If user logged in from home overview without pending action, guide to Roster
+    if (currentActiveView === "view-overview") {
+      switchView("view-roster");
+    }
+  }
 }
 
 /**
@@ -185,9 +232,7 @@ function saveUserSession(user) {
   currentUser = user;
   try {
     localStorage.setItem("dropguard_user_session", JSON.stringify(user));
-  } catch (e) {
-    // localstorage unavailable
-  }
+  } catch (e) {}
   updateAuthUI();
 }
 
@@ -222,17 +267,17 @@ function updateAuthUI() {
         <div class="text-left hidden sm:block">
           <p class="text-xs font-semibold text-slate-900 leading-tight">${currentUser.name}</p>
         </div>
-        <button type="button" onclick="logoutUser()" title="Sign Out" class="text-[11px] text-slate-400 hover:text-slate-700 ml-1">
+        <button type="button" onclick="logoutUser()" title="Sign Out" class="text-[11px] text-slate-400 hover:text-slate-700 ml-1 cursor-pointer">
           <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
         </button>
       </div>
     `;
   } else {
     container.innerHTML = `
-      <button type="button" onclick="openAuthModal('signin')" class="text-xs font-semibold px-3 py-1.5 text-slate-600 hover:text-slate-900 transition-colors">
+      <button type="button" onclick="openAuthModal('signin')" class="text-xs font-semibold px-3 py-1.5 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer">
         Log In
       </button>
-      <button type="button" onclick="openAuthModal('signup')" class="linear-btn-secondary text-xs">
+      <button type="button" onclick="openAuthModal('signup')" class="linear-btn-secondary text-xs cursor-pointer">
         Sign Up
       </button>
     `;
@@ -242,7 +287,7 @@ function updateAuthUI() {
 }
 
 /**
- * Logs out the current user.
+ * Logs out the current user and clears active sessions.
  */
 function logoutUser() {
   currentUser = null;
@@ -250,6 +295,9 @@ function logoutUser() {
     localStorage.removeItem("dropguard_user_session");
   } catch (e) {}
   updateAuthUI();
+  applyFiltersAndRender();
+  if (typeof closeStudentModal === "function") closeStudentModal();
+  document.getElementById("predict-modal")?.classList.add("hidden");
   showToast("Signed out successfully");
 }
 
@@ -257,9 +305,6 @@ function logoutUser() {
    3. DATA INGESTION & HEALTH MONITORING
    ========================================================================== */
 
-/**
- * Checks backend API health and displays real-time server status badge.
- */
 async function checkBackendHealth() {
   const badge = document.getElementById("server-status-badge");
   const dot = document.getElementById("server-status-dot");
@@ -273,9 +318,7 @@ async function checkBackendHealth() {
       if (badge) badge.className = "hidden sm:flex text-xs px-2.5 py-1 rounded-full bg-emerald-50/70 text-emerald-800 font-medium border border-emerald-200/80 shadow-2xs items-center space-x-2";
       return true;
     }
-  } catch (err) {
-    // API not reachable directly
-  }
+  } catch (err) {}
 
   if (dot) dot.className = "h-2 w-2 rounded-full bg-amber-500";
   if (label) label.innerText = "Mock Dataset Active";
@@ -283,9 +326,6 @@ async function checkBackendHealth() {
   return false;
 }
 
-/**
- * Loads student dataset: attempts FastAPI endpoint first, falls back to local JSON.
- */
 async function fetchStudentData() {
   try {
     let response;
@@ -298,11 +338,8 @@ async function fetchStudentData() {
     }
 
     allStudents = await response.json();
-
-    // Initial Sort: Highest risk first
     sortStudents(currentSortColumn, currentSortAsc);
 
-    // Update KPI cards, filter pill counters, breakdown bar, and table
     updateKPIs(allStudents);
     updatePillCounters(allStudents);
     if (typeof renderCohortBreakdownBar === "function") {
@@ -314,10 +351,6 @@ async function fetchStudentData() {
   }
 }
 
-/**
- * Updates top KPI summary metric cards strictly per Day 2 Blueprint:
- * (Total Students, % At-Risk, Average GPA)
- */
 function updateKPIs(students) {
   if (!students || students.length === 0) return;
 
@@ -328,28 +361,21 @@ function updateKPIs(students) {
   const atRiskPct = ((atRiskTotal / total) * 100).toFixed(1);
   const avgGpa = (students.reduce((acc, s) => acc + (s.gpa || 0), 0) / total).toFixed(1);
 
-  // Total Students
   const totalEl = document.getElementById("kpi-total");
   if (totalEl) totalEl.innerText = total;
 
-  // % At-Risk
   const atRiskEl = document.getElementById("kpi-at-risk-pct");
   const atRiskBreakdownEl = document.getElementById("kpi-at-risk-breakdown");
   if (atRiskEl) atRiskEl.innerText = `${atRiskPct}%`;
   if (atRiskBreakdownEl) atRiskBreakdownEl.innerText = `${atRiskTotal} of ${total} in High / Watchlist`;
 
-  // High Risk Alert
   const highRiskEl = document.getElementById("kpi-high-risk");
   if (highRiskEl) highRiskEl.innerText = `${highRisk} Critical`;
 
-  // Cohort Average GPA
   const avgGpaEl = document.getElementById("kpi-avg-gpa");
   if (avgGpaEl) avgGpaEl.innerText = `${avgGpa} / 20`;
 }
 
-/**
- * Updates the numerical count badges inside each filter pill.
- */
 function updatePillCounters(students) {
   if (!students) return;
   const total = students.length;
@@ -369,8 +395,8 @@ function updatePillCounters(students) {
 }
 
 /* ==========================================================================
-   4. ROSTER FILTERING, SEARCH & SORTING
-   ========================================================================= */
+   4. ROSTER FILTERING, SEARCH & SORTING (WITH AUTH GATING)
+   ========================================================================== */
 
 function setupFilterPills() {
   const container = document.getElementById("filter-pills-container");
@@ -480,7 +506,19 @@ function renderTable(students) {
   students.forEach(student => {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-slate-50/80 transition-colors cursor-pointer group";
-    tr.onclick = () => openStudentModal(student);
+
+    // Gated click: if unauthenticated, pops login dialog automatically!
+    tr.onclick = () => {
+      if (!currentUser) {
+        openAuthModal(
+          "signin",
+          `Advisor sign-in required to inspect risk predictions and counseling dossiers for ${student.name}.`,
+          { type: "open_student", student }
+        );
+        return;
+      }
+      openStudentModal(student);
+    };
 
     const riskLevel = student.prediction ? student.prediction.risk_level : "Medium";
     const riskScore = student.prediction ? student.prediction.risk_score : 0.5;
@@ -507,8 +545,8 @@ function renderTable(students) {
         ${riskBadge}
       </td>
       <td class="px-6 py-4 whitespace-nowrap text-right">
-        <button class="linear-btn-secondary text-xs px-3 py-1 group-hover:border-slate-300 transition-all">
-          <span>View Dossier</span>
+        <button class="linear-btn-secondary text-xs px-3 py-1 group-hover:border-slate-300 transition-all flex items-center justify-end space-x-1 ml-auto">
+          ${currentUser ? '<span>View Dossier</span>' : '<span class="text-indigo-600 font-semibold flex items-center"><i data-lucide="lock" class="w-3 h-3 mr-1 inline"></i>Sign In to Inspect</span>'}
           <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700"></i>
         </button>
       </td>
@@ -519,9 +557,6 @@ function renderTable(students) {
   if (window.lucide) lucide.createIcons();
 }
 
-/**
- * Returns formatted Linear status pill tag strictly per Non-Contradiction Matrix.
- */
 function getRiskBadge(level, score) {
   const pct = Math.round(score * 100);
   if (level === "High") {
@@ -574,15 +609,25 @@ function setupDemoPersonas() {
     btn.addEventListener("click", () => {
       const studentId = btn.getAttribute("data-id");
       const target = allStudents.find(s => s.student_id === studentId);
-      if (target && typeof openStudentModal === "function") {
-        openStudentModal(target);
+      if (target) {
+        if (!currentUser) {
+          openAuthModal(
+            "signin",
+            `Advisor sign-in required to inspect demo persona (${target.name}).`,
+            { type: "open_student", student: target }
+          );
+          return;
+        }
+        if (typeof openStudentModal === "function") {
+          openStudentModal(target);
+        }
       }
     });
   });
 }
 
 /* ==========================================================================
-   5. LIVE ML PREDICTION MODAL CONTROLLER
+   5. LIVE ML PREDICTION MODAL (AUTHENTICATION GATED)
    ========================================================================== */
 
 function setupPredictionModal() {
@@ -595,6 +640,11 @@ function setupPredictionModal() {
 
   const closeModal = () => modal.classList.add("hidden");
   const openModal = () => {
+    // Authentication Gate Check
+    if (!currentUser) {
+      openAuthModal("signin", "Advisor sign-in required to execute live machine learning dropout predictions.", { type: "open_predict" });
+      return;
+    }
     modal.classList.remove("hidden");
     if (window.lucide) lucide.createIcons();
   };
@@ -606,6 +656,13 @@ function setupPredictionModal() {
 
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (!currentUser) {
+      modal.classList.add("hidden");
+      openAuthModal("signin", "Advisor sign-in required to execute live machine learning dropout predictions.", { type: "open_predict" });
+      return;
+    }
+
     const submitBtn = document.getElementById("predict-submit-btn");
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<span>Evaluating Model...</span>`;
@@ -677,7 +734,6 @@ function setupPredictionModal() {
         if (!resp.ok) throw new Error("API inference failure");
         result = await resp.json();
       } catch (postErr) {
-        // High fidelity heuristic fallback if FastAPI server is offline
         const score = attendance < 60 || sem2Units < 2 ? 0.86 : (attendance < 75 ? 0.52 : 0.18);
         const level = score >= 0.65 ? "High" : (score >= 0.35 ? "Medium" : "Low");
         result = {
@@ -751,15 +807,18 @@ function setupKeyboardShortcuts() {
       document.getElementById("predict-modal")?.classList.add("hidden");
     }
 
-    // Don't trigger shortcuts if user is typing in an input or textarea
     const activeTag = document.activeElement?.tagName;
     if (activeTag === "INPUT" || activeTag === "TEXTAREA" || activeTag === "SELECT") {
       return;
     }
 
-    // ⌘P or Ctrl+P opens prediction modal
+    // ⌘P or Ctrl+P opens prediction modal (with auth gate)
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
       e.preventDefault();
+      if (!currentUser) {
+        openAuthModal("signin", "Advisor sign-in required to execute live machine learning predictions.", { type: "open_predict" });
+        return;
+      }
       document.getElementById("btn-open-predict-modal")?.click();
     }
 

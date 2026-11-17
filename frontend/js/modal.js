@@ -13,6 +13,18 @@ function openStudentModal(student) {
   const modal = document.getElementById("student-modal");
   if (!modal || !student) return;
 
+  // Gated Authentication Check: Only logged-in advisors can inspect student dossiers & predictions
+  if (typeof currentUser !== "undefined" && !currentUser) {
+    if (typeof openAuthModal === "function") {
+      openAuthModal(
+        "signin",
+        `Advisor sign-in required to inspect risk predictions and counseling dossiers for ${student.name}.`,
+        { type: "open_student", student }
+      );
+    }
+    return;
+  }
+
   currentModalStudent = student;
 
   // Header Details
@@ -212,6 +224,13 @@ function showToast(msg) {
  */
 async function regenerateAIMemo() {
   if (!currentModalStudent) return;
+
+  if (typeof currentUser !== "undefined" && !currentUser) {
+    if (typeof openAuthModal === "function") {
+      openAuthModal("signin", "Advisor sign-in required to synthesize AI counseling strategies.", { type: "open_student", student: currentModalStudent });
+    }
+    return;
+  }
 
   const regenBtn = document.getElementById("modal-regenerate-memo-btn");
   const icon = document.getElementById("memo-regen-icon");

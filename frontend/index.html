@@ -607,7 +607,16 @@
             </svg>
           </div>
           <h3 id="auth-title" class="text-lg font-bold text-slate-900">Sign in to DropGuard</h3>
-          <p class="text-xs text-slate-500">Access the institutional early warning advisory console.</p>
+          <p id="auth-subtitle" class="text-xs text-slate-500">Access the institutional early warning advisory console.</p>
+        </div>
+
+        <!-- Dynamic Access Gate Banner -->
+        <div id="auth-reason-banner" class="hidden text-xs p-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-200/80 flex items-start space-x-2.5">
+          <i data-lucide="lock" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+          <div>
+            <p class="font-semibold text-amber-950">Advisor Authentication Required</p>
+            <p id="auth-reason-text" class="text-[11px] text-amber-800 mt-0.5">Please sign in or use one-click demo access to run live machine learning predictions and view student diagnostic dossiers.</p>
+          </div>
         </div>
 
         <!-- One-Click Academic Counselor Demo Login -->
