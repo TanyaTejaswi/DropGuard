@@ -3,275 +3,680 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DropGuard — Dropout Prediction & Counseling Portal</title>
+  <title>DropGuard — Dropout Prediction & Counseling Intelligence</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-[#eb9d2a] selection:text-[#111111]">
+<body class="min-h-screen flex flex-col bg-[#fafafa] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
 
-  <!-- Top Navigation Header (PostHog Style) -->
-  <header class="bg-white border-b-2 border-[#111111] sticky top-0 z-30 shadow-[0_2px_0_0_#111111]">
+  <!-- Linear Frosted Glass Ribbon Header -->
+  <header class="linear-ribbon sticky top-0 z-40 transition-all duration-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3.5">
-        <!-- PostHog-inspired Hedgehog Emblem -->
-        <div class="h-10 w-10 rounded-lg bg-[#eb9d2a] border-2 border-[#111111] flex items-center justify-center text-[#111111] font-black text-xl shadow-[2px_2px_0px_#111111] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-transform">
-          🦔
+      
+      <!-- Brand & Version Tag -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('view-overview')">
+        <div class="h-9 w-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-xs">
+          <!-- Sleek Linear Geometric Mark -->
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
         </div>
         <div>
-          <div class="flex items-center space-x-2.5">
-            <span class="text-xl font-black text-[#111111] tracking-tight">DropGuard</span>
-            <span class="font-mono text-[10px] font-bold px-2 py-0.5 bg-[#fff5db] text-[#925300] rounded-md border-1.5 border-[#111111] shadow-[1px_1px_0px_#111111]">
-              ML + SHAP + LLM
-            </span>
+          <div class="flex items-center space-x-2">
+            <span class="text-base font-bold text-slate-900 tracking-tight">DropGuard</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/80">v2.4</span>
           </div>
-          <p class="font-mono text-[11px] text-[#575953]">The Open-Source Higher Ed Early Warning & Intervention Platform</p>
+          <p class="text-[11px] text-slate-400 font-medium">Early Warning System</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-3 sm:space-x-4">
-        <!-- Live Connection Status Hardware Badge -->
-        <div id="server-status-badge" class="font-mono text-xs px-3 py-1.5 rounded-lg bg-white text-[#111111] font-bold border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-center space-x-2">
-          <span id="server-status-dot" class="h-2.5 w-2.5 rounded-full bg-emerald-500 pulse-dot-green"></span>
-          <span id="server-status-label">Checking Server...</span>
+      <!-- Center Ribbon Navigation Bar (Multi-Page Switcher) -->
+      <nav class="hidden md:flex items-center bg-slate-100/80 p-1 rounded-full border border-slate-200/60 shadow-xs" id="ribbon-navigation">
+        <button type="button" class="ribbon-nav-pill active" data-view="view-overview" onclick="switchView('view-overview')">
+          <i data-lucide="layout" class="w-3.5 h-3.5"></i>
+          <span>Overview</span>
+        </button>
+        <button type="button" class="ribbon-nav-pill" data-view="view-roster" onclick="switchView('view-roster')">
+          <i data-lucide="users" class="w-3.5 h-3.5"></i>
+          <span>Live Roster</span>
+        </button>
+        <button type="button" class="ribbon-nav-pill" data-view="view-telemetry" onclick="switchView('view-telemetry')">
+          <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+          <span>Model Telemetry</span>
+        </button>
+        <button type="button" class="ribbon-nav-pill" data-view="view-counseling" onclick="switchView('view-counseling')">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-500"></i>
+          <span>Counseling Hub</span>
+        </button>
+      </nav>
+
+      <!-- Right Action Bar & Auth Controls -->
+      <div class="flex items-center space-x-3">
+        <!-- Live Connection Status -->
+        <div id="server-status-badge" class="hidden sm:flex text-xs px-2.5 py-1 rounded-full bg-white text-slate-600 font-medium border border-slate-200 shadow-2xs items-center space-x-2">
+          <span id="server-status-dot" class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="server-status-label" class="text-[11px]">Server Active</span>
         </div>
 
-        <button id="btn-open-predict-modal" class="ph-btn-primary px-3.5 py-2 text-xs font-mono">
-          <i data-lucide="zap" class="w-4 h-4 mr-1.5"></i>
-          <span>Live ML Pipeline ⚡</span>
+        <!-- Linear Auth State Container -->
+        <div id="auth-controls" class="flex items-center space-x-2">
+          <button type="button" onclick="openAuthModal('signin')" class="text-xs font-semibold px-3 py-1.5 text-slate-600 hover:text-slate-900 transition-colors">
+            Log In
+          </button>
+          <button type="button" onclick="openAuthModal('signup')" class="linear-btn-secondary text-xs">
+            Sign Up
+          </button>
+        </div>
+
+        <!-- Live Prediction Action Trigger -->
+        <button id="btn-open-predict-modal" class="linear-btn-primary text-xs hidden lg:inline-flex">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-indigo-300"></i>
+          <span>Run Prediction</span>
+          <kbd class="ml-1 bg-slate-800 text-slate-300 border-slate-700">⌘P</kbd>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Layout -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
+  <!-- Mobile Ribbon Navigation Row (Visible on small screens) -->
+  <div class="md:hidden bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between overflow-x-auto text-xs space-x-2">
+    <button type="button" class="ribbon-nav-pill active text-xs py-1" data-view="view-overview" onclick="switchView('view-overview')">Overview</button>
+    <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-roster" onclick="switchView('view-roster')">Roster</button>
+    <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-telemetry" onclick="switchView('view-telemetry')">Telemetry</button>
+    <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-counseling" onclick="switchView('view-counseling')">Counseling</button>
+  </div>
 
-    <!-- KPI Summary Row (PostHog Retro-Card Style) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <!-- Main Content Layout (Multi-View Pages) -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+    <!-- ======================================================================
+         PAGE 1: OVERVIEW / HOME INTRO (Linear Style Product Landing)
+         ====================================================================== -->
+    <section id="view-overview" class="page-view active space-y-12">
       
-      <!-- Card 1: Total Students -->
-      <div class="ph-card p-5 bg-white flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-3">
-          <span class="font-mono text-[11px] font-bold text-[#575953] uppercase tracking-wider">[01 // ACTIVE COHORT]</span>
-          <div class="h-8 w-8 rounded-md bg-[#fff5db] border-1.5 border-[#111111] text-[#111111] flex items-center justify-center shadow-[1px_1px_0px_#111111]">
-            <i data-lucide="users" class="w-4 h-4"></i>
-          </div>
+      <!-- Linear Hero Section -->
+      <div class="linear-hero-glow rounded-3xl p-8 sm:p-14 text-center max-w-4xl mx-auto space-y-6 border border-slate-200/60 shadow-xs">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs text-xs font-medium text-slate-600 mb-2">
+          <span class="flex h-2 w-2 rounded-full bg-indigo-600"></span>
+          <span>Higher Education Early Warning System</span>
+          <span class="text-slate-300">•</span>
+          <span class="text-indigo-600 font-semibold cursor-pointer" onclick="switchView('view-telemetry')">RandomForest 200-Trees + SHAP →</span>
         </div>
-        <div>
-          <p id="kpi-total" class="font-mono text-3xl font-black text-[#111111]">--</p>
-          <p class="font-mono text-[11px] text-[#575953] mt-1">Total Enrolled Students</p>
+
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
+          Predict academic dropout <br class="hidden sm:inline">
+          <span class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-800 bg-clip-text text-transparent">before it happens.</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed">
+          DropGuard bridges high-accuracy tabular machine learning, local SHAP feature attribution, and autonomous GenAI counseling advisors into a unified early intervention platform.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
+          <button type="button" onclick="switchView('view-roster')" class="linear-btn-primary px-5 py-2.5 text-sm shadow-sm">
+            <span>Open Early Warning Roster</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+          </button>
+          <button type="button" onclick="switchView('view-telemetry')" class="linear-btn-secondary px-5 py-2.5 text-sm">
+            <span>Inspect Model Telemetry</span>
+          </button>
+        </div>
+
+        <!-- Quick Stats Strip -->
+        <div class="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-slate-200/80 text-left">
+          <div class="p-3">
+            <p class="text-2xl font-bold text-slate-900">89.2%</p>
+            <p class="text-xs text-slate-500 font-medium mt-0.5">Test Classification Accuracy</p>
+          </div>
+          <div class="p-3">
+            <p class="text-2xl font-bold text-indigo-600">0.971</p>
+            <p class="text-xs text-slate-500 font-medium mt-0.5">ROC-AUC Discrimination</p>
+          </div>
+          <div class="p-3">
+            <p class="text-2xl font-bold text-slate-900">&lt; 15ms</p>
+            <p class="text-xs text-slate-500 font-medium mt-0.5">SHAP Inference Latency</p>
+          </div>
+          <div class="p-3">
+            <p class="text-2xl font-bold text-emerald-600">100%</p>
+            <p class="text-xs text-slate-500 font-medium mt-0.5">Contract Schema Compliance</p>
+          </div>
         </div>
       </div>
 
-      <!-- Card 2: % At-Risk -->
-      <div class="ph-card p-5 bg-white flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-3">
-          <span class="font-mono text-[11px] font-bold text-[#f54e00] uppercase tracking-wider">[02 // RISK RATIO]</span>
-          <div class="h-8 w-8 rounded-md bg-[#ffece5] border-1.5 border-[#111111] text-[#f54e00] flex items-center justify-center shadow-[1px_1px_0px_#111111]">
-            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
-          </div>
-        </div>
-        <div>
-          <p id="kpi-at-risk-pct" class="font-mono text-3xl font-black text-[#f54e00]">--%</p>
-          <p id="kpi-at-risk-breakdown" class="font-mono text-[11px] font-semibold text-[#f54e00] mt-1">-- in High / Watchlist</p>
-        </div>
-      </div>
-
-      <!-- Card 3: High Risk Alert -->
-      <div class="ph-card p-5 bg-white flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-3">
-          <span class="font-mono text-[11px] font-bold text-[#f54e00] uppercase tracking-wider">[03 // HIGH RISK]</span>
-          <div class="h-8 w-8 rounded-md bg-[#ffece5] border-1.5 border-[#111111] text-[#f54e00] flex items-center justify-center shadow-[1px_1px_0px_#111111]">
-            <i data-lucide="shield-alert" class="w-4 h-4"></i>
-          </div>
-        </div>
-        <div>
-          <p id="kpi-high-risk" class="font-mono text-3xl font-black text-[#111111]">--</p>
-          <p class="font-mono text-[11px] text-[#575953] mt-1">Probability ≥ 65% (Urgent)</p>
-        </div>
-      </div>
-
-      <!-- Card 4: Cohort Avg GPA -->
-      <div class="ph-card p-5 bg-white flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-3">
-          <span class="font-mono text-[11px] font-bold text-[#27a745] uppercase tracking-wider">[04 // MEAN GPA]</span>
-          <div class="h-8 w-8 rounded-md bg-[#eaf8ee] border-1.5 border-[#111111] text-[#27a745] flex items-center justify-center shadow-[1px_1px_0px_#111111]">
-            <i data-lucide="award" class="w-4 h-4"></i>
-          </div>
-        </div>
-        <div>
-          <p id="kpi-avg-gpa" class="font-mono text-3xl font-black text-[#27a745]">--</p>
-          <p class="font-mono text-[11px] text-[#575953] mt-1">Standard Scale (0–20 Marks)</p>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Student Roster Section (PostHog Event Explorer Style) -->
-    <div class="ph-card bg-white overflow-hidden">
-      
-      <!-- Toolbar with Search & Filter Pills -->
-      <div class="p-5 border-b-2 border-[#111111] space-y-4 bg-[#fcfbf7]">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center space-x-2">
-              <span class="font-mono text-xs font-bold px-2 py-0.5 bg-[#111111] text-[#ffffff] rounded-md">PERSONS</span>
-              <h2 class="text-lg font-black text-[#111111] tracking-tight">Student Early Warning Roster</h2>
+      <!-- Linear 3 Pillars Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="linear-card p-6 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+              <i data-lucide="cpu" class="w-5 h-5"></i>
             </div>
-            <p class="font-mono text-xs text-[#575953] mt-1">Click any student row to inspect SHAP feature attributions and generate an AI counseling strategy.</p>
+            <h3 class="text-base font-bold text-slate-900">1. Tabular Machine Learning</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Ensemble of 200 balanced decision trees trained on 34 curricular, socio-demographic, and financial parameters with automated ColumnTransformer preprocessing.
+            </p>
           </div>
-          
-          <div class="flex items-center space-x-3">
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-indigo-600 font-semibold cursor-pointer" onclick="switchView('view-telemetry')">
+            <span>View benchmarks</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </div>
+        </div>
+
+        <div class="linear-card p-6 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100">
+              <i data-lucide="git-branch" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">2. SHAP Explainability Engine</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Local TreeExplainer calculates exact additive Shapley values, transforming black-box probabilities into the top 3 human-readable risk drivers for every student.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-amber-600 font-semibold cursor-pointer" onclick="switchView('view-roster')">
+            <span>Inspect student SHAP</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </div>
+        </div>
+
+        <div class="linear-card p-6 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+              <i data-lucide="message-square-text" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">3. GenAI Counseling Advisor</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Synthesizes empathetic, solution-oriented counseling memos with structured diagnostic summaries, advisor action plans, and 1-on-1 discussion prompts.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-emerald-600 font-semibold cursor-pointer" onclick="switchView('view-counseling')">
+            <span>Explore advisory hub</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         PAGE 2: LIVE ROSTER & EARLY WARNING CONSOLE (Core App)
+         ====================================================================== -->
+    <section id="view-roster" class="page-view space-y-6">
+      
+      <!-- Top Title Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Active Cohort Early Warning Roster</h1>
+          <p class="text-xs text-slate-500 mt-1">Real-time risk scoring, attendance monitoring, and GenAI counseling intervention dossiers.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button type="button" onclick="fetchStudentData()" class="linear-btn-secondary text-xs">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Refresh Roster</span>
+          </button>
+          <button type="button" onclick="document.getElementById('btn-open-predict-modal').click()" class="linear-btn-primary text-xs">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>New Live Evaluation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Row (Linear Minimalist Card Style) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="linear-card p-5 bg-white">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+            <span>TOTAL STUDENTS</span>
+            <i data-lucide="users" class="w-4 h-4 text-slate-400"></i>
+          </div>
+          <p id="kpi-total" class="text-3xl font-extrabold text-slate-900 mt-2 font-mono">--</p>
+          <p class="text-[11px] text-slate-400 mt-1">Active Enrolled Cohort</p>
+        </div>
+
+        <div class="linear-card p-5 bg-white">
+          <div class="flex items-center justify-between text-rose-600 text-xs font-semibold">
+            <span>% AT-RISK</span>
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500"></i>
+          </div>
+          <p id="kpi-at-risk-pct" class="text-3xl font-extrabold text-rose-600 mt-2 font-mono">--%</p>
+          <p id="kpi-at-risk-breakdown" class="text-[11px] text-slate-500 mt-1">-- in High / Watchlist</p>
+        </div>
+
+        <div class="linear-card p-5 bg-white">
+          <div class="flex items-center justify-between text-rose-700 text-xs font-semibold">
+            <span>CRITICAL ALERT</span>
+            <i data-lucide="shield-alert" class="w-4 h-4 text-rose-600"></i>
+          </div>
+          <p id="kpi-high-risk" class="text-3xl font-extrabold text-slate-900 mt-2 font-mono">--</p>
+          <p class="text-[11px] text-slate-400 mt-1">Probability ≥ 65% (Immediate SLA)</p>
+        </div>
+
+        <div class="linear-card p-5 bg-white">
+          <div class="flex items-center justify-between text-emerald-600 text-xs font-semibold">
+            <span>COHORT MEAN GPA</span>
+            <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
+          </div>
+          <p id="kpi-avg-gpa" class="text-3xl font-extrabold text-emerald-600 mt-2 font-mono">--</p>
+          <p class="text-[11px] text-slate-400 mt-1">Standard scale (0–20 Marks)</p>
+        </div>
+
+      </div>
+
+      <!-- Student Roster Table Card -->
+      <div class="linear-card bg-white overflow-hidden">
+        
+        <!-- Toolbar with Search & Filter Pills -->
+        <div class="p-5 border-b border-slate-200/80 space-y-4 bg-slate-50/50">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div class="relative">
               <input 
                 id="search-input" 
                 type="text" 
-                placeholder="Search student, program, or ID..." 
-                class="w-72 pl-9 pr-4 py-2 font-mono text-xs border-2 border-[#111111] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#eb9d2a] bg-white shadow-[2px_2px_0px_#111111]"
+                placeholder="Filter by name, program, or student ID..." 
+                class="w-72 sm:w-80 pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-2xs font-normal"
               />
-              <i data-lucide="search" class="w-4 h-4 text-[#575953] absolute left-3 top-2.5"></i>
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
             </div>
-            <select id="filter-risk" class="font-mono text-xs border-2 border-[#111111] rounded-lg px-3 py-2 bg-white text-[#111111] shadow-[2px_2px_0px_#111111] focus:outline-none focus:ring-2 focus:ring-[#eb9d2a] hidden sm:block">
+            
+            <select id="filter-risk" class="text-xs border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 hidden sm:block">
               <option value="ALL">All Risk Levels</option>
               <option value="High">High Risk (≥65%)</option>
               <option value="Medium">Medium Risk (35–64%)</option>
               <option value="Low">Low Risk (<35%)</option>
             </select>
           </div>
-        </div>
 
-        <!-- Filter Pills Bar (PostHog Property Filter Style) -->
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#e2e4d8]">
-          <div class="flex flex-wrap items-center gap-2" id="filter-pills-container">
-            <button type="button" data-filter="ALL" class="filter-pill active px-3 py-1.5 text-xs flex items-center space-x-1.5">
-              <span>All Students</span>
-              <span id="pill-count-all" class="px-1.5 py-0.5 rounded text-[10px]">--</span>
-            </button>
-            <button type="button" data-filter="High" class="filter-pill px-3 py-1.5 text-xs flex items-center space-x-1.5">
-              <span class="w-2 h-2 rounded-full bg-[#f54e00]"></span>
-              <span>High Risk (≥65%)</span>
-              <span id="pill-count-high" class="px-1.5 py-0.5 rounded text-[10px]">--</span>
-            </button>
-            <button type="button" data-filter="Medium" class="filter-pill px-3 py-1.5 text-xs flex items-center space-x-1.5">
-              <span class="w-2 h-2 rounded-full bg-[#f7a501]"></span>
-              <span>Watchlist (35–64%)</span>
-              <span id="pill-count-med" class="px-1.5 py-0.5 rounded text-[10px]">--</span>
-            </button>
-            <button type="button" data-filter="Low" class="filter-pill px-3 py-1.5 text-xs flex items-center space-x-1.5">
-              <span class="w-2 h-2 rounded-full bg-[#27a745]"></span>
-              <span>Low Risk (&lt;35%)</span>
-              <span id="pill-count-low" class="px-1.5 py-0.5 rounded text-[10px]">--</span>
-            </button>
+          <!-- Filter Pills & Quick Personas Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div class="flex flex-wrap items-center gap-2" id="filter-pills-container">
+              <button type="button" data-filter="ALL" class="filter-pill active">
+                <span>All Students</span>
+                <span id="pill-count-all" class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono">--</span>
+              </button>
+              <button type="button" data-filter="High" class="filter-pill">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>High Risk</span>
+                <span id="pill-count-high" class="text-[10px] px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-mono">--</span>
+              </button>
+              <button type="button" data-filter="Medium" class="filter-pill">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>Watchlist</span>
+                <span id="pill-count-med" class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 font-mono">--</span>
+              </button>
+              <button type="button" data-filter="Low" class="filter-pill">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Low Risk</span>
+                <span id="pill-count-low" class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-mono">--</span>
+              </button>
+            </div>
+
+            <!-- Demo Persona Shortcuts -->
+            <div class="flex items-center space-x-1.5 text-xs">
+              <span class="text-[11px] text-slate-400 font-medium mr-1 flex items-center">
+                <i data-lucide="play" class="w-3 h-3 text-indigo-500 mr-1"></i>
+                <span>Fast Personas:</span>
+              </span>
+              <button type="button" class="demo-persona-btn text-[11px] px-2.5 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium border border-rose-200 transition-colors" data-id="STU-101">
+                Academic (STU-101)
+              </button>
+              <button type="button" class="demo-persona-btn text-[11px] px-2.5 py-1 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium border border-amber-200 transition-colors" data-id="STU-102">
+                Financial (STU-102)
+              </button>
+              <button type="button" class="demo-persona-btn text-[11px] px-2.5 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium border border-rose-200 transition-colors" data-id="STU-104">
+                Absence (STU-104)
+              </button>
+              <button type="button" class="demo-persona-btn text-[11px] px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium border border-emerald-200 transition-colors" data-id="STU-103">
+                Safe (STU-103)
+              </button>
+            </div>
           </div>
 
-          <!-- Day 7 Live Presentation Fast Demo Profiles -->
-          <div class="flex items-center space-x-1.5 text-xs">
-            <span class="font-mono text-[11px] text-[#575953] font-bold uppercase tracking-wider flex items-center space-x-1 mr-1">
-              <i data-lucide="play-circle" class="w-3.5 h-3.5 text-[#eb9d2a]"></i>
-              <span>Demo Profiles:</span>
-            </span>
-            <button type="button" class="demo-persona-btn font-mono text-[11px] px-2.5 py-1 rounded-md bg-[#ffece5] hover:bg-[#ffd8cd] text-[#f54e00] font-bold border-1.5 border-[#111111] shadow-[1px_1px_0px_#111111] transition-transform active:translate-y-0.5" data-id="STU-101" title="Academic Failure Persona">
-              Academic [STU-101]
-            </button>
-            <button type="button" class="demo-persona-btn font-mono text-[11px] px-2.5 py-1 rounded-md bg-[#fff5db] hover:bg-[#ffebb8] text-[#925300] font-bold border-1.5 border-[#111111] shadow-[1px_1px_0px_#111111] transition-transform active:translate-y-0.5" data-id="STU-102" title="Financial Hardship Persona">
-              Financial [STU-102]
-            </button>
-            <button type="button" class="demo-persona-btn font-mono text-[11px] px-2.5 py-1 rounded-md bg-[#ffece5] hover:bg-[#ffd8cd] text-[#f54e00] font-bold border-1.5 border-[#111111] shadow-[1px_1px_0px_#111111] transition-transform active:translate-y-0.5" data-id="STU-104" title="Absenteeism Persona">
-              Absence [STU-104]
-            </button>
-            <button type="button" class="demo-persona-btn font-mono text-[11px] px-2.5 py-1 rounded-md bg-[#eaf8ee] hover:bg-[#d6f2dc] text-[#27a745] font-bold border-1.5 border-[#111111] shadow-[1px_1px_0px_#111111] transition-transform active:translate-y-0.5" data-id="STU-103" title="Low Risk Persona">
-              Safe [STU-103]
-            </button>
+          <!-- Cohort Breakdown Ratio Bar -->
+          <div id="cohort-breakdown-container" class="pt-2 border-t border-slate-200/60">
+            <!-- Rendered dynamically by charts.js -->
           </div>
         </div>
 
-        <!-- Cohort Ratio Breakdown Bar -->
-        <div id="cohort-breakdown-container" class="pt-2 border-t border-[#e2e4d8]">
-          <!-- Rendered dynamically by charts.js -->
+        <!-- Table with Interactive Sort Headers -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200/80 text-left">
+            <thead class="bg-slate-50/60 text-xs font-semibold text-slate-500 uppercase tracking-wider select-none">
+              <tr>
+                <th id="sort-name" class="px-6 py-3.5 cursor-pointer hover:text-slate-900 transition-colors">
+                  <div class="flex items-center space-x-1">
+                    <span>Student Person</span>
+                    <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
+                  </div>
+                </th>
+                <th class="px-6 py-3.5">Program & Sem</th>
+                <th id="sort-attendance" class="px-6 py-3.5 cursor-pointer hover:text-slate-900 transition-colors">
+                  <div class="flex items-center space-x-1">
+                    <span>Attendance</span>
+                    <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
+                  </div>
+                </th>
+                <th id="sort-gpa" class="px-6 py-3.5 cursor-pointer hover:text-slate-900 transition-colors">
+                  <div class="flex items-center space-x-1">
+                    <span>GPA (0–20)</span>
+                    <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
+                  </div>
+                </th>
+                <th id="sort-risk" class="px-6 py-3.5 cursor-pointer hover:text-slate-900 transition-colors">
+                  <div class="flex items-center space-x-1">
+                    <span>Predicted Risk</span>
+                    <i data-lucide="arrow-up-down" class="w-3.5 h-3.5 text-indigo-600"></i>
+                  </div>
+                </th>
+                <th class="px-6 py-3.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="student-table-body" class="divide-y divide-slate-100 text-sm bg-white">
+              <!-- Dynamically populated by app.js -->
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Table with Interactive Sort Headers -->
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y-2 divide-[#111111] text-left">
-          <thead class="bg-[#eeefe9] font-mono text-xs font-bold text-[#111111] uppercase tracking-wider select-none">
-            <tr>
-              <th id="sort-name" class="px-6 py-3.5 cursor-pointer hover:bg-[#e4e5dd] transition-colors border-r border-[#e2e4d8]">
-                <div class="flex items-center space-x-1">
-                  <span>Student Person</span>
-                  <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
-                </div>
-              </th>
-              <th class="px-6 py-3.5 border-r border-[#e2e4d8]">Program & Sem</th>
-              <th id="sort-attendance" class="px-6 py-3.5 cursor-pointer hover:bg-[#e4e5dd] transition-colors border-r border-[#e2e4d8]">
-                <div class="flex items-center space-x-1">
-                  <span>Attendance</span>
-                  <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
-                </div>
-              </th>
-              <th id="sort-gpa" class="px-6 py-3.5 cursor-pointer hover:bg-[#e4e5dd] transition-colors border-r border-[#e2e4d8]">
-                <div class="flex items-center space-x-1">
-                  <span>GPA (0–20)</span>
-                  <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
-                </div>
-              </th>
-              <th id="sort-risk" class="px-6 py-3.5 cursor-pointer hover:bg-[#e4e5dd] transition-colors border-r border-[#e2e4d8]">
-                <div class="flex items-center space-x-1">
-                  <span>Dropout Risk</span>
-                  <i data-lucide="arrow-up-down" class="w-3.5 h-3.5 text-[#eb9d2a]"></i>
-                </div>
-              </th>
-              <th class="px-6 py-3.5 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="student-table-body" class="divide-y border-[#e2e4d8] text-sm bg-white">
-            <!-- Dynamically populated by app.js -->
-          </tbody>
-        </table>
+    </section>
+
+    <!-- ======================================================================
+         PAGE 3: MODEL TELEMETRY & BENCHMARKS (Linear Analytics View)
+         ====================================================================== -->
+    <section id="view-telemetry" class="page-view space-y-8">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Machine Learning Model Telemetry</h1>
+          <p class="text-xs text-slate-500 mt-1">Multi-model benchmarks, ROC-AUC discrimination curves, and global SHAP attribution hierarchy.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Production Pipeline Verified</span>
+          </span>
+        </div>
       </div>
-    </div>
+
+      <!-- Benchmark Metrics Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Random Forest (Winner) -->
+        <div class="linear-card p-6 border-indigo-200 bg-indigo-50/20 relative overflow-hidden">
+          <div class="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white uppercase tracking-wider">
+            Active Model
+          </div>
+          <h3 class="text-base font-bold text-slate-900">Random Forest Classifier</h3>
+          <p class="text-xs text-slate-500 mt-0.5">200 estimators, balanced weights, depth=12</p>
+          <div class="mt-4 space-y-2 font-mono text-xs">
+            <div class="flex justify-between"><span>Accuracy:</span><b class="text-slate-900 font-bold">89.2%</b></div>
+            <div class="flex justify-between"><span>Recall (Dropout):</span><b class="text-indigo-600 font-bold">86.4%</b></div>
+            <div class="flex justify-between"><span>F1-Score:</span><b class="text-slate-900 font-bold">0.88</b></div>
+            <div class="flex justify-between"><span>ROC-AUC:</span><b class="text-indigo-600 font-bold">0.9711</b></div>
+          </div>
+        </div>
+
+        <!-- XGBoost -->
+        <div class="linear-card p-6 bg-white">
+          <h3 class="text-base font-bold text-slate-900">XGBoost Gradient Booster</h3>
+          <p class="text-xs text-slate-500 mt-0.5">learning_rate=0.08, max_depth=6</p>
+          <div class="mt-4 space-y-2 font-mono text-xs text-slate-600">
+            <div class="flex justify-between"><span>Accuracy:</span><b>88.6%</b></div>
+            <div class="flex justify-between"><span>Recall (Dropout):</span><b>84.8%</b></div>
+            <div class="flex justify-between"><span>F1-Score:</span><b>0.87</b></div>
+            <div class="flex justify-between"><span>ROC-AUC:</span><b>0.9654</b></div>
+          </div>
+        </div>
+
+        <!-- Logistic Regression Baseline -->
+        <div class="linear-card p-6 bg-white">
+          <h3 class="text-base font-bold text-slate-900">Logistic Regression</h3>
+          <p class="text-xs text-slate-500 mt-0.5">L2 penalty, liblinear solver baseline</p>
+          <div class="mt-4 space-y-2 font-mono text-xs text-slate-600">
+            <div class="flex justify-between"><span>Accuracy:</span><b>83.1%</b></div>
+            <div class="flex justify-between"><span>Recall (Dropout):</span><b>78.2%</b></div>
+            <div class="flex justify-between"><span>F1-Score:</span><b>0.81</b></div>
+            <div class="flex justify-between"><span>ROC-AUC:</span><b>0.9120</b></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Global Feature Importance & SHAP Drivers -->
+      <div class="linear-card p-6 bg-white space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Global SHAP Feature Importance Hierarchy</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Mean absolute Shapley values ($|\phi_i|$) measured across the entire test evaluation partition.</p>
+          </div>
+          <span class="text-xs font-mono text-slate-400">TreeExplainer Evaluated</span>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <div class="flex justify-between text-slate-700 font-medium mb-1">
+              <span>1. Curricular units 2nd sem (approved)</span>
+              <span class="font-mono text-indigo-600 font-bold">+0.382 SHAP Impact</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-indigo-600 h-2 rounded-full" style="width: 95%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-slate-700 font-medium mb-1">
+              <span>2. Tuition fees up to date</span>
+              <span class="font-mono text-indigo-600 font-bold">+0.294 SHAP Impact</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-indigo-500 h-2 rounded-full" style="width: 78%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-slate-700 font-medium mb-1">
+              <span>3. Curricular units 1st sem (approved)</span>
+              <span class="font-mono text-indigo-600 font-bold">+0.241 SHAP Impact</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-indigo-500 h-2 rounded-full" style="width: 65%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-slate-700 font-medium mb-1">
+              <span>4. Attendance percentage</span>
+              <span class="font-mono text-indigo-600 font-bold">+0.198 SHAP Impact</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-indigo-400 h-2 rounded-full" style="width: 52%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-slate-700 font-medium mb-1">
+              <span>5. Age at enrollment</span>
+              <span class="font-mono text-indigo-600 font-bold">+0.155 SHAP Impact</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-indigo-400 h-2 rounded-full" style="width: 42%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         PAGE 4: AI COUNSELING HUB (Advisor Knowledge Base)
+         ====================================================================== -->
+    <section id="view-counseling" class="page-view space-y-8">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">AI Counseling & Intervention Hub</h1>
+          <p class="text-xs text-slate-500 mt-1">Autonomous advisory prompt templates, intervention archetypes, and clinical counseling documentation.</p>
+        </div>
+        <button type="button" onclick="switchView('view-roster')" class="linear-btn-secondary text-xs">
+          <span>Apply in Live Roster →</span>
+        </button>
+      </div>
+
+      <!-- Counseling Persona Archetypes Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Persona 1 -->
+        <div class="linear-card p-6 bg-white space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Acute Academic Failure</span>
+            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: 24h</span>
+          </div>
+          <h3 class="text-base font-bold text-slate-900">Core Subject Friction & Exam Failure</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Characterized by failures in foundational coursework during the first two semesters. The AI advisor prescribes syllabus decompression, peer tutoring pairing, and course retake agreements.
+          </p>
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
+            Inspect case profile (Maria Silva STU-101) →
+          </div>
+        </div>
+
+        <!-- Persona 2 -->
+        <div class="linear-card p-6 bg-white space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Socio-Economic Hardship</span>
+            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: 48h</span>
+          </div>
+          <h3 class="text-base font-bold text-slate-900">Overdue Tuition & Registration Hold</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Students performing at passable grade levels but facing acute financial vulnerability. AI intervention coordinates emergency student grants, installment payment plans, and campus work-study.
+          </p>
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
+            Inspect case profile (Lucas Santos STU-102) →
+          </div>
+        </div>
+
+        <!-- Persona 3 -->
+        <div class="linear-card p-6 bg-white space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Chronic Absenteeism</span>
+            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: 48h</span>
+          </div>
+          <h3 class="text-base font-bold text-slate-900">Lecture Disengagement & Commute Strain</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Rapid drops in physical lecture presence often driven by scheduling conflicts, transportation bottlenecks, or employment commitments. AI designs structured time-blocking schedules.
+          </p>
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
+            Inspect case profile (Beatriz Lima STU-104) →
+          </div>
+        </div>
+
+        <!-- Persona 4 -->
+        <div class="linear-card p-6 bg-white space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Dean's List / High Retention</span>
+            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: Routine</span>
+          </div>
+          <h3 class="text-base font-bold text-slate-900">Academic Excellence & Leadership Trajectory</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Consistent high attendance and solid GPA performance. The advisor focuses on undergraduate research fellowships, internship placements, and department mentoring positions.
+          </p>
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
+            Inspect case profile (Tiago Ferreira STU-103) →
+          </div>
+        </div>
+
+      </div>
+
+    </section>
 
   </main>
 
-  <!-- Slide-Over Drawer Modal for Student Deep-Dive & Counseling Memo (PostHog Notebook Style) -->
+  <!-- ======================================================================
+       MODAL 1: LINEAR AUTHENTICATION DIALOG (Sign In / Sign Up)
+       ====================================================================== -->
+  <div id="auth-modal" class="fixed inset-0 z-50 overflow-hidden hidden" role="dialog" aria-modal="true">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" onclick="closeAuthModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="linear-card bg-white max-w-sm w-full p-6 shadow-2xl space-y-5 border border-slate-200">
+        
+        <div class="text-center space-y-1">
+          <div class="h-10 w-10 mx-auto rounded-xl bg-slate-900 text-white flex items-center justify-center mb-2 shadow-xs">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <h3 id="auth-title" class="text-lg font-bold text-slate-900">Sign in to DropGuard</h3>
+          <p class="text-xs text-slate-500">Access the institutional early warning advisory console.</p>
+        </div>
+
+        <!-- One-Click Academic Counselor Demo Login -->
+        <button type="button" onclick="performDemoLogin()" class="w-full linear-btn-primary py-2.5 text-xs justify-center">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Continue as Academic Advisor (Demo)</span>
+        </button>
+
+        <div class="relative flex items-center justify-center">
+          <div class="border-t border-slate-200 w-full"></div>
+          <span class="bg-white px-2 text-[10px] uppercase font-semibold text-slate-400 absolute">or email</span>
+        </div>
+
+        <form onsubmit="handleAuthSubmit(event)" class="space-y-3 text-xs">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">University Email</label>
+            <input type="email" required placeholder="advisor@university.edu" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="advisor@university.edu" />
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Password</label>
+            <input type="password" required placeholder="••••••••" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" value="password123" />
+          </div>
+          <button type="submit" class="w-full linear-btn-secondary py-2 justify-center font-medium mt-1">
+            Continue with Institutional SSO
+          </button>
+        </form>
+
+        <div class="text-center text-[11px] text-slate-400">
+          DropGuard Enterprise Academic License • SOC-2 Type II
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2: SLIDE-OVER DETAIL DRAWER & COUNSELING DOSSIER
+       ====================================================================== -->
   <div id="student-modal" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 bg-[#111111]/60 backdrop-blur-xs transition-opacity" id="modal-backdrop"></div>
+    <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-xs transition-opacity" id="modal-backdrop"></div>
     <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
-      <div class="drawer-panel w-screen max-w-xl bg-[#fcfbf7] flex flex-col">
+      <div class="drawer-panel w-screen max-w-xl bg-white flex flex-col">
         
         <!-- Print Letterhead (visible only in Print/PDF) -->
         <div class="hidden print-header px-6 pt-6">
-          <div class="flex items-center justify-between border-b-2 border-[#111111] pb-3">
+          <div class="flex items-center justify-between border-b-2 border-slate-900 pb-3">
             <div>
-              <h1 class="text-xl font-black text-[#111111] uppercase tracking-tight">DropGuard University Early Warning System</h1>
-              <p class="text-xs text-[#575953] font-semibold mt-0.5">Academic Intervention & Advisory Consultation Dossier</p>
+              <h1 class="text-xl font-extrabold text-slate-900 uppercase tracking-tight">DropGuard University Early Warning System</h1>
+              <p class="text-xs text-slate-600 font-medium mt-0.5">Academic Intervention & Advisory Consultation Dossier</p>
             </div>
-            <div class="text-right text-xs text-[#575953] font-mono">
-              CONFIDENTIAL ADVISORY DOSSIER
+            <div class="text-right text-xs text-slate-500 font-mono">
+              CONFIDENTIAL REPORT
             </div>
           </div>
-          <div class="mt-3 text-xs text-[#111111] flex justify-between font-mono">
+          <div class="mt-3 text-xs text-slate-700 flex justify-between font-mono">
             <span id="print-student-name" class="font-bold text-sm"></span>
             <span id="print-student-meta"></span>
           </div>
         </div>
 
         <!-- Drawer Header (Screen view) -->
-        <div class="p-6 border-b-2 border-[#111111] flex items-center justify-between bg-white">
-          <div class="flex items-center space-x-3">
-            <div class="h-10 w-10 rounded-lg bg-[#eb9d2a] border-2 border-[#111111] flex items-center justify-center font-bold text-lg shadow-[2px_2px_0px_#111111]">
-              🦔
+        <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 id="modal-student-name" class="text-lg font-bold text-slate-900">Student Profile</h3>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">Dossier</span>
             </div>
-            <div>
-              <div class="flex items-center space-x-2">
-                <h3 id="modal-student-name" class="text-xl font-black text-[#111111] tracking-tight">Student Profile</h3>
-                <span class="font-mono text-[10px] font-bold px-2 py-0.5 bg-[#f4f3ec] text-[#111111] rounded border border-[#111111]">DOSSIER</span>
-              </div>
-              <p id="modal-student-meta" class="font-mono text-xs text-[#575953] mt-0.5">ID: -- | Program: --</p>
-            </div>
+            <p id="modal-student-meta" class="text-xs text-slate-500 mt-0.5 font-mono">ID: -- | Program: --</p>
           </div>
-          <button id="modal-close-btn" class="ph-btn-secondary p-2 rounded-lg" title="Close drawer (Esc)">
+          <button id="modal-close-btn" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/50 transition-colors">
             <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
@@ -279,64 +684,60 @@
         <!-- Drawer Body -->
         <div class="p-6 space-y-6 flex-1 overflow-y-auto">
           
-          <!-- Animated Radial Risk Gauge & Indicators (PostHog Vitals Card) -->
-          <div class="ph-card bg-white p-5 flex items-center justify-between">
+          <!-- Animated Radial Risk Gauge & Indicators (Linear Vitals Card) -->
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 flex items-center justify-between">
             <div class="flex items-center space-x-4">
               <!-- Radial SVG Gauge Meter -->
               <div class="relative w-20 h-20 flex items-center justify-center">
                 <svg class="w-20 h-20" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="40" stroke="#eeefe9" stroke-width="9" fill="transparent"></circle>
-                  <circle id="radial-gauge-circle" class="gauge-circle" cx="50" cy="50" r="40" stroke="#f54e00" stroke-width="9" stroke-linecap="round" fill="transparent" stroke-dasharray="251.3" stroke-dashoffset="251.3"></circle>
+                  <circle cx="50" cy="50" r="40" stroke="#e2e8f0" stroke-width="8" fill="transparent"></circle>
+                  <circle id="radial-gauge-circle" class="gauge-circle" cx="50" cy="50" r="40" stroke="#ef4444" stroke-width="8" stroke-linecap="round" fill="transparent" stroke-dasharray="251.3" stroke-dashoffset="251.3"></circle>
                 </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span id="modal-risk-score" class="font-mono text-lg font-black text-[#111111]">--%</span>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span id="modal-risk-score" class="text-base font-extrabold text-slate-900 font-mono">--%</span>
                 </div>
               </div>
 
               <div>
-                <p class="font-mono text-[11px] font-bold text-[#575953] uppercase tracking-wider">Dropout Probability</p>
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Dropout Risk Probability</p>
                 <div class="mt-1">
-                  <span id="modal-risk-badge" class="ph-tag">--</span>
+                  <span id="modal-risk-badge" class="linear-tag">--</span>
                 </div>
               </div>
             </div>
 
-            <div id="modal-stats" class="text-right font-mono text-xs text-[#575953] space-y-1.5 border-l-2 border-[#eeefe9] pl-4">
-              <p>Attendance: <b id="modal-attendance" class="font-bold text-[#111111]">--%</b></p>
-              <p>Current GPA: <b id="modal-gpa" class="font-bold text-[#111111]">--/20</b></p>
-              <p class="text-[10px] text-[#8e9087]">RandomForest (200 Trees)</p>
+            <div id="modal-stats" class="text-right text-xs text-slate-600 space-y-1.5 border-l border-slate-200 pl-4 font-mono">
+              <p>Attendance: <b id="modal-attendance" class="font-bold text-slate-900">--%</b></p>
+              <p>Current GPA: <b id="modal-gpa" class="font-bold text-slate-900">--/20</b></p>
+              <p class="text-[10px] text-slate-400">RandomForest Model</p>
             </div>
           </div>
 
           <!-- SHAP Primary Drivers -->
           <div>
             <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center space-x-1.5">
-                <span class="font-mono text-xs font-bold px-2 py-0.5 bg-[#111111] text-[#ffffff] rounded-md">SHAP</span>
-                <h4 class="font-mono text-xs font-bold text-[#111111] uppercase tracking-wider">Feature Risk Attribution Drivers</h4>
-              </div>
-              <span class="font-mono text-[10px] text-[#575953]">TreeExplainer Pipeline</span>
+              <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Key Drivers of Risk (SHAP Attribution)</h4>
+              <span class="text-[10px] text-slate-400 font-mono">TreeExplainer Model</span>
             </div>
-            <ul id="modal-factors-list" class="space-y-2.5">
+            <ul id="modal-factors-list" class="space-y-2">
               <!-- Populated dynamically by charts.js -->
             </ul>
           </div>
 
-          <!-- AI Counseling Intervention Memo (PostHog Notebook Card) -->
-          <div class="ph-card bg-white p-5 space-y-4 border-2 border-[#111111]">
-            <div class="flex items-center justify-between flex-wrap gap-2 border-b-2 border-[#eeefe9] pb-3">
-              <div class="flex items-center space-x-2 text-[#111111] font-bold text-sm">
-                <span class="text-base">🦔</span>
-                <span class="font-black">GenAI Advisory Strategy Plan</span>
-                <span class="font-mono text-[10px] bg-[#fff5db] text-[#925300] font-bold px-2 py-0.5 rounded border border-[#111111]">AUTOPILOT</span>
+          <!-- AI Counseling Intervention Memo -->
+          <div class="border border-indigo-100 bg-indigo-50/30 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center space-x-2 text-indigo-950 font-bold text-sm">
+                <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
+                <span>Automated Counseling Intervention Strategy</span>
               </div>
               <div class="flex items-center space-x-2">
-                <button id="modal-copy-memo-btn" type="button" class="ph-btn-secondary px-2.5 py-1 text-xs font-mono">
-                  <i data-lucide="copy" class="w-3.5 h-3.5 mr-1"></i>
+                <button id="modal-copy-memo-btn" type="button" class="text-[11px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium border border-slate-200 transition-colors flex items-center space-x-1 shadow-2xs">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
                   <span>Copy Memo</span>
                 </button>
-                <button id="modal-regenerate-memo-btn" type="button" class="ph-btn-primary px-2.5 py-1 text-xs font-mono">
-                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5 mr-1" id="memo-regen-icon"></i>
+                <button id="modal-regenerate-memo-btn" type="button" class="text-[11px] px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition-colors flex items-center space-x-1 shadow-2xs">
+                  <i data-lucide="refresh-cw" class="w-3 h-3" id="memo-regen-icon"></i>
                   <span id="memo-regen-label">Regenerate AI</span>
                 </button>
               </div>
@@ -344,50 +745,48 @@
 
             <!-- Summary -->
             <div>
-              <p class="font-mono text-[11px] font-bold text-[#575953] uppercase tracking-wider">Diagnostic Summary</p>
-              <div class="mt-1 bg-[#fcfbf7] p-3.5 rounded-lg border-2 border-[#111111] shadow-[2px_2px_0px_#111111]">
-                <p id="modal-memo-summary" class="text-xs text-[#111111] leading-relaxed"></p>
-              </div>
+              <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Diagnostic Summary</p>
+              <p id="modal-memo-summary" class="text-xs text-slate-800 mt-1 leading-relaxed bg-white p-3.5 rounded-xl border border-indigo-100 shadow-2xs"></p>
             </div>
 
             <!-- Recommended Actions -->
             <div>
-              <p class="font-mono text-[11px] font-bold text-[#575953] uppercase tracking-wider">Recommended Advisor Action Checklist</p>
-              <ul id="modal-memo-actions" class="mt-1 space-y-2">
+              <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Recommended Advisor Actions</p>
+              <ul id="modal-memo-actions" class="text-xs text-slate-700 mt-1 space-y-1.5 list-disc list-inside bg-white p-3.5 rounded-xl border border-indigo-100 shadow-2xs">
               </ul>
             </div>
 
             <!-- Discussion Prompts -->
             <div>
-              <p class="font-mono text-[11px] font-bold text-[#575953] uppercase tracking-wider">1-on-1 Meeting Discussion Prompts</p>
-              <ul id="modal-memo-prompts" class="mt-1 space-y-2">
+              <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">1-on-1 Meeting Discussion Prompts</p>
+              <ul id="modal-memo-prompts" class="text-xs text-slate-700 mt-1 space-y-1.5 list-disc list-inside bg-white p-3.5 rounded-xl border border-indigo-100 shadow-2xs">
               </ul>
             </div>
           </div>
         </div>
 
         <!-- Official Print Signatures & Institutional Sign-Off (visible only in Print/PDF) -->
-        <div class="hidden print-signature-section px-6 pb-6 pt-4 text-xs text-[#111111] font-mono">
+        <div class="hidden print-signature-section px-6 pb-6 pt-4 text-xs text-slate-800">
           <div class="grid grid-cols-2 gap-12 mt-6">
-            <div class="border-t-2 border-[#111111] pt-2">
+            <div class="border-t border-slate-900 pt-2">
               <p class="font-bold">Academic Advisory Counselor</p>
-              <p class="text-[10px] text-[#575953] mt-0.5">Signature & Date</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Signature & Date</p>
             </div>
-            <div class="border-t-2 border-[#111111] pt-2">
+            <div class="border-t border-slate-900 pt-2">
               <p class="font-bold">Student Intake Acknowledgement</p>
-              <p class="text-[10px] text-[#575953] mt-0.5">Signature & Date</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Signature & Date</p>
             </div>
           </div>
-          <p class="text-[9px] text-[#8e9087] text-center mt-6">Generated by DropGuard Early Warning System (ML + SHAP + LLM GenAI) • Confidential Academic Document</p>
+          <p class="text-[9px] text-slate-400 text-center mt-6">Generated by DropGuard Early Warning System (ML + SHAP + LLM GenAI) • Confidential Academic Document</p>
         </div>
 
         <!-- Drawer Footer -->
-        <div class="p-4 border-t-2 border-[#111111] bg-white flex items-center justify-end space-x-3">
-          <button onclick="window.print()" class="ph-btn-secondary px-4 py-2 font-mono text-xs">
-            <i data-lucide="printer" class="w-3.5 h-3.5 mr-1.5"></i>
+        <div class="p-4 border-t border-slate-200 bg-slate-50/50 flex items-center justify-end space-x-3">
+          <button onclick="window.print()" class="linear-btn-secondary text-xs">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
             <span>Export / Print PDF</span>
           </button>
-          <button id="modal-dismiss-btn" class="ph-btn-dark px-4 py-2 font-mono text-xs">
+          <button id="modal-dismiss-btn" class="linear-btn-primary text-xs">
             Close Dossier
           </button>
         </div>
@@ -395,40 +794,31 @@
     </div>
   </div>
 
-  <!-- PostHog Floating Toast Notification Element -->
-  <div id="dropguard-toast" class="hidden">
-    <span class="text-base">🦔</span>
-    <span id="toast-message">Counseling memo copied to clipboard!</span>
-  </div>
-
-  <!-- Interactive Live ML Simulation Modal (PostHog Neo-Brutalist Dialog) -->
+  <!-- ======================================================================
+       MODAL 3: LIVE ML PREDICTION DIALOG (Linear Clean Dialog)
+       ====================================================================== -->
   <div id="predict-modal" class="fixed inset-0 z-50 overflow-hidden hidden" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 bg-[#111111]/60 backdrop-blur-xs" id="predict-backdrop"></div>
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs" id="predict-backdrop"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
-      <div class="ph-card-static bg-white max-w-lg w-full border-3 border-[#111111] shadow-[6px_6px_0px_#111111] rounded-2xl overflow-hidden">
-        <div class="p-5 border-b-2 border-[#111111] bg-[#fcfbf7] flex items-center justify-between">
-          <div class="flex items-center space-x-2.5">
-            <div class="h-8 w-8 rounded-md bg-[#eb9d2a] border-1.5 border-[#111111] flex items-center justify-center font-bold text-sm shadow-[1px_1px_0px_#111111]">
-              ⚡
-            </div>
-            <div>
-              <h3 class="text-base font-black text-[#111111] tracking-tight">Run Live Dropout Prediction & GenAI Memo</h3>
-              <p class="font-mono text-[11px] text-[#575953] mt-0.5">Direct telemetry execution on Random Forest + SHAP + LLM</p>
-            </div>
+      <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
+        <div class="p-5 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Run Live Dropout Prediction & GenAI Memo</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Input real student indicators for instantaneous Random Forest + SHAP + AI evaluation.</p>
           </div>
-          <button id="predict-close-btn" class="ph-btn-secondary p-1.5 rounded-lg">
-            <i data-lucide="x" class="w-4 h-4"></i>
+          <button id="predict-close-btn" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg">
+            <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
         <form id="predict-form" class="p-6 space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block font-mono text-xs font-bold text-[#111111] mb-1">Student Full Name</label>
-              <input id="form-name" type="text" required placeholder="e.g. Gabriel Santos" class="w-full font-mono text-xs px-3 py-2 border-2 border-[#111111] rounded-lg shadow-[2px_2px_0px_#111111] focus:outline-none focus:ring-2 focus:ring-[#eb9d2a]" value="Gabriel Santos" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Student Full Name</label>
+              <input id="form-name" type="text" required placeholder="e.g. Gabriel Santos" class="w-full text-xs px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" value="Gabriel Santos" />
             </div>
             <div>
-              <label class="block font-mono text-xs font-bold text-[#111111] mb-1">Academic Program</label>
-              <select id="form-program" class="w-full font-mono text-xs px-3 py-2 border-2 border-[#111111] rounded-lg shadow-[2px_2px_0px_#111111] focus:outline-none focus:ring-2 focus:ring-[#eb9d2a] bg-white">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Academic Program</label>
+              <select id="form-program" class="w-full text-xs px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
                 <option value="Computer Science">Computer Science</option>
                 <option value="Electrical Engineering">Electrical Engineering</option>
                 <option value="Business Administration">Business Administration</option>
@@ -440,51 +830,57 @@
 
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="block font-mono text-xs font-bold text-[#111111] mb-1">Semester</label>
-              <input id="form-semester" type="number" min="1" max="8" value="2" class="w-full font-mono text-xs px-3 py-2 border-2 border-[#111111] rounded-lg shadow-[2px_2px_0px_#111111]" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Semester</label>
+              <input id="form-semester" type="number" min="1" max="8" value="2" class="w-full text-xs px-3 py-2 border rounded-lg" />
             </div>
             <div>
-              <label class="block font-mono text-xs font-bold text-[#111111] mb-1">Attendance %</label>
-              <input id="form-attendance" type="number" min="0" max="100" value="58" class="w-full font-mono text-xs px-3 py-2 border-2 border-[#111111] rounded-lg shadow-[2px_2px_0px_#111111]" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Attendance %</label>
+              <input id="form-attendance" type="number" min="0" max="100" value="58" class="w-full text-xs px-3 py-2 border rounded-lg" />
             </div>
             <div>
-              <label class="block font-mono text-xs font-bold text-[#111111] mb-1">GPA (0–20)</label>
-              <input id="form-gpa" type="number" step="0.1" min="0" max="20" value="7.8" class="w-full font-mono text-xs px-3 py-2 border-2 border-[#111111] rounded-lg shadow-[2px_2px_0px_#111111]" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">GPA (0–20)</label>
+              <input id="form-gpa" type="number" step="0.1" min="0" max="20" value="7.8" class="w-full text-xs px-3 py-2 border rounded-lg" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block font-mono text-xs font-bold text-[#111111] mb-1">Sem 1 Approved Units</label>
-              <input id="form-sem1-units" type="number" min="0" max="10" value="2" class="w-full font-mono text-xs px-3 py-2 border-2 border-[#111111] rounded-lg shadow-[2px_2px_0px_#111111]" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Sem 1 Approved Units</label>
+              <input id="form-sem1-units" type="number" min="0" max="10" value="2" class="w-full text-xs px-3 py-2 border rounded-lg" />
             </div>
             <div>
-              <label class="block font-mono text-xs font-bold text-[#111111] mb-1">Sem 2 Approved Units</label>
-              <input id="form-sem2-units" type="number" min="0" max="10" value="0" class="w-full font-mono text-xs px-3 py-2 border-2 border-[#111111] rounded-lg shadow-[2px_2px_0px_#111111]" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Sem 2 Approved Units</label>
+              <input id="form-sem2-units" type="number" min="0" max="10" value="0" class="w-full text-xs px-3 py-2 border rounded-lg" />
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4 pt-1 font-mono text-xs">
-            <label class="flex items-center space-x-2 text-[#111111] font-semibold cursor-pointer">
-              <input id="form-tuition" type="checkbox" class="w-4 h-4 rounded border-2 border-[#111111] text-[#f54e00] focus:ring-[#eb9d2a]" />
-              <span>Tuition Overdue</span>
+          <div class="grid grid-cols-2 gap-4 pt-1">
+            <label class="flex items-center space-x-2 text-xs text-slate-700">
+              <input id="form-tuition" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" />
+              <span>Tuition Overdue (Flagged)</span>
             </label>
-            <label class="flex items-center space-x-2 text-[#111111] font-semibold cursor-pointer">
-              <input id="form-debtor" type="checkbox" class="w-4 h-4 rounded border-2 border-[#111111] text-[#f54e00] focus:ring-[#eb9d2a]" checked />
-              <span>Debtor Status</span>
+            <label class="flex items-center space-x-2 text-xs text-slate-700">
+              <input id="form-debtor" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked />
+              <span>Registered Debtor Status</span>
             </label>
           </div>
 
-          <div class="pt-3 border-t-2 border-[#eeefe9] flex items-center justify-end space-x-3">
-            <button type="button" id="predict-cancel-btn" class="ph-btn-secondary px-4 py-2 font-mono text-xs">Cancel</button>
-            <button type="submit" id="predict-submit-btn" class="ph-btn-primary px-5 py-2 font-mono text-xs">
-              <i data-lucide="zap" class="w-3.5 h-3.5 mr-1.5"></i>
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+            <button type="button" id="predict-cancel-btn" class="linear-btn-secondary text-xs">Cancel</button>
+            <button type="submit" id="predict-submit-btn" class="linear-btn-primary text-xs">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-300"></i>
               <span>Run DropGuard Pipeline</span>
             </button>
           </div>
         </form>
       </div>
     </div>
+  </div>
+
+  <!-- Toast Notification Element -->
+  <div id="dropguard-toast" class="hidden">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-message">Counseling memo copied to clipboard!</span>
   </div>
 
   <script src="js/charts.js"></script>

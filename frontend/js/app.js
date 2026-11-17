@@ -1,12 +1,7 @@
 /**
  * DropGuard — Main Frontend Controller (Member 3)
- * PostHog-Inspired Neo-Brutalist Telemetry & Early Warning Portal
- * Full Implementation:
- * - Ingests data from FastAPI server with graceful offline fallback (Day 6)
- * - Renders KPI summary metric cards: Total Students, % At-Risk, Average GPA (Day 2)
- * - Interactive Search & Filter Pills for High/Medium/Low tiers (Day 3)
- * - Sortable columns, live cohort breakdown bar, and fast demo profiles (Day 7)
- * - Executes live on-demand ML predictions with instant deep-dive dossier
+ * Linear-Inspired Light Theme Architecture
+ * Multi-Page View Controller, Authentication Engine, Live Telemetry & Early Warning Console
  */
 
 let allStudents = [];
@@ -14,6 +9,8 @@ let currentFilter = "ALL";
 let searchQuery = "";
 let currentSortColumn = "risk_score";
 let currentSortAsc = false; // default highest risk first
+let currentActiveView = "view-overview";
+let currentUser = null;
 
 const API_BASE = "http://localhost:8000";
 const API_URL = `${API_BASE}/api/students`;
@@ -22,13 +19,243 @@ const LOCAL_MOCK = "mock_students.json";
 
 document.addEventListener("DOMContentLoaded", () => {
   checkBackendHealth();
+  checkSavedAuth();
   fetchStudentData();
   setupFilterPills();
   setupSearchAndFilters();
   setupTableSorting();
   setupDemoPersonas();
   setupPredictionModal();
+  setupKeyboardShortcuts();
+  initViewFromHash();
 });
+
+/* ==========================================================================
+   1. MULTI-PAGE VIEW ROUTING (Overview, Live Roster, Telemetry, Counseling)
+   ========================================================================== */
+
+/**
+ * Switches the active page view and synchronizes all ribbon navigation bars.
+ * @param {string} viewId - 'view-overview' | 'view-roster' | 'view-telemetry' | 'view-counseling'
+ */
+function switchView(viewId) {
+  const views = document.querySelectorAll(".page-view");
+  let found = false;
+
+  views.forEach(view => {
+    if (view.id === viewId) {
+      view.classList.add("active");
+      found = true;
+    } else {
+      view.classList.remove("active");
+    }
+  });
+
+  if (!found) {
+    viewId = "view-overview";
+    document.getElementById("view-overview")?.classList.add("active");
+  }
+
+  currentActiveView = viewId;
+
+  // Sync ribbon pills (both desktop ribbon and mobile tabs)
+  const navButtons = document.querySelectorAll(".ribbon-nav-pill");
+  navButtons.forEach(btn => {
+    if (btn.getAttribute("data-view") === viewId) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  // Update URL hash without triggering reload
+  const hashKey = viewId.replace("view-", "");
+  history.replaceState(null, "", `#${hashKey}`);
+
+  // Scroll to top smoothly
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // Re-render table if switching to roster
+  if (viewId === "view-roster") {
+    applyFiltersAndRender();
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * Initializes the active view from the URL hash on page load.
+ */
+function initViewFromHash() {
+  const hash = window.location.hash.replace("#", "").trim();
+  if (hash === "roster" || hash === "dashboard") {
+    switchView("view-roster");
+  } else if (hash === "telemetry" || hash === "benchmarks") {
+    switchView("view-telemetry");
+  } else if (hash === "counseling" || hash === "hub") {
+    switchView("view-counseling");
+  } else {
+    switchView("view-overview");
+  }
+}
+
+// Handle browser back/forward navigation
+window.addEventListener("hashchange", () => {
+  initViewFromHash();
+});
+
+/* ==========================================================================
+   2. AUTHENTICATION CONTROLLER (Sign In, Sign Up, Demo Advisor, Session)
+   ========================================================================== */
+
+/**
+ * Opens the Linear authentication modal.
+ * @param {'signin'|'signup'} mode
+ */
+function openAuthModal(mode = "signin") {
+  const modal = document.getElementById("auth-modal");
+  const title = document.getElementById("auth-title");
+  if (!modal) return;
+
+  if (title) {
+    title.innerText = mode === "signup" ? "Create Advisor Account" : "Sign in to DropGuard";
+  }
+
+  modal.classList.remove("hidden");
+  if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * Closes the Linear authentication modal.
+ */
+function closeAuthModal() {
+  const modal = document.getElementById("auth-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
+/**
+ * Performs instant demo counselor login.
+ */
+function performDemoLogin() {
+  const demoAdvisor = {
+    name: "Dr. Sarah Adams",
+    email: "sarah.adams@university.edu",
+    role: "Senior Academic Advisor",
+    department: "Student Retention & Success",
+    initials: "SA"
+  };
+
+  saveUserSession(demoAdvisor);
+  closeAuthModal();
+  showToast("Signed in as Dr. Sarah Adams (Senior Advisor)");
+
+  // Navigate directly to the Live Roster so the advisor can view students
+  switchView("view-roster");
+}
+
+/**
+ * Handles custom email / password submit form.
+ */
+function handleAuthSubmit(event) {
+  event.preventDefault();
+  const form = event.target;
+  const emailInput = form.querySelector('input[type="email"]');
+  const email = emailInput ? emailInput.value.trim() : "advisor@university.edu";
+  const namePart = email.split("@")[0].replace(/[._-]/g, " ");
+  const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+
+  const user = {
+    name: formattedName.length > 2 ? `Advisor ${formattedName}` : "Academic Advisor",
+    email: email,
+    role: "Academic Advisor",
+    department: "Advisory Services",
+    initials: formattedName.substring(0, 2).toUpperCase() || "AA"
+  };
+
+  saveUserSession(user);
+  closeAuthModal();
+  showToast(`Welcome, ${user.name}!`);
+  switchView("view-roster");
+}
+
+/**
+ * Saves user in localStorage and updates UI.
+ */
+function saveUserSession(user) {
+  currentUser = user;
+  try {
+    localStorage.setItem("dropguard_user_session", JSON.stringify(user));
+  } catch (e) {
+    // localstorage unavailable
+  }
+  updateAuthUI();
+}
+
+/**
+ * Checks for existing user session on boot.
+ */
+function checkSavedAuth() {
+  try {
+    const saved = localStorage.getItem("dropguard_user_session");
+    if (saved) {
+      currentUser = JSON.parse(saved);
+      updateAuthUI();
+    }
+  } catch (e) {
+    currentUser = null;
+  }
+}
+
+/**
+ * Updates navbar auth container based on logged-in state.
+ */
+function updateAuthUI() {
+  const container = document.getElementById("auth-controls");
+  if (!container) return;
+
+  if (currentUser) {
+    container.innerHTML = `
+      <div class="flex items-center space-x-2.5 bg-slate-100/90 border border-slate-200/80 rounded-full pl-2 pr-3 py-1 shadow-2xs">
+        <div class="h-6 w-6 rounded-full bg-slate-900 text-white font-bold text-[10px] flex items-center justify-center">
+          ${currentUser.initials}
+        </div>
+        <div class="text-left hidden sm:block">
+          <p class="text-xs font-semibold text-slate-900 leading-tight">${currentUser.name}</p>
+        </div>
+        <button type="button" onclick="logoutUser()" title="Sign Out" class="text-[11px] text-slate-400 hover:text-slate-700 ml-1">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <button type="button" onclick="openAuthModal('signin')" class="text-xs font-semibold px-3 py-1.5 text-slate-600 hover:text-slate-900 transition-colors">
+        Log In
+      </button>
+      <button type="button" onclick="openAuthModal('signup')" class="linear-btn-secondary text-xs">
+        Sign Up
+      </button>
+    `;
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * Logs out the current user.
+ */
+function logoutUser() {
+  currentUser = null;
+  try {
+    localStorage.removeItem("dropguard_user_session");
+  } catch (e) {}
+  updateAuthUI();
+  showToast("Signed out successfully");
+}
+
+/* ==========================================================================
+   3. DATA INGESTION & HEALTH MONITORING
+   ========================================================================== */
 
 /**
  * Checks backend API health and displays real-time server status badge.
@@ -41,18 +268,18 @@ async function checkBackendHealth() {
   try {
     const res = await fetch(HEALTH_URL, { cache: "no-store", signal: AbortSignal.timeout(2000) });
     if (res.ok) {
-      if (dot) dot.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 pulse-dot-green";
-      if (label) label.innerText = "FastAPI ML Core Active";
-      if (badge) badge.className = "font-mono text-xs px-3 py-1.5 rounded-lg bg-white text-[#111111] font-bold border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-center space-x-2";
+      if (dot) dot.className = "h-2 w-2 rounded-full bg-emerald-500 animate-pulse";
+      if (label) label.innerText = "FastAPI ML Active";
+      if (badge) badge.className = "hidden sm:flex text-xs px-2.5 py-1 rounded-full bg-emerald-50/70 text-emerald-800 font-medium border border-emerald-200/80 shadow-2xs items-center space-x-2";
       return true;
     }
   } catch (err) {
     // API not reachable directly
   }
 
-  if (dot) dot.className = "h-2.5 w-2.5 rounded-full bg-[#f7a501]";
-  if (label) label.innerText = "Standalone / Mock Mode";
-  if (badge) badge.className = "font-mono text-xs px-3 py-1.5 rounded-lg bg-[#fff5db] text-[#925300] font-bold border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-center space-x-2";
+  if (dot) dot.className = "h-2 w-2 rounded-full bg-amber-500";
+  if (label) label.innerText = "Mock Dataset Active";
+  if (badge) badge.className = "hidden sm:flex text-xs px-2.5 py-1 rounded-full bg-amber-50/70 text-amber-800 font-medium border border-amber-200/80 shadow-2xs items-center space-x-2";
   return false;
 }
 
@@ -90,7 +317,6 @@ async function fetchStudentData() {
 /**
  * Updates top KPI summary metric cards strictly per Day 2 Blueprint:
  * (Total Students, % At-Risk, Average GPA)
- * @param {Array<object>} students
  */
 function updateKPIs(students) {
   if (!students || students.length === 0) return;
@@ -123,7 +349,6 @@ function updateKPIs(students) {
 
 /**
  * Updates the numerical count badges inside each filter pill.
- * @param {Array<object>} students
  */
 function updatePillCounters(students) {
   if (!students) return;
@@ -137,15 +362,16 @@ function updatePillCounters(students) {
   const pillMed = document.getElementById("pill-count-med");
   const pillLow = document.getElementById("pill-count-low");
 
-  if (pillAll) pillAll.innerText = `[${total}]`;
-  if (pillHigh) pillHigh.innerText = `[${high}]`;
-  if (pillMed) pillMed.innerText = `[${med}]`;
-  if (pillLow) pillLow.innerText = `[${low}]`;
+  if (pillAll) pillAll.innerText = total;
+  if (pillHigh) pillHigh.innerText = high;
+  if (pillMed) pillMed.innerText = med;
+  if (pillLow) pillLow.innerText = low;
 }
 
-/**
- * Sets up interactive Filter Pills (Day 3 Requirement).
- */
+/* ==========================================================================
+   4. ROSTER FILTERING, SEARCH & SORTING
+   ========================================================================= */
+
 function setupFilterPills() {
   const container = document.getElementById("filter-pills-container");
   if (!container) return;
@@ -158,7 +384,6 @@ function setupFilterPills() {
 
       currentFilter = pill.getAttribute("data-filter") || "ALL";
 
-      // Also sync the fallback select if visible
       const select = document.getElementById("filter-risk");
       if (select) select.value = currentFilter;
 
@@ -167,9 +392,6 @@ function setupFilterPills() {
   });
 }
 
-/**
- * Sets up Search Bar and optional Dropdown synchronization.
- */
 function setupSearchAndFilters() {
   const searchInput = document.getElementById("search-input");
   const filterRisk = document.getElementById("filter-risk");
@@ -193,9 +415,6 @@ function setupSearchAndFilters() {
   });
 }
 
-/**
- * Filters the active student list by search query and risk level, then updates the table.
- */
 function applyFiltersAndRender() {
   const filtered = allStudents.filter(student => {
     const matchesSearch = 
@@ -213,9 +432,6 @@ function applyFiltersAndRender() {
   renderTable(filtered);
 }
 
-/**
- * Sorts allStudents by chosen column and direction.
- */
 function sortStudents(column, asc = true) {
   currentSortColumn = column;
   currentSortAsc = asc;
@@ -242,10 +458,6 @@ function sortStudents(column, asc = true) {
   });
 }
 
-/**
- * Renders the Student Roster Table DOM.
- * @param {Array<object>} students
- */
 function renderTable(students) {
   const tbody = document.getElementById("student-table-body");
   if (!tbody) return;
@@ -254,10 +466,10 @@ function renderTable(students) {
   if (!students || students.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" class="px-6 py-12 text-center text-[#575953] bg-white font-mono">
-          <p class="text-2xl mb-1">🦔</p>
-          <p class="font-bold text-sm text-[#111111]">No students match your filter criteria.</p>
-          <p class="text-xs text-[#575953] mt-1">Try clearing the search box or selecting "All Students".</p>
+        <td colspan="6" class="px-6 py-12 text-center text-slate-400 bg-white">
+          <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+          <p class="font-semibold text-slate-600 text-sm">No students match your query criteria.</p>
+          <p class="text-xs text-slate-400 mt-1">Try clearing the search box or selecting "All Students".</p>
         </td>
       </tr>
     `;
@@ -267,7 +479,7 @@ function renderTable(students) {
 
   students.forEach(student => {
     const tr = document.createElement("tr");
-    tr.className = "ph-table-row border-b border-[#e2e4d8] cursor-pointer group";
+    tr.className = "hover:bg-slate-50/80 transition-colors cursor-pointer group";
     tr.onclick = () => openStudentModal(student);
 
     const riskLevel = student.prediction ? student.prediction.risk_level : "Medium";
@@ -275,28 +487,29 @@ function renderTable(students) {
     const riskBadge = getRiskBadge(riskLevel, riskScore);
 
     tr.innerHTML = `
-      <td class="px-6 py-4 whitespace-nowrap border-r border-[#e2e4d8]">
-        <div class="font-black text-sm text-[#111111] group-hover:text-[#f54e00] transition-colors">${student.name}</div>
-        <div class="mt-0.5"><span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#f4f3ec] border border-[#111111] text-[#111111]">${student.student_id}</span></div>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">${student.name}</div>
+        <div class="font-mono text-xs text-slate-400">${student.student_id}</div>
       </td>
-      <td class="px-6 py-4 whitespace-nowrap text-[#575953] border-r border-[#e2e4d8]">
-        <div class="font-bold text-xs text-[#111111]">${student.program}</div>
-        <div class="font-mono text-xs text-[#575953]">Semester ${student.semester}</div>
+      <td class="px-6 py-4 whitespace-nowrap text-slate-600">
+        <div class="font-medium text-xs text-slate-800">${student.program}</div>
+        <div class="text-xs text-slate-400">Semester ${student.semester}</div>
       </td>
-      <td class="px-6 py-4 whitespace-nowrap border-r border-[#e2e4d8]">
-        <span class="font-mono font-bold text-xs ${student.attendance_pct < 65 ? 'text-[#f54e00] bg-[#ffece5] px-2 py-0.5 rounded border border-[#f54e00]' : 'text-[#111111]'}">
+      <td class="px-6 py-4 whitespace-nowrap">
+        <span class="font-mono text-xs font-semibold ${student.attendance_pct < 65 ? 'text-rose-600 font-bold' : 'text-slate-700'}">
           ${student.attendance_pct}%
         </span>
       </td>
-      <td class="px-6 py-4 whitespace-nowrap font-mono font-bold text-xs text-[#111111] border-r border-[#e2e4d8]">
+      <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-semibold text-slate-700">
         ${student.gpa}/20
       </td>
-      <td class="px-6 py-4 whitespace-nowrap border-r border-[#e2e4d8]">
+      <td class="px-6 py-4 whitespace-nowrap">
         ${riskBadge}
       </td>
       <td class="px-6 py-4 whitespace-nowrap text-right">
-        <button class="ph-btn-secondary px-3 py-1.5 text-xs font-mono font-bold group-hover:bg-[#eb9d2a] transition-all">
-          View Dossier →
+        <button class="linear-btn-secondary text-xs px-3 py-1 group-hover:border-slate-300 transition-all">
+          <span>View Dossier</span>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700"></i>
         </button>
       </td>
     `;
@@ -307,38 +520,34 @@ function renderTable(students) {
 }
 
 /**
- * Returns formatted HTML risk badge in PostHog tag style strictly per Non-Contradiction Matrix.
- * High: Red (≥0.65), Medium: Yellow/Amber (0.35–0.64), Low: Green (<0.35)
+ * Returns formatted Linear status pill tag strictly per Non-Contradiction Matrix.
  */
 function getRiskBadge(level, score) {
   const pct = Math.round(score * 100);
   if (level === "High") {
     return `
-      <span class="ph-tag ph-tag-high shadow-[1px_1px_0px_#111]">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#f54e00] pulse-dot-coral"></span>
-        ${pct}% (High)
+      <span class="linear-tag linear-tag-high">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+        <span>${pct}% (High)</span>
       </span>
     `;
   } else if (level === "Medium") {
     return `
-      <span class="ph-tag ph-tag-medium shadow-[1px_1px_0px_#111]">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#f7a501]"></span>
-        ${pct}% (Watch)
+      <span class="linear-tag linear-tag-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        <span>${pct}% (Watch)</span>
       </span>
     `;
   } else {
     return `
-      <span class="ph-tag ph-tag-low shadow-[1px_1px_0px_#111]">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#27a745]"></span>
-        ${pct}% (Safe)
+      <span class="linear-tag linear-tag-low">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span>${pct}% (Safe)</span>
       </span>
     `;
   }
 }
 
-/**
- * Sets up table header sort listeners.
- */
 function setupTableSorting() {
   const headers = [
     { id: "sort-risk", col: "risk_score" },
@@ -359,9 +568,6 @@ function setupTableSorting() {
   });
 }
 
-/**
- * Sets up Day 7 Demo Persona Quick Access Buttons.
- */
 function setupDemoPersonas() {
   const buttons = document.querySelectorAll(".demo-persona-btn");
   buttons.forEach(btn => {
@@ -375,9 +581,10 @@ function setupDemoPersonas() {
   });
 }
 
-/**
- * Sets up Live ML Prediction Modal and Form.
- */
+/* ==========================================================================
+   5. LIVE ML PREDICTION MODAL CONTROLLER
+   ========================================================================== */
+
 function setupPredictionModal() {
   const openBtn = document.getElementById("btn-open-predict-modal");
   const modal = document.getElementById("predict-modal");
@@ -401,7 +608,7 @@ function setupPredictionModal() {
     e.preventDefault();
     const submitBtn = document.getElementById("predict-submit-btn");
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>Running Pipeline...</span>`;
+    submitBtn.innerHTML = `<span>Evaluating Model...</span>`;
 
     const name = document.getElementById("form-name").value;
     const program = document.getElementById("form-program").value;
@@ -518,13 +725,51 @@ function setupPredictionModal() {
       applyFiltersAndRender();
 
       closeModal();
+      switchView("view-roster");
       openStudentModal(newStudent);
+      showToast(`Evaluation completed for ${newStudent.name}`);
     } catch (err) {
       alert("Error: " + err.message);
     } finally {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5 mr-1.5"></i><span>Run DropGuard Pipeline</span>`;
+      submitBtn.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-300"></i><span>Run DropGuard Pipeline</span>`;
       if (window.lucide) lucide.createIcons();
+    }
+  });
+}
+
+/* ==========================================================================
+   6. GLOBAL KEYBOARD SHORTCUTS (Linear Style ⌘P, ⌘K, Esc)
+   ========================================================================== */
+
+function setupKeyboardShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    // Escape closes any open modal
+    if (e.key === "Escape") {
+      closeAuthModal();
+      if (typeof closeStudentModal === "function") closeStudentModal();
+      document.getElementById("predict-modal")?.classList.add("hidden");
+    }
+
+    // Don't trigger shortcuts if user is typing in an input or textarea
+    const activeTag = document.activeElement?.tagName;
+    if (activeTag === "INPUT" || activeTag === "TEXTAREA" || activeTag === "SELECT") {
+      return;
+    }
+
+    // ⌘P or Ctrl+P opens prediction modal
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
+      e.preventDefault();
+      document.getElementById("btn-open-predict-modal")?.click();
+    }
+
+    // ⌘K or Ctrl+K focuses search in Roster
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      switchView("view-roster");
+      setTimeout(() => {
+        document.getElementById("search-input")?.focus();
+      }, 100);
     }
   });
 }
