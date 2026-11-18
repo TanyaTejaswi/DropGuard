@@ -69,7 +69,7 @@ function openStudentModal(student) {
   const attEl = document.getElementById("modal-attendance");
   const gpaEl = document.getElementById("modal-gpa");
   if (attEl) attEl.innerText = `${student.attendance_pct}%`;
-  if (gpaEl) gpaEl.innerText = `${student.gpa}/20`;
+  if (gpaEl) gpaEl.innerText = `${student.gpa}/10`;
 
   // Horizontal SHAP Risk Attribution Factors
   const factorsContainer = document.getElementById("modal-factors-list");
@@ -157,7 +157,7 @@ CONFIDENTIAL - HIGHER EDUCATION EARLY WARNING DOSSIER
 Student Name:     ${s.name} (${s.student_id})
 Program:          ${s.program} (Semester ${s.semester})
 Attendance Rate:  ${s.attendance_pct}%
-Current GPA:      ${s.gpa} / 20.0
+Current CGPA:     ${s.gpa} / 10.0
 Dropout Risk:     ${Math.round((s.prediction?.risk_score || 0) * 100)}% (${s.prediction?.risk_level || 'N/A'} Risk)
 
 PRIMARY SHAP RISK DRIVERS:

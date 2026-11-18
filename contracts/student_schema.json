@@ -19,7 +19,7 @@
     "program": { "type": "string" },
     "semester": { "type": "integer" },
     "attendance_pct": { "type": "number", "minimum": 0, "maximum": 100 },
-    "gpa": { "type": "number", "minimum": 0, "maximum": 20 },
+    "gpa": { "type": "number", "minimum": 0, "maximum": 10 },
     "prediction": {
       "type": "object",
       "required": ["risk_score", "risk_level"],

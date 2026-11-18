@@ -82,13 +82,16 @@ def predict_risk(student_data: dict):
     except Exception as e:
         print(f"[Server] Inference fallback triggered: {e}")
         attendance = float(student_data.get("attendance_pct", 75))
-        gpa = float(student_data.get("gpa", 10))
+        gpa = float(student_data.get("gpa", 5.0))
+        # Support both 10-point and legacy 20-point scales
+        if gpa > 10.0:
+            gpa = gpa / 2.0
         tuition = int(student_data.get("Tuition fees up to date", 1))
 
-        if attendance < 65 or gpa < 8.0 or tuition == 0:
+        if attendance < 65 or gpa < 4.0 or tuition == 0:
             score, level = 0.88, "High"
-            factors = ["Attendance below mandatory minimum threshold", "Cumulative GPA below passing criteria"]
-        elif attendance < 80 or gpa < 11.0:
+            factors = ["Attendance below mandatory minimum threshold", "Cumulative CGPA below passing criteria"]
+        elif attendance < 80 or gpa < 5.5:
             score, level = 0.45, "Medium"
             factors = ["Borderline course evaluation performance"]
         else:

@@ -373,7 +373,7 @@ function updateKPIs(students) {
   if (highRiskEl) highRiskEl.innerText = `${highRisk} Critical`;
 
   const avgGpaEl = document.getElementById("kpi-avg-gpa");
-  if (avgGpaEl) avgGpaEl.innerText = `${avgGpa} / 20`;
+  if (avgGpaEl) avgGpaEl.innerText = `${avgGpa} / 10`;
 }
 
 function updatePillCounters(students) {
@@ -539,7 +539,7 @@ function renderTable(students) {
         </span>
       </td>
       <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-semibold text-slate-700">
-        ${student.gpa}/20
+        ${student.gpa}/10
       </td>
       <td class="px-6 py-4 whitespace-nowrap">
         ${riskBadge}
@@ -677,13 +677,17 @@ function setupPredictionModal() {
     const tuitionOverdue = document.getElementById("form-tuition").checked;
     const debtor = document.getElementById("form-debtor").checked;
 
+    // Normalize CGPA: display on 10-point scale, map to 20-point scale for UCI-trained model features
+    const displayGpa = gpa <= 10.0 ? gpa : parseFloat((gpa / 2).toFixed(1));
+    const uciGrade = gpa <= 10.0 ? Math.min(20, Math.max(0, gpa * 2)) : gpa;
+
     const studentData = {
       student_id: `STU-GEN-${Math.floor(100 + Math.random() * 900)}`,
       name: name,
       program: program,
       semester: semester,
       attendance_pct: attendance,
-      gpa: gpa,
+      gpa: displayGpa,
       "Marital status": 1,
       "Application mode": 1,
       "Application order": 1,
@@ -709,13 +713,13 @@ function setupPredictionModal() {
       "Curricular units 1st sem (enrolled)": 6,
       "Curricular units 1st sem (evaluations)": 6,
       "Curricular units 1st sem (approved)": sem1Units,
-      "Curricular units 1st sem (grade)": gpa,
+      "Curricular units 1st sem (grade)": uciGrade,
       "Curricular units 1st sem (without evaluations)": 0,
       "Curricular units 2nd sem (credited)": 0,
       "Curricular units 2nd sem (enrolled)": 6,
       "Curricular units 2nd sem (evaluations)": 6,
       "Curricular units 2nd sem (approved)": sem2Units,
-      "Curricular units 2nd sem (grade)": sem2Units === 0 ? 0.0 : gpa,
+      "Curricular units 2nd sem (grade)": sem2Units === 0 ? 0.0 : uciGrade,
       "Curricular units 2nd sem (without evaluations)": 0,
       "Unemployment rate": 10.8,
       "Inflation rate": 1.4,

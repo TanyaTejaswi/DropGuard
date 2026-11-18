@@ -159,7 +159,7 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
         if has_financial_issue and has_academic_failure:
             summary = (
                 f"{name} is experiencing compounding academic distress intertwined with severe financial constraints. "
-                f"With a GPA of {gpa}/20 and outstanding institutional obligations, the risk of discontinuation is acute."
+                f"With a CGPA of {gpa}/10 and outstanding institutional obligations, the risk of discontinuation is acute."
             )
             action_items.append("Fast-track emergency financial aid review with the campus Student Bursar office.")
             action_items.append("Audit semester workload and evaluate dropping one high-demand elective to protect core GPA.")
@@ -170,7 +170,7 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
         elif has_attendance_issue and has_academic_failure:
             summary = (
                 f"{name} presents critical dropout vulnerability driven by severe lecture absenteeism ({attendance}%) "
-                f"and poor course assessments ({gpa}/20) in {program}."
+                f"and poor course assessments ({gpa}/10) in {program}."
             )
             action_items.append("Issue a formal attendance notice and execute an Attendance Recovery Compact.")
             action_items.append("Enroll student in mandatory peer-assisted tutoring for flagged prerequisite courses.")
@@ -203,7 +203,7 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
     elif risk_level == "Medium":
         if has_financial_issue:
             summary = (
-                f"{name} is making steady academic progress ({gpa}/20) but faces emerging financial friction that could "
+                f"{name} is making steady academic progress ({gpa}/10) but faces emerging financial friction that could "
                 f"threaten upcoming enrollment continuity."
             )
             action_items.append("Connect student with the campus financial counselor to explore tuition grant programs.")
@@ -233,7 +233,7 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
 
     else:  # Low Risk
         summary = (
-            f"{name} demonstrates commendable academic resilience with strong attendance ({attendance}%) and a solid GPA of {gpa}/20, "
+            f"{name} demonstrates commendable academic resilience with strong attendance ({attendance}%) and a solid CGPA of {gpa}/10, "
             f"indicating low dropout vulnerability ({int(risk_score * 100)}%)."
         )
         action_items.append("Encourage student to apply for departmental peer-tutoring and undergraduate research roles.")
@@ -271,7 +271,7 @@ def generate_counseling_memo(student_profile: dict, top_risk_factors: list) -> d
                 name=student_profile.get("name", "Student"),
                 program=student_profile.get("program", "General Studies"),
                 semester=student_profile.get("semester", 1),
-                gpa=student_profile.get("gpa", 10.0),
+                gpa=student_profile.get("gpa", 5.0),
                 attendance_pct=student_profile.get("attendance_pct", 80.0),
                 risk_score=risk_score,
                 risk_level=risk_level,

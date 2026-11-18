@@ -51,7 +51,7 @@ def test_end_to_end_system():
         'program': 'Computer Science',
         'semester': 2,
         'attendance_pct': 52.0,
-        'gpa': 7.2,
+        'gpa': 3.6,
         'Marital status': 1, 'Application mode': 1, 'Application order': 1, 'Course': 33,
         'Daytime/evening attendance': 1, 'Previous qualification': 1, 'Previous qualification (grade)': 122.0,
         'Nacionality': 1, "Mother's qualification": 1, "Father's qualification": 1,
@@ -86,7 +86,7 @@ def test_end_to_end_system():
             "program": "Civil Engineering",
             "semester": 3,
             "attendance_pct": 62.0,
-            "gpa": 8.5,
+            "gpa": 4.25,
             "prediction": {"risk_score": 0.72, "risk_level": "High"}
         },
         "top_risk_factors": ["Repeated failure in Structural Mechanics", "Tuition fees overdue"]

@@ -59,9 +59,11 @@ def format_risk_factor(feature_name: str, value, shap_val: float) -> str:
     elif "debtor" in feat_lower and value == 1:
         return "Student registered with outstanding debt"
     elif "curricular units 2nd sem (grade)" in feat_lower:
-        return f"Sub-par 2nd semester grade point ({float(value):.1f}/20)"
+        val_10 = float(value) / 2.0 if float(value) <= 20.0 else float(value) / 20.0
+        return f"Sub-par 2nd semester grade point ({val_10:.1f}/10)"
     elif "curricular units 1st sem (grade)" in feat_lower:
-        return f"Low 1st semester grade point ({float(value):.1f}/20)"
+        val_10 = float(value) / 2.0 if float(value) <= 20.0 else float(value) / 20.0
+        return f"Low 1st semester grade point ({val_10:.1f}/10)"
     elif "age at enrollment" in feat_lower:
         return f"Mature student entry ({int(value)} years) facing outside work-study pressures"
     elif "scholarship holder" in feat_lower and value == 0:
@@ -166,7 +168,7 @@ def predict_student(student_features: dict) -> dict:
 
         grade_2nd = student_features.get("Curricular units 2nd sem (grade)", None)
         if grade_2nd is not None and grade_2nd < 10.0:
-            top_factors.append(f"Sub-par 2nd semester grade point ({grade_2nd}/20)")
+            top_factors.append(f"Sub-par 2nd semester grade point ({float(grade_2nd)/2.0:.1f}/10)")
 
     if not top_factors:
         if risk_level == "Low":

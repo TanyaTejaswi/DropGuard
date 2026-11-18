@@ -255,11 +255,11 @@
 
         <div class="linear-card p-5 bg-white">
           <div class="flex items-center justify-between text-emerald-600 text-xs font-semibold">
-            <span>COHORT MEAN GPA</span>
+            <span>COHORT MEAN CGPA</span>
             <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
           </div>
           <p id="kpi-avg-gpa" class="text-3xl font-extrabold text-emerald-600 mt-2 font-mono">--</p>
-          <p class="text-[11px] text-slate-400 mt-1">Standard scale (0–20 Marks)</p>
+          <p class="text-[11px] text-slate-400 mt-1">Standard scale (0–10 CGPA)</p>
         </div>
 
       </div>
@@ -359,7 +359,7 @@
                 </th>
                 <th id="sort-gpa" class="px-6 py-3.5 cursor-pointer hover:text-slate-900 transition-colors">
                   <div class="flex items-center space-x-1">
-                    <span>GPA (0–20)</span>
+                    <span>CGPA (0–10)</span>
                     <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
                   </div>
                 </th>
@@ -717,7 +717,7 @@
 
             <div id="modal-stats" class="text-right text-xs text-slate-600 space-y-1.5 border-l border-slate-200 pl-4 font-mono">
               <p>Attendance: <b id="modal-attendance" class="font-bold text-slate-900">--%</b></p>
-              <p>Current GPA: <b id="modal-gpa" class="font-bold text-slate-900">--/20</b></p>
+              <p>Current CGPA: <b id="modal-gpa" class="font-bold text-slate-900">--/10</b></p>
               <p class="text-[10px] text-slate-400">RandomForest Model</p>
             </div>
           </div>
@@ -847,8 +847,8 @@
               <input id="form-attendance" type="number" min="0" max="100" value="58" class="w-full text-xs px-3 py-2 border rounded-lg" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">GPA (0–20)</label>
-              <input id="form-gpa" type="number" step="0.1" min="0" max="20" value="7.8" class="w-full text-xs px-3 py-2 border rounded-lg" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">CGPA (0–10)</label>
+              <input id="form-gpa" type="number" step="0.1" min="0" max="10" value="3.9" class="w-full text-xs px-3 py-2 border rounded-lg" />
             </div>
           </div>
 
