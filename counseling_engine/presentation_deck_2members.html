@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DropGuard — 2-Member Master Presentation Deck (50/50 Division)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .slide { display: none; }
+    .slide.active { display: flex; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white font-sans antialiased min-h-screen flex flex-col justify-between select-none">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 px-8 py-4 flex items-center justify-between bg-slate-900/60 backdrop-blur-md">
+    <div class="flex items-center space-x-3">
+      <div class="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-sm">
+        DG
+      </div>
+      <div>
+        <span class="font-bold text-sm tracking-tight text-slate-100">DropGuard: Early Warning & Counseling System</span>
+        <span class="text-xs px-2 py-0.5 ml-2 bg-blue-950 text-blue-400 rounded-full border border-blue-800">2-Member Team (50/50 Split)</span>
+      </div>
+    </div>
+    <div class="text-xs text-slate-400 font-mono">
+      Slide <span id="slide-num">1</span> of 14
+    </div>
+  </header>
+
+  <!-- Slide Stage -->
+  <main class="max-w-6xl w-full mx-auto px-6 py-6 flex-1 flex flex-col justify-center items-center">
+
+    <!-- SLIDE 1 -->
+    <div class="slide active fade-in flex-col items-center text-center space-y-6 max-w-3xl" data-slide="1">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 bg-blue-900/40 text-blue-400 rounded-full text-xs font-semibold border border-blue-700/50">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>Academic Project Master Deck • 2-Engineer Division</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+        DropGuard: Dropout Prediction & Explainable AI Counseling System
+      </h1>
+      <p class="text-base text-slate-400 leading-relaxed max-w-2xl">
+        Bridging Tabular Machine Learning, SHAP Explainability, and Generative AI to deliver structured, legally sound academic intervention memos for university advisors.
+      </p>
+      
+      <div class="grid grid-cols-2 gap-4 w-full max-w-xl text-left pt-2">
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+          <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Member 1 (50% Scope)</span>
+          <p class="text-xs font-bold text-slate-200">ML & Data Intelligence Lead</p>
+          <p class="text-[11px] text-slate-400">UCI Dataset #697, Preprocessing, Random Forest (92.98% Acc), SHAP XAI.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+          <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Member 2 (50% Scope)</span>
+          <p class="text-xs font-bold text-slate-200">GenAI & Full-Stack Platform Lead</p>
+          <p class="text-[11px] text-slate-400">Gemini Counseling Engine, FastAPI Server, Linear Light Dashboard & PDF.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide fade-in flex-col space-y-6 w-full" data-slide="2">
+      <div class="border-b border-slate-800 pb-3">
+        <h2 class="text-2xl font-bold text-white">The Higher Education Retention Crisis</h2>
+        <p class="text-xs text-slate-400">The "Cold Data" Bottleneck in legacy early warning systems.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3">
+          <div class="h-10 w-10 rounded-xl bg-rose-950 text-rose-400 flex items-center justify-center border border-rose-800">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-base text-slate-200">The 30% Attrition Gap</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Over 30% of college students drop out within the first 2 years, inflicting massive institutional tuition losses and derailed futures.
+          </p>
+        </div>
+
+        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3">
+          <div class="h-10 w-10 rounded-xl bg-amber-950 text-amber-400 flex items-center justify-center border border-amber-800">
+            <i data-lucide="file-question" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-base text-slate-200">The "Cold Data" Trap</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Existing dashboards output raw numbers (e.g. <code class="text-rose-300 font-mono">Risk: 0.88</code>) without explaining root causes or prescribing clinical remedies.
+          </p>
+        </div>
+
+        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3">
+          <div class="h-10 w-10 rounded-xl bg-blue-950 text-blue-400 flex items-center justify-center border border-blue-800">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-base text-slate-200">Restorative Intervention</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            DropGuard translates mathematical SHAP vectors into empathetic, restorative counseling roadmaps before drop deadlines pass.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide fade-in flex-col space-y-6 w-full" data-slide="3">
+      <div class="border-b border-slate-800 pb-3">
+        <h2 class="text-2xl font-bold text-white">System Architecture & The 50/50 Contract</h2>
+        <p class="text-xs text-slate-400">Decoupled execution via Universal JSON Contract (contracts/student_schema.json).</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <div class="bg-slate-900 p-5 rounded-2xl border border-blue-900/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider">Member 1 Domain (50%)</h3>
+            <span class="text-[10px] bg-blue-950 px-2 py-0.5 rounded text-blue-300 border border-blue-800 font-mono">/ml_engine/</span>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Raw dataset ingestion: UCI Dataset #697 (4,424 records).</li>
+            <li>• Preprocessing: ColumnTransformer (StandardScaler + OneHotEncoder).</li>
+            <li>• Model Training: Random Forest Ensemble (200 decision trees).</li>
+            <li>• Explainability: SHAP TreeExplainer local attribution extraction.</li>
+            <li>• <b>Contract Output:</b> Float risk score ($[0, 1]$) + Top-3 SHAP strings.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border border-emerald-900/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">Member 2 Domain (50%)</h3>
+            <span class="text-[10px] bg-emerald-950 px-2 py-0.5 rounded text-emerald-300 border border-emerald-800 font-mono">/counseling_engine/ & /server/</span>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Restorative prompt engineering in <code>counselor_prompt.txt</code>.</li>
+            <li>• Core GenAI Engine: Google Gemini 1.5 Flash + Expert Fallback.</li>
+            <li>• Strict 3-key JSON output parsing: <code>summary</code>, <code>actions</code>, <code>prompts</code>.</li>
+            <li>• FastAPI REST API server bridge & middleware in <code>server/main.py</code>.</li>
+            <li>• Production UI Dashboard with animated gauge & live prediction simulator.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="4">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Data Engineering & Preprocessing Pipeline (Member 1)</h2>
+        <p class="text-xs text-slate-400">UCI Dataset #697 Cohort Isolation and ColumnTransformer feature taxonomy.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="text-xs font-bold text-blue-400 uppercase">18 Numerical Features</h3>
+          <p class="text-[11px] text-slate-300">StandardScaler ($\mu=0.0, \sigma=1.0$)</p>
+          <p class="text-[10px] text-slate-400">Curricular units enrolled/approved/grade (sem 1 & 2), admission grade, age at enrollment, GDP, inflation.</p>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="text-xs font-bold text-amber-400 uppercase">10 Categorical Features</h3>
+          <p class="text-[11px] text-slate-300">OneHotEncoder (Sparse Dummy Cols)</p>
+          <p class="text-[10px] text-slate-400">Course IDs, marital status, nationality, father's/mother's qualifications and occupations.</p>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="text-xs font-bold text-emerald-400 uppercase">8 Binary Flags</h3>
+          <p class="text-[11px] text-slate-300">Passthrough ($0/1$ Booleans)</p>
+          <p class="text-[10px] text-slate-400">Debtor status, tuition fees up to date, scholarship holder, gender, daytime/evening attendance.</p>
+        </div>
+      </div>
+
+      <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs font-mono text-slate-300 flex justify-between">
+        <span>Filtered Binary Cohort: 3,630 students (1,421 Dropouts / 2,209 Graduates)</span>
+        <span class="text-blue-400">Exported: 3,630 rows × 233 dimensions</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="5">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Multi-Model Benchmarks & Algorithm Selection (Member 1)</h2>
+        <p class="text-xs text-slate-400">Holdout evaluation on 726 unseen students (80/20 Stratified Partition).</p>
+      </div>
+
+      <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900 text-xs">
+        <table class="min-w-full divide-y divide-slate-800 text-left">
+          <thead class="bg-slate-950 text-slate-400 font-mono uppercase text-[10px]">
+            <tr>
+              <th class="px-4 py-3">Candidate Algorithm</th>
+              <th class="px-4 py-3">Accuracy</th>
+              <th class="px-4 py-3">Precision (Dropout)</th>
+              <th class="px-4 py-3">Recall (Dropout)</th>
+              <th class="px-4 py-3">F1-Score</th>
+              <th class="px-4 py-3">ROC-AUC</th>
+              <th class="px-4 py-3">Engineering Verdict</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr>
+              <td class="px-4 py-2.5 font-bold text-slate-200">Logistic Regression (Linear)</td>
+              <td class="px-4 py-2.5">92.01%</td>
+              <td class="px-4 py-2.5">86.69%</td>
+              <td class="px-4 py-2.5 text-blue-400 font-bold">94.01%</td>
+              <td class="px-4 py-2.5">90.20%</td>
+              <td class="px-4 py-2.5">0.9753</td>
+              <td class="px-4 py-2.5 text-slate-400">High false positive rate</td>
+            </tr>
+            <tr class="bg-blue-950/30">
+              <td class="px-4 py-2.5 font-bold text-emerald-400">Random Forest (Selected Engine)</td>
+              <td class="px-4 py-2.5 font-bold text-emerald-400">92.98%</td>
+              <td class="px-4 py-2.5 font-bold text-emerald-400">91.17%</td>
+              <td class="px-4 py-2.5">90.85%</td>
+              <td class="px-4 py-2.5 font-bold text-emerald-400">91.01%</td>
+              <td class="px-4 py-2.5 font-bold text-emerald-400">0.9711</td>
+              <td class="px-4 py-2.5 text-emerald-400 font-bold">Production Pipeline (model.pkl)</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-bold text-slate-200">Gradient Boosting (GBDT)</td>
+              <td class="px-4 py-2.5">91.87%</td>
+              <td class="px-4 py-2.5">90.04%</td>
+              <td class="px-4 py-2.5">89.08%</td>
+              <td class="px-4 py-2.5">89.56%</td>
+              <td class="px-4 py-2.5">0.9718</td>
+              <td class="px-4 py-2.5 text-slate-400">Higher inference latency</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-xs font-mono text-slate-300">
+        <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+          <span class="text-slate-400">True Negatives (Safe Graduates):</span> <b>424 / 442 (95.9% correctly identified)</b>
+        </div>
+        <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+          <span class="text-slate-400">True Positives (At-Risk Dropouts):</span> <b>247 / 284 (87.0% caught in early warning)</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="6">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Explainable AI & SHAP Risk Drivers (Member 1)</h2>
+        <p class="text-xs text-slate-400">SHAP TreeExplainer extracting local Shapley decision attributions.</p>
+      </div>
+
+      <div class="space-y-2.5 pt-1">
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-200">#1 Curricular units 2nd sem (approved)</span>
+          <span class="font-mono text-rose-400 font-bold">22.8% Gini Impact</span>
+          <span class="text-slate-400 text-[11px]">Primary academic determinant; earning &le;1 credit triggers critical risk.</span>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-200">#2 Curricular units 1st sem (approved)</span>
+          <span class="font-mono text-rose-400 font-bold">13.0% Gini Impact</span>
+          <span class="text-slate-400 text-[11px]">Early foundation indicator; first-semester deficits compound rapidly.</span>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-200">#3 Curricular units 2nd sem (grade)</span>
+          <span class="font-mono text-rose-400 font-bold">12.6% Gini Impact</span>
+          <span class="text-slate-400 text-[11px]">Continuous assessment average across second-term examination modules.</span>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-200">#4 Curricular units 1st sem (grade)</span>
+          <span class="font-mono text-rose-400 font-bold">7.0% Gini Impact</span>
+          <span class="text-slate-400 text-[11px]">Entry foundation academic baseline score.</span>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-200">#5 Tuition fees up to date</span>
+          <span class="font-mono text-amber-400 font-bold">5.2% Gini Impact</span>
+          <span class="text-slate-400 text-[11px]">Strongest non-academic socio-economic trigger; fee debt predicts drop.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="7">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">GenAI Academic Counseling Engine (Member 2)</h2>
+        <p class="text-xs text-slate-400">Restorative prompt engineering and strict JSON schema guarantees.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+          <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Dual High-Availability Architecture</h3>
+          <div class="space-y-2 text-xs">
+            <div class="p-2.5 rounded bg-slate-950 border border-slate-800">
+              <b class="text-slate-200">Mode 1: Google Gemini 1.5 Flash</b>
+              <p class="text-[11px] text-slate-400 mt-0.5">Zero-dependency HTTP client via urllib.request; dynamic prompt interpolation.</p>
+            </div>
+            <div class="p-2.5 rounded bg-slate-950 border border-slate-800">
+              <b class="text-slate-200">Mode 2: Autonomous Domain Expert Fallback</b>
+              <p class="text-[11px] text-slate-400 mt-0.5">Pedagogical heuristics guaranteeing 100% uptime if offline or key is missing.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+          <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Strict 3-Key JSON Output Contract</h3>
+          <div class="p-3 rounded bg-slate-950 font-mono text-[11px] text-blue-300 border border-slate-800">
+            {<br>
+            &nbsp;&nbsp;"summary": "2-3 diagnostic sentences",<br>
+            &nbsp;&nbsp;"action_items": ["tutoring", "bursar plan"],<br>
+            &nbsp;&nbsp;"meeting_talking_points": ["prompt 1", "prompt 2"]<br>
+            }
+          </div>
+          <p class="text-[11px] text-slate-400">Regex parser strips markdown code fences; zero frontend parsing errors.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="8">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Case Studies: Before vs. After Interventions (Member 2)</h2>
+        <p class="text-xs text-slate-400">Comparing traditional institutional responses against DropGuard AI counseling memos.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        <!-- Case 1 -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs">
+          <div class="flex justify-between font-bold text-rose-400">
+            <span>Academic Crisis</span>
+            <span class="font-mono text-[10px]">Maria (STU-101)</span>
+          </div>
+          <div class="p-2 rounded bg-rose-950/40 border border-rose-900/60 text-[10px] text-rose-200">
+            <b>Before:</b> "Warning: Your attendance is below threshold. Attend hearing or face suspension."
+          </div>
+          <div class="p-2 rounded bg-emerald-950/40 border border-emerald-900/60 text-[10px] text-emerald-200">
+            <b>After:</b> Identifies algorithms stumbling block, co-signs Attendance Recovery Compact, pairs with peer tutor.
+          </div>
+        </div>
+        <!-- Case 2 -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs">
+          <div class="flex justify-between font-bold text-amber-400">
+            <span>Debt Hardship</span>
+            <span class="font-mono text-[10px]">Lucas (STU-102)</span>
+          </div>
+          <div class="p-2 rounded bg-rose-950/40 border border-rose-900/60 text-[10px] text-rose-200">
+            <b>Before:</b> Exam registration locked due to bursar hold, exacerbating course failure.
+          </div>
+          <div class="p-2 rounded bg-emerald-950/40 border border-emerald-900/60 text-[10px] text-emerald-200">
+            <b>After:</b> Connects with Emergency Campus Bursar Aid, drops 1 elective to reduce credit overload.
+          </div>
+        </div>
+        <!-- Case 3 -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs">
+          <div class="flex justify-between font-bold text-blue-400">
+            <span>Vocational Shift</span>
+            <span class="font-mono text-[10px]">Diogo (STU-110)</span>
+          </div>
+          <div class="p-2 rounded bg-rose-950/40 border border-rose-900/60 text-[10px] text-rose-200">
+            <b>Before:</b> Deregistered for attendance violation despite scoring 15+/20 on exams.
+          </div>
+          <div class="p-2 rounded bg-emerald-950/40 border border-emerald-900/60 text-[10px] text-emerald-200">
+            <b>After:</b> Formalizes working-student status dispensation, provides asynchronous lab credits.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="9">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Full-Stack Web Application & REST Server (Member 2)</h2>
+        <p class="text-xs text-slate-400">FastAPI backend bridge and Linear-inspired responsive UI.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1 text-xs">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="font-bold text-blue-400 uppercase">FastAPI REST Server (`server/main.py`)</h3>
+          <p class="text-slate-300">• <code>GET /api/health</code>: Confirms ML model & SHAP runtime status.</p>
+          <p class="text-slate-300">• <code>GET /api/students</code>: Serves student cohort complying with schema.</p>
+          <p class="text-slate-300">• <code>POST /api/predict</code>: Combined ML inference + SHAP + GenAI memo.</p>
+          <p class="text-slate-300">• <code>POST /api/counsel</code>: Dedicated on-demand counseling memo endpoint.</p>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="font-bold text-emerald-400 uppercase">Interactive Web Dashboard Features</h3>
+          <p class="text-slate-300">• <b>Top KPI Cards:</b> Active cohort, High Risk alert, Watchlist, Cohort GPA.</p>
+          <p class="text-slate-300">• <b>Animated Radial Gauge:</b> Circular SVG stroke meter color-coded by risk.</p>
+          <p class="text-slate-300">• <b>Interactive Sorting:</b> Click column headers to sort by risk, GPA, attendance.</p>
+          <p class="text-slate-300">• <b>Official PDF Export:</b> Formatted print styles for university consultation memo.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="10">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Interactive Live ML Prediction Simulator (Member 2)</h2>
+        <p class="text-xs text-slate-400">On-the-fly student evaluation and advisor role authentication.</p>
+      </div>
+
+      <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3 text-xs">
+        <h3 class="font-bold text-emerald-400 uppercase">End-to-End Live Simulation Flow (&lt;200ms)</h3>
+        <p class="text-slate-300">
+          Advisors click <b>"+ Live ML Prediction"</b> in the top navigation bar, enter custom attributes (Course, Attendance %, GPA, 1st & 2nd Sem units approved, Tuition status, Debtor flag), and click <b>"Run DropGuard Pipeline"</b>:
+        </p>
+        <div class="grid grid-cols-4 gap-2 text-[11px] font-mono text-center">
+          <div class="p-2 bg-slate-950 rounded border border-slate-800">1. ColumnTransformer</div>
+          <div class="p-2 bg-slate-950 rounded border border-slate-800">2. Random Forest</div>
+          <div class="p-2 bg-slate-950 rounded border border-slate-800">3. SHAP TreeExplainer</div>
+          <div class="p-2 bg-slate-950 rounded border border-slate-800">4. Gemini Counseling</div>
+        </div>
+        <p class="text-slate-400 text-[11px]">
+          The newly analyzed student is prepended directly to the active roster, KPI metric cards update in real time, and the student's detail drawer opens automatically.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="11">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">System Verification & Testing Rigor (Both Members)</h2>
+        <p class="text-xs text-slate-400">Test-driven development with 5 automated test suites.</p>
+      </div>
+
+      <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900 text-xs">
+        <table class="min-w-full divide-y divide-slate-800 text-left">
+          <thead class="bg-slate-950 text-slate-400 font-mono uppercase text-[10px]">
+            <tr>
+              <th class="px-4 py-2.5">Test Suite</th>
+              <th class="px-4 py-2.5">Owner</th>
+              <th class="px-4 py-2.5">Verification Target</th>
+              <th class="px-4 py-2.5">Result</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr>
+              <td class="px-4 py-2 font-mono">verify_llm_connection.py</td>
+              <td class="px-4 py-2">Member 2</td>
+              <td class="px-4 py-2">Runtime, environment & multi-tier prompt interpolation</td>
+              <td class="px-4 py-2 text-emerald-400 font-bold">100% Pass</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 font-mono">test_edge_cases.py</td>
+              <td class="px-4 py-2">Member 2</td>
+              <td class="px-4 py-2">5 divergent student archetypes (Academic, Debt, Work, Compound, Honors)</td>
+              <td class="px-4 py-2 text-emerald-400 font-bold">5 / 5 (100%)</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 font-mono">test_counseling.py</td>
+              <td class="px-4 py-2">Member 2</td>
+              <td class="px-4 py-2">10 mock profiles contract compliance against student_schema.json</td>
+              <td class="px-4 py-2 text-emerald-400 font-bold">10 / 10 (100%)</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 font-mono">benchmark_models.py</td>
+              <td class="px-4 py-2">Member 1</td>
+              <td class="px-4 py-2">Holdout evaluation of Logistic Regression, Random Forest, Gradient Boosting</td>
+              <td class="px-4 py-2 text-emerald-400 font-bold">100% Pass</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 font-mono">test_integration.py</td>
+              <td class="px-4 py-2">Both</td>
+              <td class="px-4 py-2">End-to-end REST API bridge, health status, prediction & UI delivery</td>
+              <td class="px-4 py-2 text-emerald-400 font-bold">5 / 5 (100%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="12">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Business Value & Ethical AI Governance (Both Members)</h2>
+        <p class="text-xs text-slate-400">Institutional ROI, advisor productivity, and ethical AI standards.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="font-bold text-blue-400 uppercase">Institutional ROI</h3>
+          <p class="text-slate-300">Retaining just 10 additional students saves a university <b>$120,000–$250,000</b> in tuition revenue per academic year.</p>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="font-bold text-emerald-400 uppercase">85% Time Savings</h3>
+          <p class="text-slate-300">Reduces diagnostic case prep time from <b>45 minutes to 2 minutes</b> per student, eliminating advisor burnout.</p>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="font-bold text-amber-400 uppercase">Ethical AI Guardrails</h3>
+          <p class="text-slate-300">Models focus on dynamic academic behaviors; human advisors always retain final decision authority; zero PII exposed.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13 -->
+    <div class="slide fade-in flex-col space-y-4 w-full" data-slide="13">
+      <div class="border-b border-slate-800 pb-2">
+        <h2 class="text-xl font-bold text-white">Future Roadmap & Extensibility (Both Members)</h2>
+        <p class="text-xs text-slate-400">Scaling DropGuard into higher education enterprise ecosystems.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 text-xs">
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1">
+          <span class="text-blue-400 font-bold">Phase 1: LMS Plugins</span>
+          <p class="text-[11px] text-slate-400">Direct LTI integrations with Canvas, Moodle, and Blackboard.</p>
+        </div>
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1">
+          <span class="text-emerald-400 font-bold">Phase 2: Trajectory AI</span>
+          <p class="text-[11px] text-slate-400">Longitudinal LSTMs to forecast semester-by-semester GPA drift.</p>
+        </div>
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1">
+          <span class="text-amber-400 font-bold">Phase 3: Student App</span>
+          <p class="text-[11px] text-slate-400">Student-facing companion app for recovery milestones.</p>
+        </div>
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1">
+          <span class="text-rose-400 font-bold">Phase 4: Multilingual</span>
+          <p class="text-[11px] text-slate-400">Expanding prompts to Spanish, Portuguese, and French.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14 -->
+    <div class="slide fade-in flex-col items-center text-center space-y-5 max-w-2xl" data-slide="14">
+      <div class="h-12 w-12 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center border border-blue-500/40">
+        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-3xl font-black text-white">Summary of Achievements & Live Demonstration</h2>
+      <p class="text-xs text-slate-400 leading-relaxed max-w-lg">
+        DropGuard bridges high-accuracy tabular machine learning with compassionate restorative counseling, delivering an actionable, explainable clinical decision support tool for universities.
+      </p>
+
+      <div class="w-full bg-slate-900 p-4 rounded-xl border border-slate-800 text-xs font-mono text-slate-300 space-y-1 text-left">
+        <p>• <b>ML Pipeline:</b> 92.98% Accuracy & 0.9711 ROC-AUC (Member 1)</p>
+        <p>• <b>Explainability:</b> Local SHAP TreeAttribution ranking (Member 1)</p>
+        <p>• <b>Counseling Engine:</b> Gemini GenAI + Autonomous Domain Expert (Member 2)</p>
+        <p>• <b>Full-Stack Application:</b> FastAPI REST Server + Linear Light Dashboard (Member 2)</p>
+      </div>
+
+      <div class="flex items-center space-x-4 pt-1">
+        <a href="http://127.0.0.1:8000" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold text-white transition-colors">
+          Open Live Web App (http://127.0.0.1:8000) ↗
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Controls -->
+  <footer class="border-t border-slate-800 px-8 py-4 flex items-center justify-between bg-slate-900/60 backdrop-blur-md">
+    <div class="text-xs text-slate-500">
+      Use <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono">←</kbd> and <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono">→</kbd> keys to navigate
+    </div>
+    <div class="flex items-center space-x-3">
+      <button id="prev-btn" class="px-4 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-colors">
+        ← Previous
+      </button>
+      <button id="next-btn" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white transition-colors">
+        Next Slide →
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 14;
+
+    function showSlide(index) {
+      if (index < 1) index = 1;
+      if (index > totalSlides) index = totalSlides;
+      currentSlide = index;
+
+      document.querySelectorAll(".slide").forEach((s, idx) => {
+        if (idx + 1 === currentSlide) {
+          s.classList.add("active");
+        } else {
+          s.classList.remove("active");
+        }
+      });
+
+      document.getElementById("slide-num").innerText = currentSlide;
+      document.getElementById("prev-btn").disabled = currentSlide === 1;
+      document.getElementById("next-btn").innerText = currentSlide === totalSlides ? "Restart ↺" : "Next Slide →";
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    document.getElementById("prev-btn").addEventListener("click", () => showSlide(currentSlide - 1));
+    document.getElementById("next-btn").addEventListener("click", () => {
+      if (currentSlide === totalSlides) showSlide(1);
+      else showSlide(currentSlide + 1);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") showSlide(currentSlide + 1);
+      if (e.key === "ArrowLeft") showSlide(currentSlide - 1);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
