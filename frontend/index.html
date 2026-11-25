@@ -862,19 +862,19 @@
             </div>
           </div>
 
-          <!-- Dynamic Failed Subjects by Semester Section -->
+          <!-- Dynamic Approved Units by Semester Section -->
           <div class="space-y-2 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80">
             <div class="flex items-center justify-between">
               <div>
-                <label class="block text-xs font-bold text-slate-800">Subjects Failed (Backlogs) by Semester</label>
-                <p class="text-[11px] text-slate-500 mt-0.5">Enter number of failed subjects (0–6) for each semester up to Semester <span id="active-sem-indicator" class="font-bold text-indigo-600">2</span></p>
+                <label class="block text-xs font-bold text-slate-800">Approved Units (Subjects Passed Out of 6)</label>
+                <p class="text-[11px] text-slate-500 mt-0.5">Enter subjects passed (0 to 6) for each semester up to Semester <span id="active-sem-indicator" class="font-bold text-indigo-600">2</span></p>
               </div>
-              <span id="failed-subjects-summary" class="text-[11px] font-mono text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 font-bold shrink-0">
-                Total Backlogs: 0
+              <span id="approved-units-summary" class="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold shrink-0">
+                12 / 12 Approved (0 Backlogs)
               </span>
             </div>
             <div id="dynamic-semesters-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-              <!-- Dynamically populated based on selected semester -->
+              <!-- Dynamically populated for Sem 1, Sem 2, Sem 3, etc. based on selected semester -->
             </div>
           </div>
 
@@ -907,8 +907,8 @@
     <span id="toast-message">Counseling memo copied to clipboard!</span>
   </div>
 
-  <script src="js/charts.js"></script>
-  <script src="js/modal.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/charts.js?v=2.6"></script>
+  <script src="js/modal.js?v=2.6"></script>
+  <script src="js/app.js?v=2.6"></script>
 </body>
 </html>

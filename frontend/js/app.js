@@ -627,70 +627,92 @@ function setupDemoPersonas() {
 }
 
 /* ==========================================================================
-   5. LIVE ML PREDICTION MODAL (DYNAMIC FAILED SUBJECTS BY SEMESTER)
+   5. LIVE ML PREDICTION MODAL (DYNAMIC APPROVED UNITS OUT OF 6 PER SEMESTER)
    ========================================================================== */
 
-function renderDynamicSemesterFailedInputs(selectedSemester) {
+function renderDynamicSemesterApprovedInputs(selectedSemester) {
   const container = document.getElementById("dynamic-semesters-container");
   const semIndicator = document.getElementById("active-sem-indicator");
-  const summaryBadge = document.getElementById("failed-subjects-summary");
+  const summaryBadge = document.getElementById("approved-units-summary");
   if (!container) return;
 
   const semNum = Math.max(1, Math.min(8, parseInt(selectedSemester, 10) || 1));
   if (semIndicator) semIndicator.innerText = semNum;
 
-  // Preserve existing values if user already typed numbers
+  // Preserve existing user inputs if already typed
   const existingValues = {};
   for (let i = 1; i <= 8; i++) {
-    const el = document.getElementById(`form-sem${i}-failed`);
-    if (el) existingValues[i] = parseInt(el.value, 10) || 0;
+    const el = document.getElementById(`form-sem${i}-approved`) || document.getElementById(`form-sem${i}-units`);
+    if (el) existingValues[i] = parseInt(el.value, 10);
   }
 
   container.innerHTML = "";
 
   for (let i = 1; i <= semNum; i++) {
-    const prevVal = existingValues[i] !== undefined ? existingValues[i] : 0;
+    // Default to 6 approved units (normal full clearance), or preserved value
+    const prevVal = existingValues[i] !== undefined && !isNaN(existingValues[i]) ? existingValues[i] : 6;
     const div = document.createElement("div");
     div.className = "bg-white p-2.5 rounded-lg border border-slate-200/90 shadow-2xs space-y-1";
     div.innerHTML = `
       <div class="flex items-center justify-between">
-        <label for="form-sem${i}-failed" class="block text-[11px] font-bold text-slate-700">
-          Sem ${i} Failed
+        <label for="form-sem${i}-approved" class="block text-[11px] font-bold text-slate-800">
+          Sem ${i} Approved Units (out of 6)
         </label>
-        <span class="text-[9px] font-medium px-1.5 py-0.2 rounded bg-slate-100 text-slate-500">Max 6</span>
+        <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700">Max 6</span>
       </div>
       <input 
-        id="form-sem${i}-failed" 
+        id="form-sem${i}-approved" 
         type="number" 
         min="0" 
         max="6" 
         value="${prevVal}" 
-        class="sem-failed-input w-full text-xs font-mono font-bold px-2 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-white" 
-        placeholder="0"
+        class="sem-approved-input w-full text-xs font-mono font-bold px-2.5 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-white" 
+        placeholder="6"
       />
-      <p class="text-[9px] text-slate-400">Failed / backlogs</p>
+      <div class="flex items-center justify-between text-[9px] text-slate-400">
+        <span>Passed subjects</span>
+        <span id="sem${i}-status-pill" class="font-medium text-emerald-600">6/6 Clear</span>
+      </div>
     `;
     container.appendChild(div);
   }
 
   const updateSummary = () => {
-    let total = 0;
+    let totalApproved = 0;
+    const maxTotal = semNum * 6;
+
     for (let i = 1; i <= semNum; i++) {
-      const el = document.getElementById(`form-sem${i}-failed`);
-      if (el) total += parseInt(el.value, 10) || 0;
+      const el = document.getElementById(`form-sem${i}-approved`);
+      const val = el ? Math.max(0, Math.min(6, parseInt(el.value, 10) || 0)) : 6;
+      totalApproved += val;
+
+      const pill = document.getElementById(`sem${i}-status-pill`);
+      if (pill) {
+        const failedInSem = 6 - val;
+        if (failedInSem === 0) {
+          pill.className = "font-medium text-emerald-600";
+          pill.innerText = "6/6 Clear";
+        } else {
+          pill.className = "font-medium text-rose-600";
+          pill.innerText = `${val}/6 (${failedInSem} backlogs)`;
+        }
+      }
     }
+
+    const totalBacklogs = Math.max(0, maxTotal - totalApproved);
+
     if (summaryBadge) {
-      if (total === 0) {
+      if (totalBacklogs === 0) {
         summaryBadge.className = "text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold shrink-0";
-        summaryBadge.innerText = "Total Backlogs: 0 (Clear)";
+        summaryBadge.innerText = `${totalApproved} / ${maxTotal} Approved (0 Backlogs)`;
       } else {
         summaryBadge.className = "text-[11px] font-mono text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 font-bold shrink-0";
-        summaryBadge.innerText = `Total Backlogs: ${total} ${total === 1 ? 'subject' : 'subjects'}`;
+        summaryBadge.innerText = `${totalApproved} / ${maxTotal} Approved (${totalBacklogs} Backlogs)`;
       }
     }
   };
 
-  container.querySelectorAll(".sem-failed-input").forEach(input => {
+  container.querySelectorAll(".sem-approved-input").forEach(input => {
     input.addEventListener("input", updateSummary);
   });
 
@@ -707,14 +729,14 @@ function setupPredictionModal() {
   const semSelect = document.getElementById("form-semester");
 
   // Initial render of dynamic semester inputs
-  renderDynamicSemesterFailedInputs(semSelect?.value || 2);
+  renderDynamicSemesterApprovedInputs(semSelect?.value || 2);
 
   // Re-render dynamically whenever user changes current semester (Sem 1 to 8)
   semSelect?.addEventListener("change", (e) => {
-    renderDynamicSemesterFailedInputs(e.target.value);
+    renderDynamicSemesterApprovedInputs(e.target.value);
   });
   semSelect?.addEventListener("input", (e) => {
-    renderDynamicSemesterFailedInputs(e.target.value);
+    renderDynamicSemesterApprovedInputs(e.target.value);
   });
 
   const closeModal = () => modal.classList.add("hidden");
@@ -724,7 +746,7 @@ function setupPredictionModal() {
       openAuthModal("signin", "Advisor sign-in required to execute live machine learning dropout predictions.", { type: "open_predict" });
       return;
     }
-    renderDynamicSemesterFailedInputs(semSelect?.value || 2);
+    renderDynamicSemesterApprovedInputs(semSelect?.value || 2);
     modal.classList.remove("hidden");
     if (window.lucide) lucide.createIcons();
   };
@@ -755,30 +777,33 @@ function setupPredictionModal() {
     const tuitionOverdue = document.getElementById("form-tuition").checked;
     const debtor = document.getElementById("form-debtor").checked;
 
-    // Collect failed subjects individually for each semester up to active semester
+    // Collect approved units out of 6 for each semester up to active semester
+    const approvedBySem = {};
     const failedBySem = {};
+    let totalApproved = 0;
     let totalBacklogs = 0;
+
     for (let i = 1; i <= semester; i++) {
-      const el = document.getElementById(`form-sem${i}-failed`);
-      const val = el ? Math.max(0, parseInt(el.value, 10) || 0) : 0;
-      failedBySem[`Sem ${i}`] = val;
-      totalBacklogs += val;
+      const el = document.getElementById(`form-sem${i}-approved`);
+      const val = el ? Math.max(0, Math.min(6, parseInt(el.value, 10) || 0)) : 6;
+      approvedBySem[`Sem ${i}`] = val;
+      const failed = 6 - val;
+      failedBySem[`Sem ${i}`] = failed;
+      totalApproved += val;
+      totalBacklogs += failed;
     }
 
-    // Map failed subjects into curricular units approved (standard 6 enrolled units per sem)
-    const sem1Failed = failedBySem["Sem 1"] !== undefined ? failedBySem["Sem 1"] : 0;
-    const sem1Units = Math.max(0, 6 - sem1Failed);
+    // Map into UCI curricular units features
+    const sem1Units = approvedBySem["Sem 1"] !== undefined ? approvedBySem["Sem 1"] : 6;
 
     let sem2Units;
     if (semester === 1) {
       sem2Units = sem1Units;
     } else if (semester === 2) {
-      const sem2Failed = failedBySem["Sem 2"] !== undefined ? failedBySem["Sem 2"] : 0;
-      sem2Units = Math.max(0, 6 - sem2Failed);
+      sem2Units = approvedBySem["Sem 2"] !== undefined ? approvedBySem["Sem 2"] : 6;
     } else {
-      // For senior semesters (3 to 8), sem2Units maps to the latest completed semester
-      const latestFailed = failedBySem[`Sem ${semester}`] !== undefined ? failedBySem[`Sem ${semester}`] : 0;
-      sem2Units = Math.max(0, 6 - latestFailed);
+      // For senior semesters (3 to 8), sem2Units represents the latest semester performance
+      sem2Units = approvedBySem[`Sem ${semester}`] !== undefined ? approvedBySem[`Sem ${semester}`] : 6;
     }
 
     // Normalize CGPA: display on 10-point scale, map to 20-point scale for UCI-trained model features
@@ -793,6 +818,8 @@ function setupPredictionModal() {
       attendance_pct: attendance,
       gpa: displayGpa,
       total_backlogs: totalBacklogs,
+      total_approved: totalApproved,
+      approved_units_by_sem: approvedBySem,
       failed_subjects_by_sem: failedBySem,
       "Marital status": 1,
       "Application mode": 1,
@@ -850,17 +877,18 @@ function setupPredictionModal() {
         
         const fallbackFactors = [];
         if (totalBacklogs > 0) {
-          fallbackFactors.push(`Accumulated ${totalBacklogs} failed subject(s) across Semesters 1–${semester}`);
+          fallbackFactors.push(`Completed ${totalApproved} of ${semester * 6} credits (${totalBacklogs} backlogs) across Sem 1–${semester}`);
           for (let i = 1; i <= semester; i++) {
             if (failedBySem[`Sem ${i}`] > 0) {
-              fallbackFactors.push(`Semester ${i}: ${failedBySem[`Sem ${i}`]} failed course module(s)`);
+              fallbackFactors.push(`Semester ${i}: Approved ${approvedBySem[`Sem ${i}`]}/6 units (${failedBySem[`Sem ${i}`]} backlogs)`);
             }
           }
+        } else {
+          fallbackFactors.push(`100% Course Completion: Approved all ${totalApproved}/${semester * 6} units across Sem 1–${semester}`);
         }
         if (attendance < 65) fallbackFactors.push("Attendance below mandatory 65% threshold");
         if (debtor) fallbackFactors.push("Student registered with outstanding debt");
         if (tuitionOverdue) fallbackFactors.push("Overdue tuition fees flagged");
-        if (fallbackFactors.length === 0) fallbackFactors.push("Consistent course evaluations and zero backlogs");
 
         result = {
           prediction: {
@@ -869,26 +897,31 @@ function setupPredictionModal() {
             top_risk_factors: fallbackFactors.slice(0, 3)
           },
           counseling_memo: {
-            summary: `${name} presents ${level} dropout vulnerability in Semester ${semester} with ${totalBacklogs} accumulated backlog(s) and attendance at ${attendance}%. Targeted academic remediation is required.`,
+            summary: `${name} displays ${level} dropout vulnerability in Semester ${semester} with ${totalApproved}/${semester * 6} approved credits and attendance at ${attendance}%. Targeted academic remediation is required.`,
             action_items: [
-              `Initiate credit recovery plan for the ${totalBacklogs} failed subject(s).`,
+              totalBacklogs > 0 ? `Initiate course credit recovery for the ${totalBacklogs} backlog subject(s).` : "Maintain consistent study schedule and pace.",
               "Connect with departmental peer tutors for prerequisite revision.",
               "Establish a structured bi-weekly attendance and progress check-in."
             ],
             meeting_talking_points: [
-              `Review hurdles encountered during prior semesters causing course failures.`,
+              `Review academic workload across semesters and identify specific subject hurdles.`,
               "Explore campus resources for academic and personal support."
             ]
           }
         };
       }
 
-      // Ensure backlog insights are prominently surfaced in top_risk_factors
+      // Ensure approved units and backlog insights are prominently surfaced in top_risk_factors
       let finalTopFactors = result.prediction.top_risk_factors || [];
       if (totalBacklogs > 0) {
-        const backlogText = `Accumulated ${totalBacklogs} failed subject(s) across Semesters 1–${semester}`;
-        if (!finalTopFactors.some(f => f.toLowerCase().includes("failed") || f.toLowerCase().includes("backlog"))) {
-          finalTopFactors = [backlogText, ...finalTopFactors].slice(0, 3);
+        const approvedText = `Approved ${totalApproved} of ${semester * 6} credits (${totalBacklogs} backlogs across Sem 1–${semester})`;
+        if (!finalTopFactors.some(f => f.toLowerCase().includes("approved") || f.toLowerCase().includes("backlog"))) {
+          finalTopFactors = [approvedText, ...finalTopFactors].slice(0, 3);
+        }
+      } else {
+        const perfectText = `Cleared 100% course credits (${totalApproved}/${semester * 6} units approved)`;
+        if (!finalTopFactors.some(f => f.toLowerCase().includes("approved") || f.toLowerCase().includes("credit"))) {
+          finalTopFactors = [perfectText, ...finalTopFactors].slice(0, 3);
         }
       }
 
@@ -900,6 +933,8 @@ function setupPredictionModal() {
         attendance_pct: studentData.attendance_pct,
         gpa: studentData.gpa,
         total_backlogs: totalBacklogs,
+        total_approved: totalApproved,
+        approved_units_by_sem: approvedBySem,
         failed_subjects_by_sem: failedBySem,
         prediction: {
           ...result.prediction,
