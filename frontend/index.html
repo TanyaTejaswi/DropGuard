@@ -718,6 +718,7 @@
             <div id="modal-stats" class="text-right text-xs text-slate-600 space-y-1.5 border-l border-slate-200 pl-4 font-mono">
               <p>Attendance: <b id="modal-attendance" class="font-bold text-slate-900">--%</b></p>
               <p>Current CGPA: <b id="modal-gpa" class="font-bold text-slate-900">--/10</b></p>
+              <p id="modal-backlogs-row" class="text-rose-600 font-semibold hidden">Failed Subjects: <b id="modal-backlogs" class="font-bold">0</b></p>
               <p class="text-[10px] text-slate-400">RandomForest Model</p>
             </div>
           </div>
@@ -839,8 +840,17 @@
 
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Semester</label>
-              <input id="form-semester" type="number" min="1" max="8" value="2" class="w-full text-xs px-3 py-2 border rounded-lg" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Current Semester</label>
+              <select id="form-semester" class="w-full text-xs px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white font-medium">
+                <option value="1">Semester 1</option>
+                <option value="2" selected>Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Attendance %</label>
@@ -852,14 +862,19 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Sem 1 Approved Units</label>
-              <input id="form-sem1-units" type="number" min="0" max="10" value="2" class="w-full text-xs px-3 py-2 border rounded-lg" />
+          <!-- Dynamic Failed Subjects by Semester Section -->
+          <div class="space-y-2 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80">
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="block text-xs font-bold text-slate-800">Subjects Failed (Backlogs) by Semester</label>
+                <p class="text-[11px] text-slate-500 mt-0.5">Enter number of failed subjects (0–6) for each semester up to Semester <span id="active-sem-indicator" class="font-bold text-indigo-600">2</span></p>
+              </div>
+              <span id="failed-subjects-summary" class="text-[11px] font-mono text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 font-bold shrink-0">
+                Total Backlogs: 0
+              </span>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Sem 2 Approved Units</label>
-              <input id="form-sem2-units" type="number" min="0" max="10" value="0" class="w-full text-xs px-3 py-2 border rounded-lg" />
+            <div id="dynamic-semesters-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+              <!-- Dynamically populated based on selected semester -->
             </div>
           </div>
 

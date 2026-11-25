@@ -79,6 +79,24 @@ def format_risk_factor(feature_name: str, value, shap_val: float) -> str:
         return f"Adverse indicator in {clean_name}"
 
 
+DEFAULT_FEATURES = {
+    'Marital status': 1, 'Application mode': 1, 'Application order': 1, 'Course': 33,
+    'Daytime/evening attendance': 1, 'Previous qualification': 1,
+    'Previous qualification (grade)': 120.0, 'Nacionality': 1, "Mother's qualification": 1,
+    "Father's qualification": 1, "Mother's occupation": 1, "Father's occupation": 1,
+    'Admission grade': 115.0, 'Displaced': 1, 'Educational special needs': 0, 'Debtor': 0,
+    'Tuition fees up to date': 1, 'Gender': 1, 'Scholarship holder': 0, 'Age at enrollment': 20,
+    'International': 0, 'Curricular units 1st sem (credited)': 0,
+    'Curricular units 1st sem (enrolled)': 6, 'Curricular units 1st sem (evaluations)': 6,
+    'Curricular units 1st sem (approved)': 5, 'Curricular units 1st sem (grade)': 12.0,
+    'Curricular units 1st sem (without evaluations)': 0, 'Curricular units 2nd sem (credited)': 0,
+    'Curricular units 2nd sem (enrolled)': 6, 'Curricular units 2nd sem (evaluations)': 6,
+    'Curricular units 2nd sem (approved)': 5, 'Curricular units 2nd sem (grade)': 12.0,
+    'Curricular units 2nd sem (without evaluations)': 0, 'Unemployment rate': 10.8,
+    'Inflation rate': 1.4, 'GDP': 1.74
+}
+
+
 def predict_student(student_features: dict) -> dict:
     """
     Takes raw student dictionary, applies the fitted ColumnTransformer preprocessing,
@@ -88,8 +106,17 @@ def predict_student(student_features: dict) -> dict:
     preprocessor = pipeline.named_steps['preprocessor']
     classifier = pipeline.named_steps['classifier']
 
-    # Convert dict to DataFrame
-    df_row = pd.DataFrame([student_features])
+    # Merge student_features on top of default values to guarantee complete columns
+    merged_features = {**DEFAULT_FEATURES, **student_features}
+
+    # Map GPA / Attendance if provided
+    gpa_val = float(student_features.get("gpa", student_features.get("Curricular units 2nd sem (grade)", 12.0)))
+    if gpa_val <= 10.0:
+        merged_features["Curricular units 1st sem (grade)"] = gpa_val * 2.0
+        merged_features["Curricular units 2nd sem (grade)"] = gpa_val * 2.0
+
+    # Convert dict to DataFrame filtered to preprocessor columns
+    df_row = pd.DataFrame([merged_features])
     df_row.columns = [c.strip() for c in df_row.columns]
 
     # Predict dropout probability (Class 1 = Dropout)
@@ -105,6 +132,16 @@ def predict_student(student_features: dict) -> dict:
         risk_level = "Low"
 
     top_factors = []
+
+    # If student has backlogs / failed subjects, prioritize reporting them
+    total_backlogs = student_features.get("total_backlogs", None)
+    failed_by_sem = student_features.get("failed_subjects_by_sem", {})
+    if total_backlogs is not None and total_backlogs > 0:
+        top_factors.append(f"Accumulated {total_backlogs} failed subject(s) / backlogs")
+        if isinstance(failed_by_sem, dict):
+            for sem_k, sem_failed in failed_by_sem.items():
+                if sem_failed > 0 and len(top_factors) < 3:
+                    top_factors.append(f"{sem_k}: {sem_failed} subject(s) failed")
 
     # 1. Try SHAP-based feature attribution
     if _CACHED_EXPLAINER is not None and _FEATURE_NAMES is not None:

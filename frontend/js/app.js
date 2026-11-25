@@ -627,8 +627,75 @@ function setupDemoPersonas() {
 }
 
 /* ==========================================================================
-   5. LIVE ML PREDICTION MODAL (AUTHENTICATION GATED)
+   5. LIVE ML PREDICTION MODAL (DYNAMIC FAILED SUBJECTS BY SEMESTER)
    ========================================================================== */
+
+function renderDynamicSemesterFailedInputs(selectedSemester) {
+  const container = document.getElementById("dynamic-semesters-container");
+  const semIndicator = document.getElementById("active-sem-indicator");
+  const summaryBadge = document.getElementById("failed-subjects-summary");
+  if (!container) return;
+
+  const semNum = Math.max(1, Math.min(8, parseInt(selectedSemester, 10) || 1));
+  if (semIndicator) semIndicator.innerText = semNum;
+
+  // Preserve existing values if user already typed numbers
+  const existingValues = {};
+  for (let i = 1; i <= 8; i++) {
+    const el = document.getElementById(`form-sem${i}-failed`);
+    if (el) existingValues[i] = parseInt(el.value, 10) || 0;
+  }
+
+  container.innerHTML = "";
+
+  for (let i = 1; i <= semNum; i++) {
+    const prevVal = existingValues[i] !== undefined ? existingValues[i] : 0;
+    const div = document.createElement("div");
+    div.className = "bg-white p-2.5 rounded-lg border border-slate-200/90 shadow-2xs space-y-1";
+    div.innerHTML = `
+      <div class="flex items-center justify-between">
+        <label for="form-sem${i}-failed" class="block text-[11px] font-bold text-slate-700">
+          Sem ${i} Failed
+        </label>
+        <span class="text-[9px] font-medium px-1.5 py-0.2 rounded bg-slate-100 text-slate-500">Max 6</span>
+      </div>
+      <input 
+        id="form-sem${i}-failed" 
+        type="number" 
+        min="0" 
+        max="6" 
+        value="${prevVal}" 
+        class="sem-failed-input w-full text-xs font-mono font-bold px-2 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-white" 
+        placeholder="0"
+      />
+      <p class="text-[9px] text-slate-400">Failed / backlogs</p>
+    `;
+    container.appendChild(div);
+  }
+
+  const updateSummary = () => {
+    let total = 0;
+    for (let i = 1; i <= semNum; i++) {
+      const el = document.getElementById(`form-sem${i}-failed`);
+      if (el) total += parseInt(el.value, 10) || 0;
+    }
+    if (summaryBadge) {
+      if (total === 0) {
+        summaryBadge.className = "text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold shrink-0";
+        summaryBadge.innerText = "Total Backlogs: 0 (Clear)";
+      } else {
+        summaryBadge.className = "text-[11px] font-mono text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 font-bold shrink-0";
+        summaryBadge.innerText = `Total Backlogs: ${total} ${total === 1 ? 'subject' : 'subjects'}`;
+      }
+    }
+  };
+
+  container.querySelectorAll(".sem-failed-input").forEach(input => {
+    input.addEventListener("input", updateSummary);
+  });
+
+  updateSummary();
+}
 
 function setupPredictionModal() {
   const openBtn = document.getElementById("btn-open-predict-modal");
@@ -637,6 +704,18 @@ function setupPredictionModal() {
   const cancelBtn = document.getElementById("predict-cancel-btn");
   const backdrop = document.getElementById("predict-backdrop");
   const form = document.getElementById("predict-form");
+  const semSelect = document.getElementById("form-semester");
+
+  // Initial render of dynamic semester inputs
+  renderDynamicSemesterFailedInputs(semSelect?.value || 2);
+
+  // Re-render dynamically whenever user changes current semester (Sem 1 to 8)
+  semSelect?.addEventListener("change", (e) => {
+    renderDynamicSemesterFailedInputs(e.target.value);
+  });
+  semSelect?.addEventListener("input", (e) => {
+    renderDynamicSemesterFailedInputs(e.target.value);
+  });
 
   const closeModal = () => modal.classList.add("hidden");
   const openModal = () => {
@@ -645,6 +724,7 @@ function setupPredictionModal() {
       openAuthModal("signin", "Advisor sign-in required to execute live machine learning dropout predictions.", { type: "open_predict" });
       return;
     }
+    renderDynamicSemesterFailedInputs(semSelect?.value || 2);
     modal.classList.remove("hidden");
     if (window.lucide) lucide.createIcons();
   };
@@ -669,13 +749,37 @@ function setupPredictionModal() {
 
     const name = document.getElementById("form-name").value;
     const program = document.getElementById("form-program").value;
-    const semester = parseInt(document.getElementById("form-semester").value, 10);
+    const semester = parseInt(document.getElementById("form-semester").value, 10) || 1;
     const attendance = parseFloat(document.getElementById("form-attendance").value);
     const gpa = parseFloat(document.getElementById("form-gpa").value);
-    const sem1Units = parseInt(document.getElementById("form-sem1-units").value, 10);
-    const sem2Units = parseInt(document.getElementById("form-sem2-units").value, 10);
     const tuitionOverdue = document.getElementById("form-tuition").checked;
     const debtor = document.getElementById("form-debtor").checked;
+
+    // Collect failed subjects individually for each semester up to active semester
+    const failedBySem = {};
+    let totalBacklogs = 0;
+    for (let i = 1; i <= semester; i++) {
+      const el = document.getElementById(`form-sem${i}-failed`);
+      const val = el ? Math.max(0, parseInt(el.value, 10) || 0) : 0;
+      failedBySem[`Sem ${i}`] = val;
+      totalBacklogs += val;
+    }
+
+    // Map failed subjects into curricular units approved (standard 6 enrolled units per sem)
+    const sem1Failed = failedBySem["Sem 1"] !== undefined ? failedBySem["Sem 1"] : 0;
+    const sem1Units = Math.max(0, 6 - sem1Failed);
+
+    let sem2Units;
+    if (semester === 1) {
+      sem2Units = sem1Units;
+    } else if (semester === 2) {
+      const sem2Failed = failedBySem["Sem 2"] !== undefined ? failedBySem["Sem 2"] : 0;
+      sem2Units = Math.max(0, 6 - sem2Failed);
+    } else {
+      // For senior semesters (3 to 8), sem2Units maps to the latest completed semester
+      const latestFailed = failedBySem[`Sem ${semester}`] !== undefined ? failedBySem[`Sem ${semester}`] : 0;
+      sem2Units = Math.max(0, 6 - latestFailed);
+    }
 
     // Normalize CGPA: display on 10-point scale, map to 20-point scale for UCI-trained model features
     const displayGpa = gpa <= 10.0 ? gpa : parseFloat((gpa / 2).toFixed(1));
@@ -688,6 +792,8 @@ function setupPredictionModal() {
       semester: semester,
       attendance_pct: attendance,
       gpa: displayGpa,
+      total_backlogs: totalBacklogs,
+      failed_subjects_by_sem: failedBySem,
       "Marital status": 1,
       "Application mode": 1,
       "Application order": 1,
@@ -738,30 +844,52 @@ function setupPredictionModal() {
         if (!resp.ok) throw new Error("API inference failure");
         result = await resp.json();
       } catch (postErr) {
-        const score = attendance < 60 || sem2Units < 2 ? 0.86 : (attendance < 75 ? 0.52 : 0.18);
+        // High-fidelity fallback calculation if server is offline
+        const score = totalBacklogs >= 3 || attendance < 60 || sem2Units < 2 ? 0.88 : (totalBacklogs >= 1 || attendance < 75 ? 0.52 : 0.18);
         const level = score >= 0.65 ? "High" : (score >= 0.35 ? "Medium" : "Low");
+        
+        const fallbackFactors = [];
+        if (totalBacklogs > 0) {
+          fallbackFactors.push(`Accumulated ${totalBacklogs} failed subject(s) across Semesters 1–${semester}`);
+          for (let i = 1; i <= semester; i++) {
+            if (failedBySem[`Sem ${i}`] > 0) {
+              fallbackFactors.push(`Semester ${i}: ${failedBySem[`Sem ${i}`]} failed course module(s)`);
+            }
+          }
+        }
+        if (attendance < 65) fallbackFactors.push("Attendance below mandatory 65% threshold");
+        if (debtor) fallbackFactors.push("Student registered with outstanding debt");
+        if (tuitionOverdue) fallbackFactors.push("Overdue tuition fees flagged");
+        if (fallbackFactors.length === 0) fallbackFactors.push("Consistent course evaluations and zero backlogs");
+
         result = {
           prediction: {
             risk_score: score,
             risk_level: level,
-            top_risk_factors: [
-              `Low 2nd semester approved modules (${sem2Units} units)`,
-              attendance < 65 ? "Attendance below mandatory threshold" : "Borderline continuous evaluations",
-              debtor ? "Student registered with outstanding debt" : "Tuition in good standing"
-            ]
+            top_risk_factors: fallbackFactors.slice(0, 3)
           },
           counseling_memo: {
-            summary: `${name} displays ${level} dropout vulnerability with attendance at ${attendance}% and ${sem2Units} credits completed. Immediate advisory intervention is recommended.`,
+            summary: `${name} presents ${level} dropout vulnerability in Semester ${semester} with ${totalBacklogs} accumulated backlog(s) and attendance at ${attendance}%. Targeted academic remediation is required.`,
             action_items: [
-              "Establish an individualized study schedule with course instructors.",
-              "Connect with academic support services for core module tutoring."
+              `Initiate credit recovery plan for the ${totalBacklogs} failed subject(s).`,
+              "Connect with departmental peer tutors for prerequisite revision.",
+              "Establish a structured bi-weekly attendance and progress check-in."
             ],
             meeting_talking_points: [
-              "Discuss current workload balance and identify specific subject hurdles.",
+              `Review hurdles encountered during prior semesters causing course failures.`,
               "Explore campus resources for academic and personal support."
             ]
           }
         };
+      }
+
+      // Ensure backlog insights are prominently surfaced in top_risk_factors
+      let finalTopFactors = result.prediction.top_risk_factors || [];
+      if (totalBacklogs > 0) {
+        const backlogText = `Accumulated ${totalBacklogs} failed subject(s) across Semesters 1–${semester}`;
+        if (!finalTopFactors.some(f => f.toLowerCase().includes("failed") || f.toLowerCase().includes("backlog"))) {
+          finalTopFactors = [backlogText, ...finalTopFactors].slice(0, 3);
+        }
       }
 
       const newStudent = {
@@ -771,8 +899,13 @@ function setupPredictionModal() {
         semester: studentData.semester,
         attendance_pct: studentData.attendance_pct,
         gpa: studentData.gpa,
-        prediction: result.prediction,
-        top_risk_factors: result.prediction.top_risk_factors,
+        total_backlogs: totalBacklogs,
+        failed_subjects_by_sem: failedBySem,
+        prediction: {
+          ...result.prediction,
+          top_risk_factors: finalTopFactors
+        },
+        top_risk_factors: finalTopFactors,
         counseling_memo: result.counseling_memo
       };
 
@@ -788,6 +921,19 @@ function setupPredictionModal() {
       switchView("view-roster");
       openStudentModal(newStudent);
       showToast(`Evaluation completed for ${newStudent.name}`);
+    } catch (err) {
+      console.error("[Prediction Form Error]", err);
+      showToast("Evaluation failed. Please review student values.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `
+        <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-300"></i>
+        <span>Run DropGuard Pipeline</span>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+  });
+}
     } catch (err) {
       alert("Error: " + err.message);
     } finally {

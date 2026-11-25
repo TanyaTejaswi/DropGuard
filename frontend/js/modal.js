@@ -65,11 +65,28 @@ function openStudentModal(student) {
     }
   }
 
-  // Attendance & GPA
+  // Attendance & GPA & Backlogs
   const attEl = document.getElementById("modal-attendance");
   const gpaEl = document.getElementById("modal-gpa");
   if (attEl) attEl.innerText = `${student.attendance_pct}%`;
   if (gpaEl) gpaEl.innerText = `${student.gpa}/10`;
+
+  const backlogsRow = document.getElementById("modal-backlogs-row");
+  const backlogsEl = document.getElementById("modal-backlogs");
+  if (backlogsRow && backlogsEl) {
+    if (student.total_backlogs !== undefined) {
+      backlogsRow.classList.remove("hidden");
+      backlogsEl.innerText = `${student.total_backlogs} subjects`;
+      if (student.total_backlogs > 0) {
+        backlogsRow.className = "text-rose-600 font-semibold";
+      } else {
+        backlogsRow.className = "text-emerald-600 font-semibold";
+        backlogsEl.innerText = "0 (Clear)";
+      }
+    } else {
+      backlogsRow.classList.add("hidden");
+    }
+  }
 
   // Horizontal SHAP Risk Attribution Factors
   const factorsContainer = document.getElementById("modal-factors-list");
