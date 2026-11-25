@@ -969,15 +969,6 @@ function setupPredictionModal() {
     }
   });
 }
-    } catch (err) {
-      alert("Error: " + err.message);
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-300"></i><span>Run DropGuard Pipeline</span>`;
-      if (window.lucide) lucide.createIcons();
-    }
-  });
-}
 
 /* ==========================================================================
    6. GLOBAL KEYBOARD SHORTCUTS (Linear Style ⌘P, ⌘K, Esc)
