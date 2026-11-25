@@ -407,6 +407,8 @@ function showToast(msg) {
   }, 2500);
 }
 
+let regenAttemptCounter = 0;
+
 /**
  * Regenerates the AI counseling strategy on demand.
  */
@@ -428,17 +430,22 @@ async function regenerateAIMemo() {
   if (icon) icon.classList.add("animate-spin");
   if (label) label.innerText = "Synthesizing...";
 
+  regenAttemptCounter++;
+
   try {
     let newMemo = null;
-    const API_BASE = "http://localhost:8000";
+    const API_BASE = (typeof window !== "undefined" && window.location.origin && window.location.origin.startsWith("http"))
+      ? window.location.origin
+      : "http://127.0.0.1:8000";
 
     try {
-      const resp = await fetch(`${API_BASE}/api/counsel`, {
+      const resp = await fetch(`${API_BASE}/api/counsel?t=${Date.now()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           student_profile: currentModalStudent,
-          top_risk_factors: currentModalStudent.top_risk_factors || []
+          top_risk_factors: currentModalStudent.top_risk_factors || [],
+          regen_counter: regenAttemptCounter
         }),
         signal: AbortSignal.timeout(4000)
       });
@@ -447,33 +454,79 @@ async function regenerateAIMemo() {
         newMemo = data.counseling_memo;
       }
     } catch (apiErr) {
-      // Offline fallback
+      // Offline fallback below
     }
 
     if (!newMemo) {
       const s = currentModalStudent;
       const isHigh = (s.prediction?.risk_score || 0) >= 0.65;
-      newMemo = {
-        summary: `Refreshed clinical diagnostic for ${s.name}: High-priority advisory intervention recommended to address ${s.top_risk_factors?.[0] || 'course friction'} via structured study pacing and bi-weekly milestone checks.`,
-        action_items: isHigh ? [
-          "Mandate immediate counselor intake appointment within 48 academic hours.",
-          "Coordinate with subject faculty for weekly formative assignment review.",
-          "Refer student to Student Academic Support and Wellness center for study-work alignment."
-        ] : [
-          "Schedule monthly check-in to review mid-semester milestone progress.",
-          "Encourage participation in departmental peer tutoring circles.",
-          "Confirm continued satisfaction with elective course choices."
-        ],
-        meeting_talking_points: [
-          `Explore specific challenges contributing to ${s.top_risk_factors?.[0] || 'current coursework pressures'}.`,
-          "Identify one achievable high-impact study habit change to implement this week.",
-          "Review available academic accommodations and faculty office hour availability."
-        ]
-      };
+      const variant = regenAttemptCounter % 3;
+
+      if (variant === 0) {
+        newMemo = {
+          summary: `Priority Advisory Realignment for ${s.name}: High-priority advisory intervention recommended to address ${s.top_risk_factors?.[0] || 'course friction'} via structured study pacing and bi-weekly milestone checks.`,
+          action_items: isHigh ? [
+            "Mandate an immediate 1-on-1 counselor intake appointment within 48 academic hours.",
+            "Coordinate with subject faculty for weekly formative assignment review.",
+            "Refer student to Student Academic Support and Wellness center for study-work alignment."
+          ] : [
+            "Schedule monthly check-in to review mid-semester milestone progress.",
+            "Encourage participation in departmental peer tutoring circles.",
+            "Confirm continued satisfaction with elective course choices."
+          ],
+          meeting_talking_points: [
+            `Explore specific challenges contributing to ${s.top_risk_factors?.[0] || 'current coursework pressures'}.`,
+            "Identify one achievable high-impact study habit change to implement this week.",
+            "Review available academic accommodations and faculty office hour availability."
+          ]
+        };
+      } else if (variant === 1) {
+        newMemo = {
+          summary: `Workload & Course Restructuring Plan for ${s.name}: Target core prerequisite subjects in ${s.program || 'their department'} with dedicated peer coaching and academic load balancing.`,
+          action_items: isHigh ? [
+            "Perform a course audit to evaluate auditing or retaking flagged core modules.",
+            "Pair with senior student tutor for 3 hours of weekly supervised problem-solving.",
+            "Establish a mandatory weekly attendance verification log with course professors."
+          ] : [
+            "Connect with faculty teaching assistant for exam preparation guidance.",
+            "Draft a realistic weekly study calendar with fixed revision blocks.",
+            "Explore departmental undergraduate research and project opportunities."
+          ],
+          meeting_talking_points: [
+            "Review past examination answer sheets to identify conceptual bottlenecks.",
+            "Discuss daily time-blocking strategies to eliminate last-minute cramming stress."
+          ]
+        };
+      } else {
+        newMemo = {
+          summary: `Targeted Retention & Milestone Compact: Structured support for ${s.name} focusing on continuous assessment recovery and faculty check-ins.`,
+          action_items: isHigh ? [
+            "Draft an advisor-signed academic recovery compact with bi-weekly progress sign-offs.",
+            "Provide access to recorded lecture archives and remedial practice question banks.",
+            "Fast-track student into departmental mid-semester recovery study groups."
+          ] : [
+            "Encourage student to take leadership roles in academic study circles.",
+            "Provide information on honors coursework and summer internship opportunities.",
+            "Acknowledge strong discipline and maintain open-door advising availability."
+          ],
+          meeting_talking_points: [
+            "Check in empathetically on external transport, housing, or personal factors affecting focus.",
+            "Co-create an achievable weekly timetable with dedicated, distraction-free study blocks."
+          ]
+        };
+      }
     }
 
     currentModalStudent.counseling_memo = newMemo;
     renderCounselingMemo(newMemo);
+
+    // Subtle pulse animation to make the change immediately obvious to the advisor
+    const summaryBox = document.getElementById("modal-memo-summary")?.closest("div");
+    if (summaryBox) {
+      summaryBox.classList.add("ring-2", "ring-indigo-400", "transition-all", "duration-300");
+      setTimeout(() => summaryBox.classList.remove("ring-2", "ring-indigo-400"), 600);
+    }
+
     showToast("New GenAI Counseling Strategy synthesized");
   } catch (err) {
     showToast("Strategy refreshed");

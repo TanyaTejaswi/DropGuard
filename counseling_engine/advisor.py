@@ -17,6 +17,7 @@ Contract Specification:
 import os
 import re
 import json
+import random
 import urllib.request
 import urllib.error
 
@@ -151,95 +152,279 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
         or "freelance" in factor_text
     )
 
+    variant = random.choice([0, 1, 2])
     action_items = []
     talking_points = []
 
     # Dynamic Persona & Strategy Synthesis
     if risk_level == "High":
         if has_financial_issue and has_academic_failure:
-            summary = (
-                f"{name} is experiencing compounding academic distress intertwined with severe financial constraints. "
-                f"With a CGPA of {gpa}/10 and outstanding institutional obligations, the risk of discontinuation is acute."
-            )
-            action_items.append("Fast-track emergency financial aid review with the campus Student Bursar office.")
-            action_items.append("Audit semester workload and evaluate dropping one high-demand elective to protect core GPA.")
-            action_items.append("Assign an academic success coach for weekly structured check-ins.")
-            talking_points.append("Gently inquire about external financial stresses and part-time job commitments.")
-            talking_points.append("Discuss creating an individualized repayment schedule and balancing study hours.")
+            if variant == 0:
+                summary = (
+                    f"{name} is experiencing compounding academic distress intertwined with severe financial constraints. "
+                    f"With a CGPA of {gpa}/10 and outstanding institutional obligations, the risk of discontinuation is acute."
+                )
+                action_items = [
+                    "Fast-track emergency financial aid review with the campus Student Bursar office.",
+                    "Audit semester workload and evaluate dropping one high-demand elective to protect core GPA.",
+                    "Assign an academic success coach for weekly structured check-ins."
+                ]
+                talking_points = [
+                    "Gently inquire about external financial stresses and part-time job commitments.",
+                    "Discuss creating an individualized repayment schedule and balancing study hours."
+                ]
+            elif variant == 1:
+                summary = (
+                    f"Socio-Financial Intervention Required: {name} faces pressing institutional fee obligations alongside "
+                    f"a {gpa}/10 CGPA, necessitating bursar coordination and academic relief."
+                )
+                action_items = [
+                    "Establish a formal tuition installment schedule to remove registration hold flags.",
+                    "Enroll in faculty peer-tutoring clinics for foundational coursework recovery.",
+                    "Review on-campus work-study positions with flexible scheduling."
+                ]
+                talking_points = [
+                    "Explore grant aid eligibility and review installment flexibility with financial services.",
+                    "Map out prerequisite course recovery milestones without overloading weekly hours."
+                ]
+            else:
+                summary = (
+                    f"Integrated Recovery Strategy: Critical retention risk for {name} driven by tuition arrears and course difficulties. "
+                    f"A dual financial-academic compact is essential this semester."
+                )
+                action_items = [
+                    "Submit an expedited request for university emergency student hardship assistance.",
+                    "Arrange weekly check-in sessions with academic department mentor.",
+                    "Optimize course timetable to allow dedicated study periods around work commitments."
+                ]
+                talking_points = [
+                    "Discuss balancing employment obligations with assignment submission deadlines.",
+                    "Reassure the student of departmental resources and available hardship funds."
+                ]
 
         elif has_attendance_issue and has_academic_failure:
-            summary = (
-                f"{name} presents critical dropout vulnerability driven by severe lecture absenteeism ({attendance}%) "
-                f"and poor course assessments ({gpa}/10) in {program}."
-            )
-            action_items.append("Issue a formal attendance notice and execute an Attendance Recovery Compact.")
-            action_items.append("Enroll student in mandatory peer-assisted tutoring for flagged prerequisite courses.")
-            action_items.append("Schedule bi-weekly counseling progress reviews with the department chair.")
-            talking_points.append("Investigate root causes of morning class absences, including commute or health challenges.")
-            talking_points.append("Identify foundational course bottlenecks and map out achievable credit milestones.")
+            if variant == 0:
+                summary = (
+                    f"{name} presents critical dropout vulnerability driven by severe lecture absenteeism ({attendance}%) "
+                    f"and poor course assessments ({gpa}/10) in {program}."
+                )
+                action_items = [
+                    "Issue a formal attendance notice and execute an Attendance Recovery Compact.",
+                    "Enroll student in mandatory peer-assisted tutoring for flagged prerequisite courses.",
+                    "Schedule bi-weekly counseling progress reviews with the department chair."
+                ]
+                talking_points = [
+                    "Investigate root causes of morning class absences, including commute or health challenges.",
+                    "Identify foundational course bottlenecks and map out achievable credit milestones."
+                ]
+            elif variant == 1:
+                summary = (
+                    f"Priority Academic Realignment: {name} is at acute risk in {program} due to lagging attendance ({attendance}%) "
+                    f"and a {gpa}/10 CGPA. Workload restructuring is recommended."
+                )
+                action_items = [
+                    "Conduct a credit audit to evaluate auditing or retaking flagged core modules.",
+                    "Assign a dedicated graduate teaching assistant for weekly problem-solving labs.",
+                    "Establish a mandatory weekly attendance verification log with course professors."
+                ]
+                talking_points = [
+                    "Discuss course pacing and pinpoint specific lecture topics causing disengagement.",
+                    "Explore flexible transport or schedule adjustments to reduce morning absence rates."
+                ]
+            else:
+                summary = (
+                    f"Targeted Retention Plan: Chronic absence ({attendance}%) combined with examination deficits ({gpa}/10) "
+                    f"requires an intensive, milestone-based intervention for {name} in {program}."
+                )
+                action_items = [
+                    "Fast-track student into the faculty's mid-semester recovery study groups.",
+                    "Draft an advisor-signed attendance agreement with weekly check-ins.",
+                    "Provide access to recorded lecture materials and remedial question banks."
+                ]
+                talking_points = [
+                    "Check in empathetically on personal or external pressures impacting classroom focus.",
+                    "Co-create an achievable weekly timetable with dedicated, distraction-free study blocks."
+                ]
 
         elif has_work_conflict or has_attendance_issue:
-            summary = (
-                f"{name} displays significant attendance attrition ({attendance}%) likely resulting from heavy outside commitments, "
-                f"jeopardizing institutional progression despite underlying academic capability."
-            )
-            action_items.append("Review campus policy on working student accommodations and formalize registration status.")
-            action_items.append("Establish a flexible lecture attendance dispensation agreement with faculty.")
-            action_items.append("Provide asynchronous study materials and recorded lecture access.")
-            talking_points.append("Discuss total weekly working hours and evaluate their impact on classroom focus.")
-            talking_points.append("Explore moving to part-time enrollment if employment obligations cannot be adjusted.")
+            if variant == 0:
+                summary = (
+                    f"{name} displays significant attendance attrition ({attendance}%) likely resulting from heavy outside commitments, "
+                    f"jeopardizing institutional progression despite underlying academic capability."
+                )
+                action_items = [
+                    "Review campus policy on working student accommodations and formalize registration status.",
+                    "Establish a flexible lecture attendance dispensation agreement with faculty.",
+                    "Provide asynchronous study materials and recorded lecture access."
+                ]
+                talking_points = [
+                    "Discuss total weekly working hours and evaluate their impact on classroom focus.",
+                    "Explore moving to part-time enrollment if employment obligations cannot be adjusted."
+                ]
+            elif variant == 1:
+                summary = (
+                    f"Schedule Harmonization Memo: {name}'s attendance rate ({attendance}%) signals substantial schedule friction. "
+                    f"Proactive faculty adjustments will prevent unexcused absence de-registration."
+                )
+                action_items = [
+                    "Formalize an official working-student dispensation with the academic dean's office.",
+                    "Shift course assignments to asynchronous digital submissions where possible.",
+                    "Schedule monthly milestone reviews to monitor syllabus coverage."
+                ]
+                talking_points = [
+                    "Review shift timings and commute obstacles to formulate an optimized weekly routine.",
+                    "Clarify mandatory practical and lab requirements that must be attended in person."
+                ]
+            else:
+                summary = (
+                    f"Alternative Scheduling Strategy: Outside obligations are creating acute lecture absence ({attendance}%) for {name}. "
+                    f"Advisory intervention is targeted at maintaining academic progression."
+                )
+                action_items = [
+                    "Coordinate with department coordinator for recorded lecture and lab makeup permissions.",
+                    "Formulate a customized self-paced learning schedule for semester {semester}.",
+                    "Ensure student remains aware of mandatory mid-term assessment dates."
+                ]
+                talking_points = [
+                    "Discuss employment demands and explore potential remote or on-campus student roles.",
+                    "Confirm commitment to critical examination windows and course evaluations."
+                ]
 
         else:
-            summary = (
-                f"{name} is currently flagged with High dropout risk ({int(risk_score * 100)}%). "
-                f"Immediate academic and pastoral intervention is required to stabilize progression in semester {semester}."
-            )
-            action_items.append("Convene an urgent 1-on-1 advisor diagnostic intake.")
-            action_items.append("Connect student with university academic tutoring and psychological counseling services.")
-            action_items.append("Establish a milestone recovery contract with scheduled mid-semester evaluations.")
-            talking_points.append("Explore holistic well-being and identify any external obstacles impeding study routines.")
-            talking_points.append("Reaffirm institutional support systems and co-develop an immediate recovery plan.")
+            if variant == 0:
+                summary = (
+                    f"{name} is currently flagged with High dropout risk ({int(risk_score * 100)}%). "
+                    f"Immediate academic and pastoral intervention is required to stabilize progression in semester {semester}."
+                )
+                action_items = [
+                    "Convene an urgent 1-on-1 advisor diagnostic intake.",
+                    "Connect student with university academic tutoring and psychological counseling services.",
+                    "Establish a milestone recovery contract with scheduled mid-semester evaluations."
+                ]
+                talking_points = [
+                    "Explore holistic well-being and identify any external obstacles impeding study routines.",
+                    "Reaffirm institutional support systems and co-develop an immediate recovery plan."
+                ]
+            else:
+                summary = (
+                    f"Emergency Academic Support Protocol: High risk indicators ({int(risk_score * 100)}%) flagged for {name} in {program}. "
+                    f"Proactive institutional support will mitigate attrition risk."
+                )
+                action_items = [
+                    "Schedule an in-depth advising consultation to evaluate subject difficulties.",
+                    "Coordinate peer study partnerships for core theoretical modules.",
+                    "Implement a bi-weekly academic progress check-in schedule."
+                ]
+                talking_points = [
+                    "Identify specific academic units where workload feels unmanageable.",
+                    "Establish short-term, achievable goals for the next three weeks."
+                ]
 
     elif risk_level == "Medium":
         if has_financial_issue:
-            summary = (
-                f"{name} is making steady academic progress ({gpa}/10) but faces emerging financial friction that could "
-                f"threaten upcoming enrollment continuity."
-            )
-            action_items.append("Connect student with the campus financial counselor to explore tuition grant programs.")
-            action_items.append("Review payment deadlines to avoid administrative registration holds.")
-            talking_points.append("Discuss financial planning and explore available emergency student grants.")
-            talking_points.append("Ensure student is aware of work-study opportunities on campus.")
+            if variant == 0:
+                summary = (
+                    f"{name} is making steady academic progress ({gpa}/10) but faces emerging financial friction that could "
+                    f"threaten upcoming enrollment continuity."
+                )
+                action_items = [
+                    "Connect student with the campus financial counselor to explore tuition grant programs.",
+                    "Review payment deadlines to avoid administrative registration holds.",
+                    "Explore on-campus student worker options with tuition deduction support."
+                ]
+                talking_points = [
+                    "Discuss financial planning and explore available emergency student grants.",
+                    "Ensure student is aware of work-study opportunities on campus."
+                ]
+            else:
+                summary = (
+                    f"Financial Stability Advising: {name} maintains viable grades ({gpa}/10), but pending fee notices "
+                    f"may disrupt enrollment if left unresolved."
+                )
+                action_items = [
+                    "Facilitate an installment plan request with the university bursar.",
+                    "Review external scholarship and emergency endowment eligibility.",
+                    "Establish proactive payment milestone dates before semester exams."
+                ]
+                talking_points = [
+                    "Discuss financial barriers frankly in an empathetic, supportive setting.",
+                    "Outline step-by-step procedures to request fee extension waivers."
+                ]
 
         elif has_disengagement or has_work_conflict:
-            summary = (
-                f"{name} maintains reasonable grades but exhibits signs of schedule compression or digital disengagement, "
-                f"requiring proactive intervention before coursework slips."
-            )
-            action_items.append("Provide a time-management and LMS portal milestone planner.")
-            action_items.append("Establish regular check-ins with course teaching assistants.")
-            talking_points.append("Discuss time-blocking techniques to handle project deadlines smoothly.")
-            talking_points.append("Assess if coursework pace or remote assignment submission is creating friction.")
+            if variant == 0:
+                summary = (
+                    f"{name} maintains reasonable grades but exhibits signs of schedule compression or digital disengagement, "
+                    f"requiring proactive intervention before coursework slips."
+                )
+                action_items = [
+                    "Provide a time-management and LMS portal milestone planner.",
+                    "Establish regular check-ins with course teaching assistants.",
+                    "Recommend small-group seminar study tables for collaborative learning."
+                ]
+                talking_points = [
+                    "Discuss time-blocking techniques to handle project deadlines smoothly.",
+                    "Assess if coursework pace or remote assignment submission is creating friction."
+                ]
+            else:
+                summary = (
+                    f"Engagement Recovery Memo: Early signs of portal inactivity or scheduling strain detected for {name}. "
+                    f"Targeted coaching will maintain student momentum."
+                )
+                action_items = [
+                    "Review weekly course portal access and assignment deadlines.",
+                    "Connect student with study circle peers in {program}.",
+                    "Set up an advisor reminder sequence ahead of key milestone deadlines."
+                ]
+                talking_points = [
+                    "Explore study environment setup and potential digital or material barriers.",
+                    "Help prioritize competing assignment deadlines for the upcoming fortnight."
+                ]
 
         else:
             summary = (
                 f"{name} is in a transitional phase with moderate dropout indicators ({int(risk_score * 100)}% risk). "
                 f"Targeted study habits and proactive advisor support will solidify academic standing."
             )
-            action_items.append("Recommend enrollment in departmental study circles and quantitative workshops.")
-            action_items.append("Conduct a mid-semester degree check to ensure prerequisite trajectory.")
-            talking_points.append("Evaluate adaptation to current course load and identify any subject-specific questions.")
-            talking_points.append("Formulate a balanced weekly study schedule to prevent pre-exam cramming.")
+            action_items = [
+                "Recommend enrollment in departmental study circles and quantitative workshops.",
+                "Conduct a mid-semester degree check to ensure prerequisite trajectory.",
+                "Review foundational lecture materials with course teaching assistant."
+            ]
+            talking_points = [
+                "Evaluate adaptation to current course load and identify any subject-specific questions.",
+                "Formulate a balanced weekly study schedule to prevent pre-exam cramming."
+            ]
 
     else:  # Low Risk
-        summary = (
-            f"{name} demonstrates commendable academic resilience with strong attendance ({attendance}%) and a solid CGPA of {gpa}/10, "
-            f"indicating low dropout vulnerability ({int(risk_score * 100)}%)."
-        )
-        action_items.append("Encourage student to apply for departmental peer-tutoring and undergraduate research roles.")
-        action_items.append("Provide information on academic honors, internships, and student leadership opportunities.")
-        talking_points.append("Congratulate the student on consistent academic discipline and performance.")
-        talking_points.append("Discuss long-term career aspirations, industry placements, and graduate study options.")
+        if variant == 0:
+            summary = (
+                f"{name} demonstrates commendable academic resilience with strong attendance ({attendance}%) and a solid CGPA of {gpa}/10, "
+                f"indicating low dropout vulnerability ({int(risk_score * 100)}%)."
+            )
+            action_items = [
+                "Encourage student to apply for departmental peer-tutoring and undergraduate research roles.",
+                "Provide information on academic honors, internships, and student leadership opportunities.",
+                "Encourage participation in technical student societies and hackathons."
+            ]
+            talking_points = [
+                "Congratulate the student on consistent academic discipline and performance.",
+                "Discuss long-term career aspirations, industry placements, and graduate study options."
+            ]
+        else:
+            summary = (
+                f"High-Retention Profile: {name} exhibits excellent engagement ({attendance}% attendance, {gpa}/10 CGPA). "
+                f"Focus is on career acceleration and honors-level enrichment."
+            )
+            action_items = [
+                "Recommend student for departmental dean's list and merit recognition.",
+                "Connect student with alumni mentorship and corporate internship programs.",
+                "Suggest advanced elective options for upcoming semester."
+            ]
+            talking_points = [
+                "Commend academic consistency and explore research project interests.",
+                "Discuss resume building, industry certifications, and summer internship timelines."
+            ]
 
     return {
         "summary": summary,
