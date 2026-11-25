@@ -97,9 +97,180 @@ function openStudentModal(student) {
   // Render strict 3-key GenAI Counseling Memo
   renderCounselingMemo(student.counseling_memo);
 
+  // Initialize Interactive "What-If" Academic Recovery Simulator
+  initRecoverySimulator(student);
+
   // Show Modal Drawer
   modal.classList.remove("hidden");
   if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * Initializes and wires the Interactive "What-If" Academic Recovery Simulator.
+ * Allows advisors to adjust attendance, passed credits, backlog clearance, and tuition status
+ * to see live risk reduction on the animated radial gauge.
+ * @param {object} student
+ */
+function initRecoverySimulator(student) {
+  const attSlider = document.getElementById("sim-attendance-slider");
+  const passedSlider = document.getElementById("sim-passed-slider");
+  const backlogsSlider = document.getElementById("sim-backlogs-slider");
+  const tuitionToggle = document.getElementById("sim-tuition-toggle");
+  const resetBtn = document.getElementById("sim-reset-btn");
+
+  if (!attSlider || !passedSlider || !backlogsSlider || !tuitionToggle) return;
+
+  const baselineAttendance = Math.min(100, Math.max(40, parseFloat(student.attendance_pct || 75)));
+  const baselinePrediction = student.prediction || { risk_score: 0.5, risk_level: "Medium" };
+  const baselineScore = typeof baselinePrediction.risk_score === "number" ? baselinePrediction.risk_score : 0.5;
+  const baselineLevel = baselinePrediction.risk_level || (baselineScore >= 0.65 ? "High" : baselineScore >= 0.35 ? "Medium" : "Low");
+
+  let baselineBacklogs = 0;
+  if (typeof student.total_backlogs === "number") {
+    baselineBacklogs = student.total_backlogs;
+  } else if (Array.isArray(student.top_risk_factors)) {
+    const factorStr = student.top_risk_factors.join(" ").toLowerCase();
+    if (factorStr.includes("failed") || factorStr.includes("backlog")) baselineBacklogs = 2;
+  }
+
+  let baselinePassed = 4;
+  if (student.approved_units_by_sem && student.approved_units_by_sem[`Sem ${student.semester}`] !== undefined) {
+    baselinePassed = student.approved_units_by_sem[`Sem ${student.semester}`];
+  } else if (baselineScore >= 0.70) {
+    baselinePassed = 1;
+  } else if (baselineScore >= 0.40) {
+    baselinePassed = 4;
+  } else {
+    baselinePassed = 6;
+  }
+
+  const baselineTuitionPaid =
+    student["Tuition fees up to date"] !== 0 &&
+    !(student.top_risk_factors || []).some(f => f.toLowerCase().includes("tuition") || f.toLowerCase().includes("fee"));
+
+  const applyBaseline = () => {
+    attSlider.value = Math.round(baselineAttendance);
+    passedSlider.value = Math.round(baselinePassed);
+    backlogsSlider.max = Math.max(1, baselineBacklogs || 3);
+    backlogsSlider.value = 0;
+    tuitionToggle.checked = baselineTuitionPaid;
+    recalculateSimulation(true);
+  };
+
+  const recalculateSimulation = (isReset = false) => {
+    const currentAtt = parseFloat(attSlider.value);
+    const currentPassed = parseInt(passedSlider.value, 10);
+    const backlogsCleared = parseInt(backlogsSlider.value, 10);
+    const tuitionPaid = tuitionToggle.checked;
+
+    const attValEl = document.getElementById("sim-attendance-val");
+    const attDeltaEl = document.getElementById("sim-attendance-delta");
+    const passedValEl = document.getElementById("sim-passed-val");
+    const passedDeltaEl = document.getElementById("sim-passed-delta");
+    const backlogsValEl = document.getElementById("sim-backlogs-val");
+    const backlogsDeltaEl = document.getElementById("sim-backlogs-delta");
+
+    const attDelta = currentAtt - baselineAttendance;
+    if (attValEl) attValEl.innerText = `${Math.round(currentAtt)}%`;
+    if (attDeltaEl) {
+      attDeltaEl.innerText = attDelta >= 0 ? `+${Math.round(attDelta)}% Improvement` : `${Math.round(attDelta)}% Decline`;
+      attDeltaEl.className = attDelta >= 0 ? "text-emerald-600 font-semibold" : "text-rose-600 font-semibold";
+    }
+
+    const passedDelta = currentPassed - baselinePassed;
+    if (passedValEl) passedValEl.innerText = `${currentPassed} / 6 units`;
+    if (passedDeltaEl) {
+      passedDeltaEl.innerText = passedDelta >= 0 ? `+${passedDelta} more units cleared` : `${passedDelta} fewer units`;
+      passedDeltaEl.className = passedDelta >= 0 ? "text-emerald-600 font-semibold" : "text-rose-600 font-semibold";
+    }
+
+    if (backlogsValEl) backlogsValEl.innerText = `${backlogsCleared} cleared`;
+    if (backlogsDeltaEl) {
+      backlogsDeltaEl.innerText = backlogsCleared > 0 ? `-${backlogsCleared} backlogs resolved` : "0 backlogs cleared";
+      backlogsDeltaEl.className = backlogsCleared > 0 ? "text-emerald-600 font-semibold" : "text-slate-400 font-semibold";
+    }
+
+    let simulatedScore = baselineScore;
+    simulatedScore += attDelta * -0.007;
+    simulatedScore += passedDelta * -0.09;
+    simulatedScore += backlogsCleared * -0.08;
+
+    if (!baselineTuitionPaid && tuitionPaid) {
+      simulatedScore -= 0.16;
+    } else if (baselineTuitionPaid && !tuitionPaid) {
+      simulatedScore += 0.16;
+    }
+
+    simulatedScore = Math.max(0.05, Math.min(0.98, parseFloat(simulatedScore.toFixed(2))));
+    const simLevel = simulatedScore >= 0.65 ? "High" : (simulatedScore >= 0.35 ? "Medium" : "Low");
+
+    if (!isReset && typeof updateRadialRiskGauge === "function") {
+      updateRadialRiskGauge(simulatedScore, simLevel);
+    } else if (isReset && typeof updateRadialRiskGauge === "function") {
+      updateRadialRiskGauge(baselineScore, baselineLevel);
+    }
+
+    const badge = document.getElementById("modal-risk-badge");
+    if (badge) {
+      const displayScore = isReset ? baselineScore : simulatedScore;
+      const displayLevel = isReset ? baselineLevel : simLevel;
+      const pct = Math.round(displayScore * 100);
+      const isSimulated = !isReset && Math.abs(simulatedScore - baselineScore) > 0.01;
+      badge.innerText = isSimulated ? `Simulated: ${displayLevel} Tier (${pct}%)` : `${displayLevel} Risk Tier (${pct}%)`;
+      badge.className =
+        displayLevel === "High"
+          ? "linear-tag linear-tag-high"
+          : displayLevel === "Medium"
+          ? "linear-tag linear-tag-medium"
+          : "linear-tag linear-tag-low";
+    }
+
+    const basePct = Math.round(baselineScore * 100);
+    const projPct = isReset ? basePct : Math.round(simulatedScore * 100);
+    const netDiff = basePct - projPct;
+
+    const originalEl = document.getElementById("sim-original-pct");
+    const projectedEl = document.getElementById("sim-projected-pct");
+    const headlineEl = document.getElementById("sim-impact-headline");
+    const deltaBadge = document.getElementById("sim-delta-badge");
+    const impactDot = document.getElementById("sim-impact-dot");
+
+    if (originalEl) originalEl.innerText = `${basePct}%`;
+    if (projectedEl) {
+      projectedEl.innerText = `${projPct}%`;
+      projectedEl.className =
+        simLevel === "Low" ? "text-emerald-600 font-bold" : simLevel === "Medium" ? "text-amber-600 font-bold" : "text-rose-600 font-bold";
+    }
+
+    if (deltaBadge) {
+      if (netDiff > 0) {
+        deltaBadge.className = "px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0";
+        deltaBadge.innerText = `-${netDiff}% Risk Reduction`;
+        if (headlineEl) headlineEl.innerText = simLevel === "Low" ? "Projected Recovery: On Track to Graduate!" : "Projected Trajectory: Watchlist Stabilization";
+        if (impactDot) impactDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0";
+      } else if (netDiff < 0) {
+        deltaBadge.className = "px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-rose-50 text-rose-700 border border-rose-200 shrink-0";
+        deltaBadge.innerText = `+${Math.abs(netDiff)}% Risk Increase`;
+        if (headlineEl) headlineEl.innerText = "Adverse Trajectory: Immediate Attrition Risk";
+        if (impactDot) impactDot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0";
+      } else {
+        deltaBadge.className = "px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0";
+        deltaBadge.innerText = "Baseline State";
+        if (headlineEl) headlineEl.innerText = `Current Baseline: ${baselineLevel} Risk Tier`;
+        if (impactDot) impactDot.className = "w-2.5 h-2.5 rounded-full bg-slate-400 shrink-0";
+      }
+    }
+  };
+
+  attSlider.oninput = () => recalculateSimulation(false);
+  passedSlider.oninput = () => recalculateSimulation(false);
+  backlogsSlider.oninput = () => recalculateSimulation(false);
+  tuitionToggle.onchange = () => recalculateSimulation(false);
+  if (resetBtn) {
+    resetBtn.onclick = () => applyBaseline();
+  }
+
+  applyBaseline();
 }
 
 /**

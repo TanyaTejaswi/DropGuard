@@ -723,6 +723,103 @@
             </div>
           </div>
 
+          <!-- Interactive "What-If" Academic Recovery Simulator -->
+          <div class="bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/50 p-5 rounded-2xl border border-indigo-100 shadow-xs space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center space-x-2.5">
+                <div class="h-7 w-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                  <i data-lucide="sliders" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
+                    <span>Interactive "What-If" Recovery Simulator</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700">Live Dial</span>
+                  </h4>
+                  <p class="text-[11px] text-slate-500">Slide hypothetical interventions to simulate live risk reduction on the radial dial</p>
+                </div>
+              </div>
+              <button id="sim-reset-btn" type="button" class="text-[10px] font-semibold px-2.5 py-1 rounded-md bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors flex items-center space-x-1 shadow-2xs cursor-pointer">
+                <i data-lucide="rotate-ccw" class="w-3 h-3 text-slate-500"></i>
+                <span>Reset Baseline</span>
+              </button>
+            </div>
+
+            <!-- Simulator Sliders Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+              
+              <!-- Slider 1: Target Attendance -->
+              <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-700 text-[11px]">Simulated Attendance</span>
+                  <span id="sim-attendance-val" class="font-mono font-bold text-indigo-600 text-[11px]">--%</span>
+                </div>
+                <input id="sim-attendance-slider" type="range" min="40" max="100" step="1" value="75" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg" />
+                <div class="flex justify-between text-[9px] text-slate-400 font-medium">
+                  <span>40% (Poor)</span>
+                  <span id="sim-attendance-delta" class="text-emerald-600 font-semibold">+0% Improvement</span>
+                  <span>100% (Perfect)</span>
+                </div>
+              </div>
+
+              <!-- Slider 2: Units Passed This Term -->
+              <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-700 text-[11px]">Approved Units This Term</span>
+                  <span id="sim-passed-val" class="font-mono font-bold text-indigo-600 text-[11px]">6 / 6</span>
+                </div>
+                <input id="sim-passed-slider" type="range" min="0" max="6" step="1" value="6" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg" />
+                <div class="flex justify-between text-[9px] text-slate-400 font-medium">
+                  <span>0 Units (Fail all)</span>
+                  <span id="sim-passed-delta" class="text-emerald-600 font-semibold">Pass all 6</span>
+                  <span>6 Units (Full pass)</span>
+                </div>
+              </div>
+
+              <!-- Slider 3: Backlogs Cleared -->
+              <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-700 text-[11px]">Backlog Exams Cleared</span>
+                  <span id="sim-backlogs-val" class="font-mono font-bold text-indigo-600 text-[11px]">0 cleared</span>
+                </div>
+                <input id="sim-backlogs-slider" type="range" min="0" max="6" step="1" value="0" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg" />
+                <div class="flex justify-between text-[9px] text-slate-400 font-medium">
+                  <span>0 Cleared</span>
+                  <span id="sim-backlogs-delta" class="text-slate-500 font-semibold">Clear backlogs</span>
+                  <span>All Cleared</span>
+                </div>
+              </div>
+
+              <!-- Toggle 4: Emergency Micro-Grant / Tuition Cleared -->
+              <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs flex items-center justify-between">
+                <div>
+                  <p class="font-semibold text-slate-800 text-[11px]">Bursar Micro-Grant / Fees Paid</p>
+                  <p class="text-[9px] text-slate-400 mt-0.5">Clear outstanding tuition hold</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input id="sim-tuition-toggle" type="checkbox" class="sr-only peer" checked>
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
+              </div>
+
+            </div>
+
+            <!-- Projected Recovery Impact Callout -->
+            <div id="sim-impact-banner" class="bg-white p-3.5 rounded-xl border border-indigo-200 flex items-center justify-between text-xs shadow-2xs">
+              <div class="flex items-center space-x-2.5">
+                <div id="sim-impact-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></div>
+                <div>
+                  <span class="font-bold text-slate-900" id="sim-impact-headline">Projected Recovery: Safe Retention Tier</span>
+                  <p class="text-[11px] text-slate-500 mt-0.5" id="sim-impact-sub">
+                    Risk reduced from <b id="sim-original-pct" class="text-slate-900">--%</b> down to <b id="sim-projected-pct" class="text-emerald-600 font-bold">--%</b>
+                  </p>
+                </div>
+              </div>
+              <span id="sim-delta-badge" class="px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                -0% Risk
+              </span>
+            </div>
+          </div>
+
           <!-- SHAP Primary Drivers -->
           <div>
             <div class="flex items-center justify-between mb-2">
@@ -907,8 +1004,8 @@
     <span id="toast-message">Counseling memo copied to clipboard!</span>
   </div>
 
-  <script src="js/charts.js?v=2.6"></script>
-  <script src="js/modal.js?v=2.6"></script>
-  <script src="js/app.js?v=2.6"></script>
+  <script src="js/charts.js?v=2.7"></script>
+  <script src="js/modal.js?v=2.7"></script>
+  <script src="js/app.js?v=2.7"></script>
 </body>
 </html>
