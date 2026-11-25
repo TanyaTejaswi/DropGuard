@@ -314,14 +314,14 @@ async function checkBackendHealth() {
     const res = await fetch(HEALTH_URL, { cache: "no-store", signal: AbortSignal.timeout(2000) });
     if (res.ok) {
       if (dot) dot.className = "h-2 w-2 rounded-full bg-emerald-500 animate-pulse";
-      if (label) label.innerText = "FastAPI ML Active";
+      if (label) label.innerText = "Online";
       if (badge) badge.className = "hidden sm:flex text-xs px-2.5 py-1 rounded-full bg-emerald-50/70 text-emerald-800 font-medium border border-emerald-200/80 shadow-2xs items-center space-x-2";
       return true;
     }
   } catch (err) {}
 
   if (dot) dot.className = "h-2 w-2 rounded-full bg-amber-500";
-  if (label) label.innerText = "Mock Dataset Active";
+  if (label) label.innerText = "Demo Mode";
   if (badge) badge.className = "hidden sm:flex text-xs px-2.5 py-1 rounded-full bg-amber-50/70 text-amber-800 font-medium border border-amber-200/80 shadow-2xs items-center space-x-2";
   return false;
 }
@@ -767,7 +767,7 @@ function setupPredictionModal() {
 
     const submitBtn = document.getElementById("predict-submit-btn");
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>Evaluating Model...</span>`;
+    submitBtn.innerHTML = `<span>Analyzing Student...</span>`;
 
     const name = document.getElementById("form-name").value;
     const program = document.getElementById("form-program").value;
@@ -963,7 +963,7 @@ function setupPredictionModal() {
       submitBtn.disabled = false;
       submitBtn.innerHTML = `
         <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-300"></i>
-        <span>Run DropGuard Pipeline</span>
+        <span>Check Student Risk</span>
       `;
       if (window.lucide) lucide.createIcons();
     }

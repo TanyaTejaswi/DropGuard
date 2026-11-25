@@ -35,19 +35,19 @@
       <nav class="hidden md:flex items-center bg-slate-100/80 p-1 rounded-full border border-slate-200/60 shadow-xs" id="ribbon-navigation">
         <button type="button" class="ribbon-nav-pill active" data-view="view-overview" onclick="switchView('view-overview')">
           <i data-lucide="layout" class="w-3.5 h-3.5"></i>
-          <span>Overview</span>
+          <span>Home</span>
         </button>
         <button type="button" class="ribbon-nav-pill" data-view="view-roster" onclick="switchView('view-roster')">
           <i data-lucide="users" class="w-3.5 h-3.5"></i>
-          <span>Live Roster</span>
+          <span>Students</span>
         </button>
         <button type="button" class="ribbon-nav-pill" data-view="view-telemetry" onclick="switchView('view-telemetry')">
           <i data-lucide="activity" class="w-3.5 h-3.5"></i>
-          <span>Model Telemetry</span>
+          <span>Model Stats</span>
         </button>
         <button type="button" class="ribbon-nav-pill" data-view="view-counseling" onclick="switchView('view-counseling')">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-500"></i>
-          <span>Counseling Hub</span>
+          <span>Counseling</span>
         </button>
       </nav>
 
@@ -56,7 +56,7 @@
         <!-- Live Connection Status -->
         <div id="server-status-badge" class="hidden sm:flex text-xs px-2.5 py-1 rounded-full bg-white text-slate-600 font-medium border border-slate-200 shadow-2xs items-center space-x-2">
           <span id="server-status-dot" class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="server-status-label" class="text-[11px]">Server Active</span>
+          <span id="server-status-label" class="text-[11px]">Online</span>
         </div>
 
         <!-- Linear Auth State Container -->
@@ -72,7 +72,7 @@
         <!-- Live Prediction Action Trigger -->
         <button id="btn-open-predict-modal" class="linear-btn-primary text-xs hidden lg:inline-flex">
           <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-indigo-300"></i>
-          <span>Run Prediction</span>
+          <span>Predict Risk</span>
           <kbd class="ml-1 bg-slate-800 text-slate-300 border-slate-700">⌘P</kbd>
         </button>
       </div>
@@ -81,9 +81,9 @@
 
   <!-- Mobile Ribbon Navigation Row (Visible on small screens) -->
   <div class="md:hidden bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between overflow-x-auto text-xs space-x-2">
-    <button type="button" class="ribbon-nav-pill active text-xs py-1" data-view="view-overview" onclick="switchView('view-overview')">Overview</button>
-    <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-roster" onclick="switchView('view-roster')">Roster</button>
-    <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-telemetry" onclick="switchView('view-telemetry')">Telemetry</button>
+    <button type="button" class="ribbon-nav-pill active text-xs py-1" data-view="view-overview" onclick="switchView('view-overview')">Home</button>
+    <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-roster" onclick="switchView('view-roster')">Students</button>
+    <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-telemetry" onclick="switchView('view-telemetry')">Model Stats</button>
     <button type="button" class="ribbon-nav-pill text-xs py-1" data-view="view-counseling" onclick="switchView('view-counseling')">Counseling</button>
   </div>
 
@@ -116,11 +116,11 @@
         <!-- CTA Buttons -->
         <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
           <button type="button" onclick="switchView('view-roster')" class="linear-btn-primary px-5 py-2.5 text-sm shadow-sm">
-            <span>Open Early Warning Roster</span>
+            <span>View Students</span>
             <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
           </button>
           <button type="button" onclick="switchView('view-telemetry')" class="linear-btn-secondary px-5 py-2.5 text-sm">
-            <span>Inspect Model Telemetry</span>
+            <span>View Model Stats</span>
           </button>
         </div>
 
@@ -519,7 +519,7 @@
           <p class="text-xs text-slate-500 mt-1">Autonomous advisory prompt templates, intervention archetypes, and clinical counseling documentation.</p>
         </div>
         <button type="button" onclick="switchView('view-roster')" class="linear-btn-secondary text-xs">
-          <span>Apply in Live Roster →</span>
+          <span>Go to Students →</span>
         </button>
       </div>
 
@@ -910,8 +910,8 @@
       <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
         <div class="p-5 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
           <div>
-            <h3 class="text-base font-bold text-slate-900">Run Live Dropout Prediction & GenAI Memo</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Input real student indicators for instantaneous Random Forest + SHAP + AI evaluation.</p>
+            <h3 class="text-base font-bold text-slate-900">Check Student Dropout Risk</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Enter student details to get an instant risk assessment and counseling advice.</p>
           </div>
           <button id="predict-close-btn" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg">
             <i data-lucide="x" class="w-5 h-5"></i>
@@ -963,11 +963,11 @@
           <div class="space-y-2 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80">
             <div class="flex items-center justify-between">
               <div>
-                <label class="block text-xs font-bold text-slate-800">Approved Units (Subjects Passed Out of 6)</label>
-                <p class="text-[11px] text-slate-500 mt-0.5">Enter subjects passed (0 to 6) for each semester up to Semester <span id="active-sem-indicator" class="font-bold text-indigo-600">2</span></p>
+                <label class="block text-xs font-bold text-slate-800">Passed Subjects (out of 6 each semester)</label>
+                <p class="text-[11px] text-slate-500 mt-0.5">Enter subjects passed (0 to 6) up to Semester <span id="active-sem-indicator" class="font-bold text-indigo-600">2</span></p>
               </div>
               <span id="approved-units-summary" class="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold shrink-0">
-                12 / 12 Approved (0 Backlogs)
+                12 / 12 Passed (0 Backlogs)
               </span>
             </div>
             <div id="dynamic-semesters-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
@@ -978,11 +978,11 @@
           <div class="grid grid-cols-2 gap-4 pt-1">
             <label class="flex items-center space-x-2 text-xs text-slate-700">
               <input id="form-tuition" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" />
-              <span>Tuition Overdue (Flagged)</span>
+              <span>Tuition Fees Overdue</span>
             </label>
             <label class="flex items-center space-x-2 text-xs text-slate-700">
               <input id="form-debtor" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked />
-              <span>Registered Debtor Status</span>
+              <span>Has Pending Fee Debt</span>
             </label>
           </div>
 
@@ -990,7 +990,7 @@
             <button type="button" id="predict-cancel-btn" class="linear-btn-secondary text-xs">Cancel</button>
             <button type="submit" id="predict-submit-btn" class="linear-btn-primary text-xs">
               <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-300"></i>
-              <span>Run DropGuard Pipeline</span>
+              <span>Check Student Risk</span>
             </button>
           </div>
         </form>
