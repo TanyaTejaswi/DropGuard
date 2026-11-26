@@ -632,10 +632,11 @@
   <!-- ======================================================================
        MODAL 1: LINEAR AUTHENTICATION DIALOG (Sign In / Sign Up)
        ====================================================================== -->
-  <div id="auth-modal" class="fixed inset-0 z-50 overflow-hidden hidden" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" onclick="closeAuthModal()"></div>
-    <div class="fixed inset-0 flex items-center justify-center p-4">
-      <div class="linear-card bg-white max-w-sm w-full p-6 shadow-2xl space-y-5 border border-slate-200">
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" onclick="closeAuthModal()"></div>
+    <div class="fixed inset-0 overflow-y-auto overscroll-contain" onclick="if(event.target === this) closeAuthModal()">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="linear-card bg-white max-w-sm w-full p-6 shadow-2xl space-y-5 border border-slate-200 my-auto" onclick="event.stopPropagation()">
         
         <div class="text-center space-y-1">
           <div class="h-10 w-10 mx-auto rounded-xl bg-slate-900 text-white flex items-center justify-center mb-2 shadow-xs">
@@ -684,6 +685,7 @@
         <div class="text-center text-[11px] text-slate-400">
           DropGuard Enterprise Academic License • SOC-2 Type II
         </div>
+        </div>
       </div>
     </div>
   </div>
@@ -718,7 +720,7 @@
           <div>
             <div class="flex items-center space-x-2">
               <h3 id="modal-student-name" class="text-lg font-bold text-slate-900">Student Profile</h3>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">Dossier</span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">Student Report</span>
             </div>
             <p id="modal-student-meta" class="text-xs text-slate-500 mt-0.5 font-mono">ID: -- | Program: --</p>
           </div>
@@ -745,7 +747,7 @@
               </div>
 
               <div>
-                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Dropout Risk Probability</p>
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Dropout Risk</p>
                 <div class="mt-1">
                   <span id="modal-risk-badge" class="linear-tag">--</span>
                 </div>
@@ -756,7 +758,6 @@
               <p>Attendance: <b id="modal-attendance" class="font-bold text-slate-900">--%</b></p>
               <p>Current CGPA: <b id="modal-gpa" class="font-bold text-slate-900">--/10</b></p>
               <p id="modal-backlogs-row" class="text-rose-600 font-semibold hidden">Failed Subjects: <b id="modal-backlogs" class="font-bold">0</b></p>
-              <p class="text-[10px] text-slate-400">RandomForest Model</p>
             </div>
           </div>
 
@@ -769,15 +770,15 @@
                 </div>
                 <div>
                   <h4 class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
-                    <span>Interactive "What-If" Recovery Simulator</span>
-                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700">Live Dial</span>
+                    <span>Try "What-If" Improvements</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700">Live Preview</span>
                   </h4>
-                  <p class="text-[11px] text-slate-500">Slide hypothetical interventions to simulate live risk reduction on the radial dial</p>
+                  <p class="text-[11px] text-slate-500">Move the sliders to see how better attendance, passing classes, or paying fees would lower risk.</p>
                 </div>
               </div>
               <button id="sim-reset-btn" type="button" class="text-[10px] font-semibold px-2.5 py-1 rounded-md bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors flex items-center space-x-1 shadow-2xs cursor-pointer">
                 <i data-lucide="rotate-ccw" class="w-3 h-3 text-slate-500"></i>
-                <span>Reset Baseline</span>
+                <span>Reset</span>
               </button>
             </div>
 
@@ -787,7 +788,7 @@
               <!-- Slider 1: Target Attendance -->
               <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs space-y-1.5">
                 <div class="flex items-center justify-between">
-                  <span class="font-semibold text-slate-700 text-[11px]">Simulated Attendance</span>
+                  <span class="font-semibold text-slate-700 text-[11px]">If Attendance Improves To</span>
                   <span id="sim-attendance-val" class="font-mono font-bold text-indigo-600 text-[11px]">--%</span>
                 </div>
                 <input id="sim-attendance-slider" type="range" min="40" max="100" step="1" value="75" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg" />
@@ -801,27 +802,27 @@
               <!-- Slider 2: Units Passed This Term -->
               <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs space-y-1.5">
                 <div class="flex items-center justify-between">
-                  <span class="font-semibold text-slate-700 text-[11px]">Approved Units This Term</span>
+                  <span class="font-semibold text-slate-700 text-[11px]">Classes Passed This Term</span>
                   <span id="sim-passed-val" class="font-mono font-bold text-indigo-600 text-[11px]">6 / 6</span>
                 </div>
                 <input id="sim-passed-slider" type="range" min="0" max="6" step="1" value="6" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg" />
                 <div class="flex justify-between text-[9px] text-slate-400 font-medium">
-                  <span>0 Units (Fail all)</span>
+                  <span>0 (None)</span>
                   <span id="sim-passed-delta" class="text-emerald-600 font-semibold">Pass all 6</span>
-                  <span>6 Units (Full pass)</span>
+                  <span>6 (All)</span>
                 </div>
               </div>
 
               <!-- Slider 3: Backlogs Cleared -->
               <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs space-y-1.5">
                 <div class="flex items-center justify-between">
-                  <span class="font-semibold text-slate-700 text-[11px]">Backlog Exams Cleared</span>
+                  <span class="font-semibold text-slate-700 text-[11px]">Failed Exams Cleared</span>
                   <span id="sim-backlogs-val" class="font-mono font-bold text-indigo-600 text-[11px]">0 cleared</span>
                 </div>
                 <input id="sim-backlogs-slider" type="range" min="0" max="6" step="1" value="0" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg" />
                 <div class="flex justify-between text-[9px] text-slate-400 font-medium">
                   <span>0 Cleared</span>
-                  <span id="sim-backlogs-delta" class="text-slate-500 font-semibold">Clear backlogs</span>
+                  <span id="sim-backlogs-delta" class="text-slate-500 font-semibold">Clear failed exams</span>
                   <span>All Cleared</span>
                 </div>
               </div>
@@ -829,8 +830,8 @@
               <!-- Toggle 4: Emergency Micro-Grant / Tuition Cleared -->
               <div class="bg-white p-3 rounded-xl border border-indigo-100/90 shadow-2xs flex items-center justify-between">
                 <div>
-                  <p class="font-semibold text-slate-800 text-[11px]">Bursar Micro-Grant / Fees Paid</p>
-                  <p class="text-[9px] text-slate-400 mt-0.5">Clear outstanding tuition hold</p>
+                  <p class="font-semibold text-slate-800 text-[11px]">Tuition Fees Paid / Cleared</p>
+                  <p class="text-[9px] text-slate-400 mt-0.5">Mark unpaid fees as cleared</p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input id="sim-tuition-toggle" type="checkbox" class="sr-only peer" checked>
@@ -860,8 +861,8 @@
           <!-- SHAP Primary Drivers -->
           <div>
             <div class="flex items-center justify-between mb-2">
-              <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Key Drivers of Risk (SHAP Attribution)</h4>
-              <span class="text-[10px] text-slate-400 font-mono">TreeExplainer Model</span>
+              <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Main Reasons for This Risk</h4>
+              <span class="text-[10px] text-slate-400 font-mono">Top Factors</span>
             </div>
             <ul id="modal-factors-list" class="space-y-2">
               <!-- Populated dynamically by charts.js -->
@@ -873,12 +874,12 @@
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center space-x-2 text-indigo-950 font-bold text-sm">
                 <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
-                <span>Automated Counseling Intervention Strategy</span>
+                <span>AI Counseling Plan</span>
               </div>
               <div class="flex items-center space-x-2">
                 <button id="modal-copy-memo-btn" type="button" class="text-[11px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium border border-slate-200 transition-colors flex items-center space-x-1 shadow-2xs">
                   <i data-lucide="copy" class="w-3 h-3"></i>
-                  <span>Copy Memo</span>
+                  <span>Copy Plan</span>
                 </button>
                 <button id="modal-regenerate-memo-btn" type="button" class="text-[11px] px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition-colors flex items-center space-x-1 shadow-2xs">
                   <i data-lucide="refresh-cw" class="w-3 h-3" id="memo-regen-icon"></i>
@@ -889,7 +890,7 @@
 
             <!-- Summary -->
             <div>
-              <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Diagnostic Summary</p>
+              <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Summary</p>
               <p id="modal-memo-summary" class="text-xs text-slate-800 mt-1 leading-relaxed bg-white p-3.5 rounded-xl border border-indigo-100 shadow-2xs"></p>
             </div>
 
@@ -931,7 +932,7 @@
             <span>Export / Print PDF</span>
           </button>
           <button id="modal-dismiss-btn" class="linear-btn-primary text-xs">
-            Close Dossier
+            Close
           </button>
         </div>
       </div>
@@ -941,10 +942,11 @@
   <!-- ======================================================================
        MODAL 3: LIVE ML PREDICTION DIALOG (Linear Clean Dialog)
        ====================================================================== -->
-  <div id="predict-modal" class="fixed inset-0 z-50 overflow-hidden hidden" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs" id="predict-backdrop"></div>
-    <div class="fixed inset-0 flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
+  <div id="predict-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs" id="predict-backdrop"></div>
+    <div class="fixed inset-0 overflow-y-auto overscroll-contain" onclick="if(event.target === this) document.getElementById('predict-close-btn').click()">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-auto" onclick="event.stopPropagation()">
         <div class="p-5 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
           <div>
             <h3 class="text-base font-bold text-slate-900">Check Student Dropout Risk</h3>
@@ -1037,6 +1039,7 @@
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   </div>
@@ -1047,8 +1050,8 @@
     <span id="toast-message">Counseling memo copied to clipboard!</span>
   </div>
 
-  <script src="js/charts.js?v=2.9"></script>
-  <script src="js/modal.js?v=2.9"></script>
-  <script src="js/app.js?v=2.9"></script>
+  <script src="js/charts.js?v=3.0"></script>
+  <script src="js/modal.js?v=3.0"></script>
+  <script src="js/app.js?v=3.0"></script>
 </body>
 </html>

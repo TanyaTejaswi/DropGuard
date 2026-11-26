@@ -121,7 +121,8 @@ def counsel_student(payload: dict):
     """
     student_profile = payload.get("student_profile", payload)
     top_risk_factors = payload.get("top_risk_factors", student_profile.get("top_risk_factors", []))
-    memo = generate_counseling_memo(student_profile, top_risk_factors)
+    regen_counter = payload.get("regen_counter", None)
+    memo = generate_counseling_memo(student_profile, top_risk_factors, regen_counter=regen_counter)
     return {
         "student_id": student_profile.get("student_id", "STU-UNKNOWN"),
         "counseling_memo": memo

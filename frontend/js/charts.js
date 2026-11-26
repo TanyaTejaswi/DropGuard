@@ -72,7 +72,7 @@ function formatSHAPFactors(factors, riskScore = 0.5) {
     `;
   }
 
-  const rankLabels = ["Primary Driver", "Secondary Driver", "Tertiary Factor", "Contributing Factor", "Minor Factor"];
+  const rankLabels = ["Biggest Factor", "2nd Biggest Factor", "3rd Factor", "Other Factor", "Minor Factor"];
   const baseWeights = [88, 64, 46, 32, 20];
 
   return factors.map((factor, index) => {
@@ -104,23 +104,23 @@ function formatSHAPFactors(factors, riskScore = 0.5) {
           </div>
           <div class="flex items-center space-x-1.5 shrink-0 ml-2">
             <span class="font-mono text-[10px] font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60">
-              +${impactDelta}% Risk Impact
+              +${impactDelta}% Risk
             </span>
           </div>
         </div>
 
-        <!-- Horizontal SHAP Attribution Bar -->
+        <!-- Horizontal Risk Factor Bar -->
         <div class="space-y-1">
           <div class="w-full bg-slate-200/80 rounded-full h-1.5 overflow-hidden flex">
             <div 
               class="${barColor} h-1.5 rounded-full transition-all duration-1000 ease-out" 
               style="width: ${weight}%"
-              title="${rankTitle}: ${weight}% relative SHAP attribution"
+              title="${rankTitle}: ${weight}% relative weight"
             ></div>
           </div>
           <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
-            <span>Baseline Cohort Average</span>
-            <span>${rankTitle} (${weight}% Attribution)</span>
+            <span>Student Average</span>
+            <span>${rankTitle} (${weight}% weight)</span>
           </div>
         </div>
       </li>

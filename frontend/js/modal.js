@@ -255,8 +255,8 @@ function initRecoverySimulator(student) {
         if (impactDot) impactDot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0";
       } else {
         deltaBadge.className = "px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0";
-        deltaBadge.innerText = "Baseline State";
-        if (headlineEl) headlineEl.innerText = `Current Baseline: ${baselineLevel} Risk Tier`;
+        deltaBadge.innerText = "Starting Score";
+        if (headlineEl) headlineEl.innerText = `Current Risk: ${baselineLevel}`;
         if (impactDot) impactDot.className = "w-2.5 h-2.5 rounded-full bg-slate-400 shrink-0";
       }
     }

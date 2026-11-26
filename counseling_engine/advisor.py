@@ -100,7 +100,7 @@ def call_gemini_api(prompt: str, api_key: str) -> str:
     return ""
 
 
-def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list) -> dict:
+def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list, regen_counter=None) -> dict:
     """
     Domain-Specific Expert Fallback Counseling Engine.
     Employs pedagogical heuristics to tailor empathetic, actionable intervention
@@ -152,7 +152,7 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
         or "freelance" in factor_text
     )
 
-    variant = random.choice([0, 1, 2])
+    variant = int(regen_counter) % 3 if regen_counter is not None else random.choice([0, 1, 2])
     action_items = []
     talking_points = []
 
@@ -336,7 +336,7 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
                     "Discuss financial planning and explore available emergency student grants.",
                     "Ensure student is aware of work-study opportunities on campus."
                 ]
-            else:
+            elif variant == 1:
                 summary = (
                     f"Financial Stability Advising: {name} maintains viable grades ({gpa}/10), but pending fee notices "
                     f"may disrupt enrollment if left unresolved."
@@ -349,6 +349,20 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
                 talking_points = [
                     "Discuss financial barriers frankly in an empathetic, supportive setting.",
                     "Outline step-by-step procedures to request fee extension waivers."
+                ]
+            else:
+                summary = (
+                    f"Tuition & Support Check-In: {name} is at moderate risk ({int(risk_score * 100)}%) due to fee pressures. "
+                    f"Early financial aid coordination will keep their semester on track."
+                )
+                action_items = [
+                    "Submit a priority bursar review to pause any late-fee penalties.",
+                    "Match student with short-term hardship bursaries or textbook vouchers.",
+                    "Schedule a 2-week follow-up to confirm payment plan approval."
+                ]
+                talking_points = [
+                    "Ask whether part-time work or family expenses are making fee deadlines harder.",
+                    "Walk through the exact documents needed for fee relief."
                 ]
 
         elif has_disengagement or has_work_conflict:
@@ -366,35 +380,78 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
                     "Discuss time-blocking techniques to handle project deadlines smoothly.",
                     "Assess if coursework pace or remote assignment submission is creating friction."
                 ]
-            else:
+            elif variant == 1:
                 summary = (
                     f"Engagement Recovery Memo: Early signs of portal inactivity or scheduling strain detected for {name}. "
                     f"Targeted coaching will maintain student momentum."
                 )
                 action_items = [
                     "Review weekly course portal access and assignment deadlines.",
-                    "Connect student with study circle peers in {program}.",
+                    f"Connect student with study circle peers in {program}.",
                     "Set up an advisor reminder sequence ahead of key milestone deadlines."
                 ]
                 talking_points = [
                     "Explore study environment setup and potential digital or material barriers.",
                     "Help prioritize competing assignment deadlines for the upcoming fortnight."
                 ]
+            else:
+                summary = (
+                    f"Schedule Balance Plan: {name} shows moderate attendance and workload strain in {program}. "
+                    f"A structured weekly routine will prevent missed classes from affecting grades."
+                )
+                action_items = [
+                    "Check if lab or tutorial sections can be switched to better-fitting time slots.",
+                    "Share recorded lecture links and key weekly summary notes.",
+                    "Set up a quick bi-weekly check-in to track attendance recovery."
+                ]
+                talking_points = [
+                    "Ask which days or class times are hardest to attend and why.",
+                    "Agree on two small, realistic attendance goals for the next 14 days."
+                ]
 
         else:
-            summary = (
-                f"{name} is in a transitional phase with moderate dropout indicators ({int(risk_score * 100)}% risk). "
-                f"Targeted study habits and proactive advisor support will solidify academic standing."
-            )
-            action_items = [
-                "Recommend enrollment in departmental study circles and quantitative workshops.",
-                "Conduct a mid-semester degree check to ensure prerequisite trajectory.",
-                "Review foundational lecture materials with course teaching assistant."
-            ]
-            talking_points = [
-                "Evaluate adaptation to current course load and identify any subject-specific questions.",
-                "Formulate a balanced weekly study schedule to prevent pre-exam cramming."
-            ]
+            if variant == 0:
+                summary = (
+                    f"{name} is in a transitional phase with moderate dropout indicators ({int(risk_score * 100)}% risk). "
+                    f"Targeted study habits and proactive advisor support will solidify academic standing."
+                )
+                action_items = [
+                    "Recommend enrollment in departmental study circles and quantitative workshops.",
+                    "Conduct a mid-semester degree check to ensure prerequisite trajectory.",
+                    "Review foundational lecture materials with course teaching assistant."
+                ]
+                talking_points = [
+                    "Evaluate adaptation to current course load and identify any subject-specific questions.",
+                    "Formulate a balanced weekly study schedule to prevent pre-exam cramming."
+                ]
+            elif variant == 1:
+                summary = (
+                    f"Mid-Semester Coaching Plan: {name} shows moderate risk ({int(risk_score * 100)}%) in {program}. "
+                    f"Early tutoring and clearer exam prep will help turn borderline grades into solid passes."
+                )
+                action_items = [
+                    "Pair student with a senior peer mentor for weekly core-subject review.",
+                    "Break upcoming assignments into weekly checkpoints with the advisor.",
+                    "Encourage attending faculty office hours before the next quiz or midterm."
+                ]
+                talking_points = [
+                    "Identify which specific subject feels most challenging right now.",
+                    "Discuss practical study techniques that fit their weekly routine."
+                ]
+            else:
+                summary = (
+                    f"Proactive Retention Support: {name} has a {gpa}/10 CGPA and {attendance}% attendance, placing them in the medium-risk range. "
+                    f"Consistent check-ins will help build momentum before finals."
+                )
+                action_items = [
+                    "Set up a 3-week academic check-in to monitor quiz and lab scores.",
+                    "Provide practice problem sets and exam-prep clinic schedules.",
+                    "Confirm all core semester credits are on track for completion."
+                ]
+                talking_points = [
+                    "Check in on overall stress levels, sleep, and study balance.",
+                    "Celebrate strengths so far and map out a clear path to the end of the term."
+                ]
 
     else:  # Low Risk
         if variant == 0:
@@ -434,7 +491,7 @@ def generate_expert_fallback_memo(student_profile: dict, top_risk_factors: list)
     }
 
 
-def generate_counseling_memo(student_profile: dict, top_risk_factors: list) -> dict:
+def generate_counseling_memo(student_profile: dict, top_risk_factors: list, regen_counter=None) -> dict:
     """
     Primary interface for DropGuard Counseling Engine.
     Takes a student profile and risk factors, executes GenAI generation with strict
@@ -488,7 +545,7 @@ def generate_counseling_memo(student_profile: dict, top_risk_factors: list) -> d
             print(f"[CounselingEngine] LLM API note: {e}. Utilizing expert advisor heuristic.")
 
     # High-fidelity domain expert fallback
-    return generate_expert_fallback_memo(student_profile, top_risk_factors)
+    return generate_expert_fallback_memo(student_profile, top_risk_factors, regen_counter=regen_counter)
 
 
 if __name__ == "__main__":
