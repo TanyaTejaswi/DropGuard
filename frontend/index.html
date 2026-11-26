@@ -25,7 +25,6 @@
         <div>
           <div class="flex items-center space-x-2">
             <span class="text-base font-bold text-slate-900 tracking-tight">DropGuard</span>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/80">v2.4</span>
           </div>
           <p class="text-[11px] text-slate-400 font-medium">Early Warning System</p>
         </div>
@@ -100,8 +99,6 @@
         <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs text-xs font-medium text-slate-600 mb-2">
           <span class="flex h-2 w-2 rounded-full bg-indigo-600"></span>
           <span>Higher Education Early Warning System</span>
-          <span class="text-slate-300">•</span>
-          <span class="text-indigo-600 font-semibold cursor-pointer" onclick="switchView('view-telemetry')">RandomForest 200-Trees + SHAP →</span>
         </div>
 
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
@@ -288,6 +285,14 @@
             </select>
           </div>
 
+          <!-- Active Category Filter Banner (when navigated from Counseling Guide) -->
+          <div id="category-filter-banner" class="hidden flex items-center justify-between px-4 py-2.5 rounded-lg bg-indigo-50 border border-indigo-200 text-xs text-indigo-900">
+            <span>Showing students in category: <strong id="category-filter-label" class="font-semibold"></strong> (click any student row to open their full dossier)</span>
+            <button type="button" onclick="clearCategoryFilter()" class="px-2.5 py-1 rounded bg-white border border-indigo-200 text-indigo-700 font-medium hover:bg-indigo-100 transition-colors">
+              Show All Students
+            </button>
+          </div>
+
           <!-- Filter Pills & Quick Personas Bar -->
           <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
             <div class="flex flex-wrap items-center gap-2" id="filter-pills-container">
@@ -443,65 +448,97 @@
 
       </div>
 
-      <!-- Global Feature Importance & SHAP Drivers -->
-      <div class="linear-card p-6 bg-white space-y-5">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div>
-            <h3 class="text-base font-bold text-slate-900">Global SHAP Feature Importance Hierarchy</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Mean absolute Shapley values ($|\phi_i|$) measured across the entire test evaluation partition.</p>
+      <!-- Dataset & Risk Thresholds Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Dataset & Training Pipeline -->
+        <div class="linear-card p-6 bg-white space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="text-base font-bold text-slate-900">Training Data & Pipeline</h3>
+            <span class="text-[11px] font-mono text-slate-400">UCI Dataset #697</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">TreeExplainer Evaluated</span>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Trained on historical university enrollment records to distinguish students who graduate from those who leave early.
+          </p>
+          <div class="space-y-2.5 text-xs">
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-500">Total Student Outcomes</span>
+              <span class="font-mono font-semibold text-slate-800">3,630 records (60.9% Grad / 39.1% Drop)</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-500">Train / Test Split</span>
+              <span class="font-mono font-semibold text-slate-800">80% Train (2,904) / 20% Test (726)</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-500">Input Signals Analyzed</span>
+              <span class="font-mono font-semibold text-slate-800">37 raw fields → 233 features</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-slate-500">Validation Method</span>
+              <span class="font-mono font-semibold text-slate-800">5-Fold Stratified Cross-Validation</span>
+            </div>
+          </div>
         </div>
 
-        <div class="space-y-3 text-xs">
-          <div>
-            <div class="flex justify-between text-slate-700 font-medium mb-1">
-              <span>1. Curricular units 2nd sem (approved)</span>
-              <span class="font-mono text-indigo-600 font-bold">+0.382 SHAP Impact</span>
+        <!-- Risk Tiers & Response Speed -->
+        <div class="linear-card p-6 bg-white space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="text-base font-bold text-slate-900">Risk Tiers & Speed</h3>
+            <span class="text-[11px] font-mono text-emerald-600 font-semibold">14.2 ms / prediction</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Each student receives a probability score from 0% to 100% that maps directly to an advisor action tier.
+          </p>
+          <div class="space-y-2.5 text-xs">
+            <div class="flex items-center justify-between p-2.5 rounded-lg bg-rose-50/70 border border-rose-200">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <span class="font-semibold text-rose-900">High Risk (65% – 100%)</span>
+              </div>
+              <span class="text-rose-700 font-medium">Urgent 24h outreach</span>
             </div>
-            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div class="bg-indigo-600 h-2 rounded-full" style="width: 95%"></div>
+            <div class="flex items-center justify-between p-2.5 rounded-lg bg-amber-50/70 border border-amber-200">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span class="font-semibold text-amber-900">Medium / Watchlist (35% – 64%)</span>
+              </div>
+              <span class="text-amber-700 font-medium">Check-in within 48h</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-200">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="font-semibold text-emerald-900">Low Risk (0% – 34%)</span>
+              </div>
+              <span class="text-emerald-700 font-medium">Routine monitoring</span>
             </div>
           </div>
+        </div>
 
+      </div>
+
+      <!-- How Reliable Is It? (Plain-English Summary Cards) -->
+      <div class="linear-card p-6 bg-white space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div>
-            <div class="flex justify-between text-slate-700 font-medium mb-1">
-              <span>2. Tuition fees up to date</span>
-              <span class="font-mono text-indigo-600 font-bold">+0.294 SHAP Impact</span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div class="bg-indigo-500 h-2 rounded-full" style="width: 78%"></div>
-            </div>
+            <h3 class="text-base font-bold text-slate-900">What These Numbers Mean in Practice</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Plain-language breakdown of how well the active model performs on unseen test students.</p>
           </div>
-
-          <div>
-            <div class="flex justify-between text-slate-700 font-medium mb-1">
-              <span>3. Curricular units 1st sem (approved)</span>
-              <span class="font-mono text-indigo-600 font-bold">+0.241 SHAP Impact</span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div class="bg-indigo-500 h-2 rounded-full" style="width: 65%"></div>
-            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-1">
+            <div class="text-lg font-extrabold text-indigo-600 font-mono">~9 of 10</div>
+            <div class="font-semibold text-slate-900">At-Risk Students Caught Early</div>
+            <p class="text-slate-500 leading-relaxed">High recall ensures struggling students are flagged before they withdraw.</p>
           </div>
-
-          <div>
-            <div class="flex justify-between text-slate-700 font-medium mb-1">
-              <span>4. Attendance percentage</span>
-              <span class="font-mono text-indigo-600 font-bold">+0.198 SHAP Impact</span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div class="bg-indigo-400 h-2 rounded-full" style="width: 52%"></div>
-            </div>
+          <div class="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-1">
+            <div class="text-lg font-extrabold text-emerald-600 font-mono">97.1%</div>
+            <div class="font-semibold text-slate-900">Separation Score (ROC-AUC)</div>
+            <p class="text-slate-500 leading-relaxed">Reliably ranks high-risk students above low-risk students across all thresholds.</p>
           </div>
-
-          <div>
-            <div class="flex justify-between text-slate-700 font-medium mb-1">
-              <span>5. Age at enrollment</span>
-              <span class="font-mono text-indigo-600 font-bold">+0.155 SHAP Impact</span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div class="bg-indigo-400 h-2 rounded-full" style="width: 42%"></div>
-            </div>
+          <div class="p-4 rounded-lg bg-slate-50 border border-slate-200/80 space-y-1">
+            <div class="text-lg font-extrabold text-slate-800 font-mono">&lt; 1.5s</div>
+            <div class="font-semibold text-slate-900">End-to-End Counseling Memo</div>
+            <p class="text-slate-500 leading-relaxed">Combines ML risk score, SHAP drivers, and AI action plan in real time.</p>
           </div>
         </div>
       </div>
@@ -515,11 +552,11 @@
       
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">AI Counseling & Intervention Hub</h1>
-          <p class="text-xs text-slate-500 mt-1">Autonomous advisory prompt templates, intervention archetypes, and clinical counseling documentation.</p>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">AI Counseling & Support Guide</h1>
+          <p class="text-xs text-slate-500 mt-1">Simple guides for common student challenges and how the AI advisor helps.</p>
         </div>
-        <button type="button" onclick="switchView('view-roster')" class="linear-btn-secondary text-xs">
-          <span>Go to Students →</span>
+        <button type="button" onclick="clearCategoryFilter(); switchView('view-roster')" class="linear-btn-secondary text-xs">
+          <span>View All Students →</span>
         </button>
       </div>
 
@@ -529,60 +566,60 @@
         <!-- Persona 1 -->
         <div class="linear-card p-6 bg-white space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Acute Academic Failure</span>
-            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: 24h</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Failing Classes</span>
+            <span class="text-[11px] font-medium text-rose-600">Urgent: Contact student within 24 hrs</span>
           </div>
-          <h3 class="text-base font-bold text-slate-900">Core Subject Friction & Exam Failure</h3>
+          <h3 class="text-base font-bold text-slate-900">Struggling With Core Subjects & Exams</h3>
           <p class="text-xs text-slate-600 leading-relaxed">
-            Characterized by failures in foundational coursework during the first two semesters. The AI advisor prescribes syllabus decompression, peer tutoring pairing, and course retake agreements.
+            For students who have failed key courses, earned low exam scores, or built up backlogs in their first two semesters. Without early help, they risk falling too far behind to catch up. The AI advisor recommends reducing their course load, pairing them with a peer tutor, and setting up a step-by-step plan to retake failed subjects.
           </p>
-          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
-            Inspect case profile (Maria Silva STU-101) →
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer hover:underline" onclick="filterByCategory('academic')">
+            View students in this category →
           </div>
         </div>
 
         <!-- Persona 2 -->
         <div class="linear-card p-6 bg-white space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Socio-Economic Hardship</span>
-            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: 48h</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Money & Tuition Trouble</span>
+            <span class="text-[11px] font-medium text-amber-600">Priority: Contact student within 48 hrs</span>
           </div>
-          <h3 class="text-base font-bold text-slate-900">Overdue Tuition & Registration Hold</h3>
+          <h3 class="text-base font-bold text-slate-900">Unpaid Tuition & Registration Hold</h3>
           <p class="text-xs text-slate-600 leading-relaxed">
-            Students performing at passable grade levels but facing acute financial vulnerability. AI intervention coordinates emergency student grants, installment payment plans, and campus work-study.
+            For students who are doing fine in their classes academically but are falling behind on tuition fees or carrying unpaid balances. Financial stress is one of the fastest causes of sudden dropout. The AI advisor guides counselors to connect them with emergency student grants, flexible installment plans, and on-campus work-study jobs.
           </p>
-          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
-            Inspect case profile (Lucas Santos STU-102) →
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer hover:underline" onclick="filterByCategory('financial')">
+            View students in this category →
           </div>
         </div>
 
         <!-- Persona 3 -->
         <div class="linear-card p-6 bg-white space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Chronic Absenteeism</span>
-            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: 48h</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Missing Classes</span>
+            <span class="text-[11px] font-medium text-amber-600">Priority: Contact student within 48 hrs</span>
           </div>
-          <h3 class="text-base font-bold text-slate-900">Lecture Disengagement & Commute Strain</h3>
+          <h3 class="text-base font-bold text-slate-900">Low Attendance & Schedule Conflicts</h3>
           <p class="text-xs text-slate-600 leading-relaxed">
-            Rapid drops in physical lecture presence often driven by scheduling conflicts, transportation bottlenecks, or employment commitments. AI designs structured time-blocking schedules.
+            For students whose class attendance has dropped sharply—often because of part-time work shifts, long daily commutes, family duties, or overlapping schedules. Early outreach helps uncover the root cause before grades suffer. The AI advisor suggests flexible class timing, recorded lecture access, and a realistic weekly study plan.
           </p>
-          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
-            Inspect case profile (Beatriz Lima STU-104) →
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer hover:underline" onclick="filterByCategory('attendance')">
+            View students in this category →
           </div>
         </div>
 
         <!-- Persona 4 -->
         <div class="linear-card p-6 bg-white space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Dean's List / High Retention</span>
-            <span class="text-[11px] font-mono text-slate-400">Intervention SLA: Routine</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Doing Great</span>
+            <span class="text-[11px] font-medium text-emerald-600">No rush: Normal semester check-in</span>
           </div>
-          <h3 class="text-base font-bold text-slate-900">Academic Excellence & Leadership Trajectory</h3>
+          <h3 class="text-base font-bold text-slate-900">Strong Grades & High Attendance</h3>
           <p class="text-xs text-slate-600 leading-relaxed">
-            Consistent high attendance and solid GPA performance. The advisor focuses on undergraduate research fellowships, internship placements, and department mentoring positions.
+            For low-risk students who attend classes regularly, keep their grades strong, and stay up to date on all requirements. Instead of urgent intervention, the focus here is growth and engagement. The AI advisor suggests undergraduate research projects, industry internships, and peer mentoring roles to keep them motivated.
           </p>
-          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer" onclick="switchView('view-roster')">
-            Inspect case profile (Tiago Ferreira STU-103) →
+          <div class="pt-2 text-xs text-indigo-600 font-medium cursor-pointer hover:underline" onclick="filterByCategory('doing_great')">
+            View students in this category →
           </div>
         </div>
 
@@ -975,14 +1012,20 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4 pt-1">
-            <label class="flex items-center space-x-2 text-xs text-slate-700">
-              <input id="form-tuition" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" />
-              <span>Tuition Fees Overdue</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <label class="flex items-start space-x-2 text-xs text-slate-700 cursor-pointer">
+              <input id="form-tuition" type="checkbox" class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500" />
+              <span>
+                <span class="font-medium block">Current Semester Tuition Unpaid</span>
+                <span class="text-[11px] text-slate-400">Missed this term's fee deadline</span>
+              </span>
             </label>
-            <label class="flex items-center space-x-2 text-xs text-slate-700">
-              <input id="form-debtor" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" checked />
-              <span>Has Pending Fee Debt</span>
+            <label class="flex items-start space-x-2 text-xs text-slate-700 cursor-pointer">
+              <input id="form-debtor" type="checkbox" class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500" checked />
+              <span>
+                <span class="font-medium block">Owes Past University Debt</span>
+                <span class="text-[11px] text-slate-400">Unpaid balance from earlier terms or fines</span>
+              </span>
             </label>
           </div>
 
@@ -1004,8 +1047,8 @@
     <span id="toast-message">Counseling memo copied to clipboard!</span>
   </div>
 
-  <script src="js/charts.js?v=2.7"></script>
-  <script src="js/modal.js?v=2.7"></script>
-  <script src="js/app.js?v=2.7"></script>
+  <script src="js/charts.js?v=2.9"></script>
+  <script src="js/modal.js?v=2.9"></script>
+  <script src="js/app.js?v=2.9"></script>
 </body>
 </html>

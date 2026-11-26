@@ -6,6 +6,7 @@
 
 let allStudents = [];
 let currentFilter = "ALL";
+let currentCategoryFilter = null;
 let searchQuery = "";
 let currentSortColumn = "risk_score";
 let currentSortAsc = false; // default highest risk first
@@ -13,7 +14,7 @@ let currentActiveView = "view-overview";
 let currentUser = null;
 let pendingAuthAction = null;
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = window.location.protocol.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000";
 const API_URL = `${API_BASE}/api/students`;
 const HEALTH_URL = `${API_BASE}/api/health`;
 const LOCAL_MOCK = "mock_students.json";
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * Public views can be freely explored without login.
  * @param {string} viewId - 'view-overview' | 'view-roster' | 'view-telemetry' | 'view-counseling'
  */
-function switchView(viewId) {
+function switchView(viewId, updateHistory = true) {
   const views = document.querySelectorAll(".page-view");
   let found = false;
 
@@ -70,9 +71,14 @@ function switchView(viewId) {
     }
   });
 
-  // Update URL hash without triggering reload
+  // Update URL hash in browser history so Chrome Back/Forward buttons work
   const hashKey = viewId.replace("view-", "");
-  history.replaceState(null, "", `#${hashKey}`);
+  const targetHash = `#${hashKey}`;
+  if (updateHistory && window.location.hash !== targetHash) {
+    history.pushState({ viewId }, "", targetHash);
+  } else if (!window.location.hash) {
+    history.replaceState({ viewId }, "", targetHash);
+  }
 
   // Scroll to top smoothly
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -86,25 +92,55 @@ function switchView(viewId) {
 }
 
 /**
- * Initializes the active view from the URL hash on page load.
+ * Initializes the active view from the URL hash on page load or history navigation.
  */
 function initViewFromHash() {
   const hash = window.location.hash.replace("#", "").trim();
   if (hash === "roster" || hash === "dashboard") {
-    switchView("view-roster");
+    switchView("view-roster", false);
   } else if (hash === "telemetry" || hash === "benchmarks") {
-    switchView("view-telemetry");
+    switchView("view-telemetry", false);
   } else if (hash === "counseling" || hash === "hub") {
-    switchView("view-counseling");
+    switchView("view-counseling", false);
   } else {
-    switchView("view-overview");
+    switchView("view-overview", false);
   }
 }
 
-// Handle browser back/forward navigation
+// Handle browser back/forward navigation (Chrome Back/Forward arrows)
+window.addEventListener("popstate", () => {
+  initViewFromHash();
+});
 window.addEventListener("hashchange", () => {
   initViewFromHash();
 });
+
+/**
+ * Navigates to the Student Roster and opens a specific student's profile modal.
+ * @param {string} studentId
+ */
+async function inspectStudentById(studentId) {
+  if (allStudents.length === 0) {
+    await fetchStudentData();
+  }
+  const student = allStudents.find(s => s.student_id === studentId);
+  switchView("view-roster");
+  if (!student) {
+    showToast(`Could not find student ${studentId}`);
+    return;
+  }
+  if (!currentUser) {
+    openAuthModal(
+      "signin",
+      `Advisor sign-in required to inspect risk predictions and counseling dossiers for ${student.name}.`,
+      { type: "open_student", student }
+    );
+    return;
+  }
+  if (typeof openStudentModal === "function") {
+    openStudentModal(student);
+  }
+}
 
 /* ==========================================================================
    2. AUTHENTICATION & ACCESS GATING ENGINE
@@ -441,7 +477,83 @@ function setupSearchAndFilters() {
   });
 }
 
+const CATEGORY_LABELS = {
+  academic: "Failing Classes (Academic)",
+  financial: "Money & Tuition Trouble",
+  attendance: "Missing Classes (Attendance)",
+  doing_great: "Doing Great (Low Risk)"
+};
+
+function matchesCategory(student, category) {
+  const factors = (student.prediction?.top_risk_factors || []).join(" ").toLowerCase();
+  if (category === "academic") {
+    return (
+      (typeof student.gpa === "number" && student.gpa < 5.0) ||
+      (student.total_backlogs || 0) > 0 ||
+      /fail|grade|exam|subject|credit|module|approved|backlog|prerequisite/.test(factors)
+    );
+  }
+  if (category === "financial") {
+    return (
+      student["Tuition fees up to date"] === 0 ||
+      student["Debtor"] === 1 ||
+      /tuition|debt|financial|fee|installment|scholarship|grant/.test(factors)
+    );
+  }
+  if (category === "attendance") {
+    return (
+      (typeof student.attendance_pct === "number" && student.attendance_pct < 75) ||
+      /attendance|absence|absent|missed|unexcused|commute|work|shift/.test(factors)
+    );
+  }
+  if (category === "doing_great") {
+    return (student.prediction?.risk_level || "") === "Low";
+  }
+  return true;
+}
+
+function updateCategoryBanner() {
+  const banner = document.getElementById("category-filter-banner");
+  const labelEl = document.getElementById("category-filter-label");
+  if (!banner || !labelEl) return;
+
+  if (currentCategoryFilter && CATEGORY_LABELS[currentCategoryFilter]) {
+    labelEl.innerText = CATEGORY_LABELS[currentCategoryFilter];
+    banner.classList.remove("hidden");
+  } else {
+    banner.classList.add("hidden");
+  }
+}
+
+/**
+ * Switches to the Student Roster filtered to a specific counseling category.
+ * @param {string} category
+ */
+async function filterByCategory(category) {
+  if (allStudents.length === 0) {
+    await fetchStudentData();
+  }
+  currentCategoryFilter = category;
+  currentFilter = "ALL";
+
+  const select = document.getElementById("filter-risk");
+  if (select) select.value = "ALL";
+  document.querySelectorAll(".filter-pill").forEach(p => {
+    p.classList.toggle("active", p.getAttribute("data-filter") === "ALL");
+  });
+
+  updateCategoryBanner();
+  switchView("view-roster");
+}
+
+function clearCategoryFilter() {
+  currentCategoryFilter = null;
+  updateCategoryBanner();
+  applyFiltersAndRender();
+}
+
 function applyFiltersAndRender() {
+  updateCategoryBanner();
   const filtered = allStudents.filter(student => {
     const matchesSearch = 
       !searchQuery ||
@@ -451,8 +563,9 @@ function applyFiltersAndRender() {
 
     const risk = student.prediction?.risk_level || "Medium";
     const matchesRisk = currentFilter === "ALL" || risk === currentFilter;
+    const matchesCat = !currentCategoryFilter || matchesCategory(student, currentCategoryFilter);
 
-    return matchesSearch && matchesRisk;
+    return matchesSearch && matchesRisk && matchesCat;
   });
 
   renderTable(filtered);
